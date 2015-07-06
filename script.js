@@ -78,12 +78,12 @@ function init () {
    light.position.set(250,250,250);
    scene.add(light);
       var ambientLight = new THREE.AmbientLight(0x111111);
-    scene.add(ambientLight);
+   // scene.add(ambientLight);
 
    // create a set of coordinate axes to help orient user
    //    specify length in pixels in each direction
    var axes = new THREE.AxisHelper(1000);
-   scene.add( axes );
+   scene.add(axes);
 
    // note: 4x4 checkboard pattern scaled so that each square is 25 by 25 pixels.
    var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
@@ -117,45 +117,67 @@ function init () {
    var y=0;
 
    for (var i = 0; i < json_data.length; i++) {
+
       var geometry = new THREE.CubeGeometry( 10, json_data[i].january, 10);
       y=json_data[i].january/2;
       var material = new THREE.MeshLambertMaterial( {color: 0xff0000} );
-      //create the CUBE
       var cube = new THREE.Mesh(geometry, material);
       cube.position.set(5, y, z);
       scene.add(cube);
+            //LABEL
+      var label = makeTextSprite(json_data[i].january, 
+         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+      label.position.set(5,json_data[i].january+20,z);
+      scene.add(label);
+
 
       var geometry = new THREE.CubeGeometry( 10, json_data[i].february, 10);
       y=json_data[i].february/2;
       var material = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
-      //create the CUBE
       var cube = new THREE.Mesh(geometry, material);
       cube.position.set(35, y, z);
       scene.add(cube);
+            //LABEL
+      var label = makeTextSprite(json_data[i].february, 
+         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+      label.position.set(35,json_data[i].february+20,z);
+      scene.add(label);
 
       var geometry = new THREE.CubeGeometry( 10, json_data[i].march, 10);
       y=json_data[i].march/2;
       var material = new THREE.MeshLambertMaterial( {color: 0x0000ff} );
-      //create the CUBE
       var cube = new THREE.Mesh(geometry, material);
       cube.position.set(65, y, z);
       scene.add(cube);
+            //LABEL
+      var label = makeTextSprite(json_data[i].march, 
+         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+      label.position.set(65,json_data[i].march+20,z);
+      scene.add(label);
 
       var geometry = new THREE.CubeGeometry( 10, json_data[i].april, 10);
       y=json_data[i].april/2;
       var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
-      //create the CUBE
       var cube = new THREE.Mesh(geometry, material);
       cube.position.set(95, y, z);
       scene.add(cube);
+            //LABEL
+      var label = makeTextSprite(json_data[i].april, 
+         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+      label.position.set(95,json_data[i].april+20,z);
+      scene.add(label);
 
       var geometry = new THREE.CubeGeometry( 10, json_data[i].may, 10);
       y=json_data[i].may/2;
       var material = new THREE.MeshLambertMaterial( {color: 0xcceeff} );
-      //create the CUBE
       var cube = new THREE.Mesh(geometry, material);
       cube.position.set(125, y, z);
       scene.add(cube);
+            //LABEL
+      var label = makeTextSprite(json_data[i].may, 
+         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+      label.position.set(125,json_data[i].may+20,z);
+      scene.add(label);
       z+=30;
    };
 
@@ -179,4 +201,78 @@ function update()
    // delta = change in time since last call (in seconds)
    var delta = clock.getDelta(); 
    controls.update();
+}
+
+function makeTextSprite( message, parameters )
+{
+   if ( parameters === undefined ) parameters = {};
+   
+   var fontface = parameters.hasOwnProperty("fontface") ? 
+      parameters["fontface"] : "Arial";
+   
+   var fontsize = parameters.hasOwnProperty("fontsize") ? 
+      parameters["fontsize"] : 18;
+   
+   var borderThickness = parameters.hasOwnProperty("borderThickness") ? 
+      parameters["borderThickness"] : 4;
+   
+   var borderColor = parameters.hasOwnProperty("borderColor") ?
+      parameters["borderColor"] : { r:0, g:0, b:0, a:1.0 };
+   
+   var backgroundColor = parameters.hasOwnProperty("backgroundColor") ?
+      parameters["backgroundColor"] : { r:255, g:255, b:255, a:1.0 };
+
+   var spriteAlignment = THREE.SpriteAlignment.topLeft;
+      
+   var canvas = document.createElement('canvas');
+   var context = canvas.getContext('2d');
+   context.font = "Bold " + fontsize + "px " + fontface;
+    
+   // get size data (height depends only on font size)
+   var metrics = context.measureText( message );
+   var textWidth = metrics.width;
+   
+   // background color
+   context.fillStyle   = "rgba(" + backgroundColor.r + "," + backgroundColor.g + ","
+                          + backgroundColor.b + "," + backgroundColor.a + ")";
+   // border color
+   context.strokeStyle = "rgba(" + borderColor.r + "," + borderColor.g + ","
+                          + borderColor.b + "," + borderColor.a + ")";
+
+   context.lineWidth = borderThickness;
+   roundRect(context, borderThickness/2, borderThickness/2, textWidth + borderThickness, fontsize * 1.4 + borderThickness, 6);
+   // 1.4 is extra height factor for text below baseline: g,j,p,q.
+   
+   // text color
+   context.fillStyle = "rgba(0, 0, 0, 1.0)";
+
+   context.fillText( message, borderThickness, fontsize + borderThickness);
+   
+   // canvas contents will be used for a texture
+   var texture = new THREE.Texture(canvas) 
+   texture.needsUpdate = true;
+
+   var spriteMaterial = new THREE.SpriteMaterial( 
+      { map: texture, useScreenCoordinates: false, alignment: spriteAlignment } );
+   var sprite = new THREE.Sprite( spriteMaterial );
+   sprite.scale.set(100,50,1.0);
+   return sprite; 
+}
+
+// function for drawing rounded rectangles
+function roundRect(ctx, x, y, w, h, r) 
+{
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+    ctx.fill();
+   ctx.stroke();   
 }
