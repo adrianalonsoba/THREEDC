@@ -73,34 +73,16 @@ function init () {
    ///////////
    // LIGHT //
    ///////////
-   var light = new THREE.PointLight(0xffffff);
-   light.position.set(0,250,0);
+   var light = new THREE.PointLight(0xffffff,1);
+   light.position.set(250,250,250);
    scene.add(light);
       var ambientLight = new THREE.AmbientLight(0x111111);
     scene.add(ambientLight);
 
 
-   //////////////
-   // GEOMETRY //
-   //////////////
-
-   // most objects displayed are a "mesh":
-   //  a collection of points ("geometry") and
-   //  a set of surface parameters ("material")
-
-   // Sphere parameters: radius, segments along width, segments along height
-   var sphereGeometry = new THREE.SphereGeometry( 50, 32, 16 );
-   var sphereMaterial = new THREE.MeshLambertMaterial( {color: 0xbf00ff} );
-   //create the sphere
-   var sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
-   sphere.position.set(100, 50, -50);
-   scene.add(sphere);
-
-
-
    // create a set of coordinate axes to help orient user
    //    specify length in pixels in each direction
-   var axes = new THREE.AxisHelper(100);
+   var axes = new THREE.AxisHelper(1000);
    scene.add( axes );
 
    // note: 4x4 checkboard pattern scaled so that each square is 25 by 25 pixels.
@@ -113,13 +95,29 @@ function init () {
    var floor = new THREE.Mesh(floorGeometry, floorMaterial);
    floor.position.y = -0.5;
    floor.rotation.x = Math.PI / 2;
-   scene.add(floor);
+  // scene.add(floor);
    
    var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
    // BackSide: render faces from inside of the cube, instead of from outside (default).
    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
    var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-   scene.add(skyBox);
+  // scene.add(skyBox);
+   scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+
+   //////////////
+   // GEOMETRY //
+   //////////////
+
+   // most objects displayed are a "mesh":
+   //  a collection of points ("geometry") and
+   //  a set of surface parameters ("material")
+
+  var geometry = new THREE.CubeGeometry( 10, 100, 10);
+   var material = new THREE.MeshLambertMaterial( {color: 0xff0000} );
+   //create the CUBE
+   var cube = new THREE.Mesh(geometry, material);
+   cube.position.set(5, 50, 5);
+   scene.add(cube);
 
 }
 

@@ -1,0 +1,31 @@
+[
+	{
+		"january": 50,
+		"february":25,
+		"march": 34,
+		"april": 23,
+		"may" : 39,
+		"june": 11,
+		"july": 22,
+		"august": 15,
+		"september": 54,
+		"october": 66,
+		"november": 21,
+		"december": 10
+	},
+
+	{
+		"january": 50,
+		"february":25,
+		"march": 34,
+		"april": 23,
+		"may" : 39,
+		"june": 11,
+		"july": 22,
+		"august": 15,
+		"september": 54,
+		"october": 66,
+		"november": 21,
+		"december": 10
+	}
+]
