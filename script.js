@@ -5,19 +5,20 @@
 
 // standard global variables
 var container, scene, camera, renderer, controls, stats;
+//JSON data saved here
+var json_data;
 //var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 
 
-// custom global variables
-var cube;
-
 // initialization
-init();
-
-
-// animation loop / game loop
-animate();
+  //getJSON call, draw cubes with data
+   $.getJSON("jsons/example.json", function(data) {
+      json_data=data;
+      init();
+      // animation loop / game loop
+      animate();
+   });
 
 ///////////////
 // FUNCTIONS //
@@ -53,7 +54,7 @@ function init () {
    //////////////
    // RENDERER //
    //////////////
-   renderer = new THREE.WebGLRenderer( {antialias:false} );
+   renderer = new THREE.WebGLRenderer( {antialias:true} );
    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
    // attach div element to variable to contain the renderer
@@ -78,7 +79,6 @@ function init () {
    scene.add(light);
       var ambientLight = new THREE.AmbientLight(0x111111);
     scene.add(ambientLight);
-
 
    // create a set of coordinate axes to help orient user
    //    specify length in pixels in each direction
@@ -112,12 +112,52 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
-  var geometry = new THREE.CubeGeometry( 10, 100, 10);
-   var material = new THREE.MeshLambertMaterial( {color: 0xff0000} );
-   //create the CUBE
-   var cube = new THREE.Mesh(geometry, material);
-   cube.position.set(5, 50, 5);
-   scene.add(cube);
+   //data in json_data
+   var z=5;
+   var y=0;
+
+   for (var i = 0; i < json_data.length; i++) {
+      var geometry = new THREE.CubeGeometry( 10, json_data[i].january, 10);
+      y=json_data[i].january/2;
+      var material = new THREE.MeshLambertMaterial( {color: 0xff0000} );
+      //create the CUBE
+      var cube = new THREE.Mesh(geometry, material);
+      cube.position.set(5, y, z);
+      scene.add(cube);
+
+      var geometry = new THREE.CubeGeometry( 10, json_data[i].february, 10);
+      y=json_data[i].february/2;
+      var material = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
+      //create the CUBE
+      var cube = new THREE.Mesh(geometry, material);
+      cube.position.set(35, y, z);
+      scene.add(cube);
+
+      var geometry = new THREE.CubeGeometry( 10, json_data[i].march, 10);
+      y=json_data[i].march/2;
+      var material = new THREE.MeshLambertMaterial( {color: 0x0000ff} );
+      //create the CUBE
+      var cube = new THREE.Mesh(geometry, material);
+      cube.position.set(65, y, z);
+      scene.add(cube);
+
+      var geometry = new THREE.CubeGeometry( 10, json_data[i].april, 10);
+      y=json_data[i].april/2;
+      var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
+      //create the CUBE
+      var cube = new THREE.Mesh(geometry, material);
+      cube.position.set(95, y, z);
+      scene.add(cube);
+
+      var geometry = new THREE.CubeGeometry( 10, json_data[i].may, 10);
+      y=json_data[i].may/2;
+      var material = new THREE.MeshLambertMaterial( {color: 0xcceeff} );
+      //create the CUBE
+      var cube = new THREE.Mesh(geometry, material);
+      cube.position.set(125, y, z);
+      scene.add(cube);
+      z+=30;
+   };
 
 }
 
