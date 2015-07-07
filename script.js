@@ -115,72 +115,35 @@ function init () {
    //data in json_data
    var z=5;
    var y=0;
+   var x=5;
 
    for (var i = 0; i < json_data.length; i++) {
-
-      var geometry = new THREE.CubeGeometry( 10, json_data[i].january, 10);
-      y=json_data[i].january/2;
-      var material = new THREE.MeshLambertMaterial( {color: 0xff0000} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(5, y, z);
-      scene.add(cube);
-            //LABEL
-      var label = makeTextSprite(json_data[i].january, 
-         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-      label.position.set(5,json_data[i].january+20,z);
-      scene.add(label);
-
-
-      var geometry = new THREE.CubeGeometry( 10, json_data[i].february, 10);
-      y=json_data[i].february/2;
-      var material = new THREE.MeshLambertMaterial( {color: 0x00ff00} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(35, y, z);
-      scene.add(cube);
-            //LABEL
-      var label = makeTextSprite(json_data[i].february, 
-         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-      label.position.set(35,json_data[i].february+20,z);
-      scene.add(label);
-
-      var geometry = new THREE.CubeGeometry( 10, json_data[i].march, 10);
-      y=json_data[i].march/2;
-      var material = new THREE.MeshLambertMaterial( {color: 0x0000ff} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(65, y, z);
-      scene.add(cube);
-            //LABEL
-      var label = makeTextSprite(json_data[i].march, 
-         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-      label.position.set(65,json_data[i].march+20,z);
-      scene.add(label);
-
-      var geometry = new THREE.CubeGeometry( 10, json_data[i].april, 10);
-      y=json_data[i].april/2;
-      var material = new THREE.MeshLambertMaterial( {color: 0xffff00} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(95, y, z);
-      scene.add(cube);
-            //LABEL
-      var label = makeTextSprite(json_data[i].april, 
-         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-      label.position.set(95,json_data[i].april+20,z);
-      scene.add(label);
-
-      var geometry = new THREE.CubeGeometry( 10, json_data[i].may, 10);
-      y=json_data[i].may/2;
-      var material = new THREE.MeshLambertMaterial( {color: 0xcceeff} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(125, y, z);
-      scene.add(cube);
-            //LABEL
-      var label = makeTextSprite(json_data[i].may, 
-         { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-      label.position.set(125,json_data[i].may+20,z);
-      scene.add(label);
+      for (var j in json_data[i]) {
+         var geometry = new THREE.CubeGeometry( 10, json_data[i][j], 10);
+         y=json_data[i][j]/2;
+         var material = new THREE.MeshLambertMaterial( {color: get_random_color()} );
+         var cube = new THREE.Mesh(geometry, material);
+         cube.position.set(x, y, z);
+         scene.add(cube);
+               //LABEL
+         var label = makeTextSprite(json_data[i][j], 
+            { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
+         label.position.set(x,json_data[i][j]+20,z);
+         scene.add(label);
+         x+=20;
+         y=0;
+      };
+      var y=0;
+      var x=0;
       z+=30;
    };
+}
 
+function get_random_color() {
+  function c() {
+    return Math.floor(Math.random()*256).toString(16)
+  }
+  return "#"+c()+c()+c();
 }
 
 function animate() 
