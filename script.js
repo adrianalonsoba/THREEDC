@@ -10,10 +10,14 @@ var json_data;
 //var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 
+// custom global variables
+var projector, mouse = { x: 0, y: 0 }, INTERSECTED;
+
+
 
 // initialization
   //getJSON call, draw cubes with data
-   $.getJSON("jsons/example.json", function(data) {
+   $.getJSON("jsons/scm-evolutionary.json", function(data) {
       json_data=data;
       init();
       // animation loop / game loop
@@ -121,30 +125,46 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
-   //data in json_data
-   var z=5;
+   //COMMITS
+   var z=1;
    var y=0;
-   var x=5;
+   var x=1;
 
-   for (var i = 0; i < json_data.length; i++) {
-      for (var j in json_data[i]) {
-         var geometry = new THREE.CubeGeometry( 10, json_data[i][j], 10);
-         y=json_data[i][j]/2;
-         var material = new THREE.MeshLambertMaterial( {color: get_random_color()} );
-         var cube = new THREE.Mesh(geometry, material);
-         cube.position.set(x, y, z);
-         scene.add(cube);
-               //LABEL
-         var label = makeTextSprite(json_data[i][j], 
-            { fontsize: 32, fontface: "Georgia", borderColor: {r:0, g:0, b:255, a:1.0} } );
-         label.position.set(x,json_data[i][j]+20,z);
-         scene.add(label);
-         x+=20;
-      };
-      var y=0;
-      var x=0;
-      z+=30;
-   };
+   for(var j=0;j<5;j++){
+	   for (var i = 0; i < json_data.commits.length; i++) {
+   		//commit values are normalized to optimal visualization(/10)
+			var geometry = new THREE.CubeGeometry( 1, json_data.commits[i]/10, 1);
+			y=json_data.commits[i]/10/2;
+			var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
+			var cube = new THREE.Mesh(geometry, material);
+			cube.position.set(x, y, z);
+			scene.add(cube);
+			x+=1;
+	   };
+	   x=0;
+	   z+=1;
+   }
+   //AUTHORS
+   var z=20;
+   var y=0;
+   var x=1;
+
+   for(var j=0;j<5;j++){
+	   for (var i = 0; i < json_data.authors.length; i++) {
+   		//author values are normalized to optimal visualization(/10)
+			var geometry = new THREE.CubeGeometry( 1, json_data.authors[i]/10, 1);
+			y=json_data.authors[i]/10/2;
+			var material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
+			var cube = new THREE.Mesh(geometry, material);
+			cube.position.set(x, y, z);
+			scene.add(cube);
+			x+=1;
+	   };
+	   x=0;
+	   z+=1;
+   }
+
+
 }
 
 function get_random_color() {
