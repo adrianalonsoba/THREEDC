@@ -97,6 +97,10 @@ function init () {
    light.position.set(250,-250,250);
    scene.add(light);
 
+   var light = new THREE.PointLight(0xffffff,1);
+   light.position.set(250,250,-250);
+   scene.add(light);
+
 
       var ambientLight = new THREE.AmbientLight(0x111111);
    // scene.add(ambientLight);
@@ -174,15 +178,15 @@ function init () {
 		square.vertices.push( new THREE.Vector3( x2+1,json_data.commits[i]/10 , 0 ) ); //top right
 		square.vertices.push( new THREE.Vector3(x2 ,0 , json_data.authors[i]/10 ) ); //bottom left
 		square.vertices.push( new THREE.Vector3( x2+1,0 , json_data.authors[i]/10) ); //bottom right
-		square.vertices.push( new THREE.Vector3( 0,0 ,0 ) );
-		square.vertices.push( new THREE.Vector3( 10,0 ,0 ) );
+		square.vertices.push( new THREE.Vector3( x2,0 ,0 ) );
+		square.vertices.push( new THREE.Vector3( x2+1,0 ,0 ) );
 		    
 		square.faces.push( new THREE.Face3( 0, 1, 2 ) );
 		square.faces.push( new THREE.Face3( 2,3 , 1 ) );
-		//square.faces.push( new THREE.Face3( 0,4 ,2 ) );
-		//square.faces.push( new THREE.Face3( 1,5 ,3 ) );
+		square.faces.push( new THREE.Face3( 0,4 ,2 ) );
+		square.faces.push( new THREE.Face3( 1,5 ,3 ) );
 
-		var square_material = new THREE.MeshBasicMaterial( { color: 0xF6831E, side: THREE.DoubleSide } );
+		var square_material = new THREE.MeshBasicMaterial( { color: get_random_color(), side: THREE.DoubleSide } );
 		var square_mesh = new THREE.Mesh(square, square_material);
 		square_mesh.name = "Auts/Coms:"+(json_data.commits[i]/json_data.authors[i]).toFixed(2)+"-"+json_data.date[i];
 
