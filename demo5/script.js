@@ -89,15 +89,15 @@ function init () {
    ///////////
    // LIGHT //
    ///////////
-   var light = new THREE.PointLight(0xffffff,1);
+   var light = new THREE.PointLight(0xffffff,1, 100000);
    light.position.set(250,250,250);
    scene.add(light);
 
-   var light = new THREE.PointLight(0xffffff,1);
+   var light = new THREE.PointLight(0xffffff,1, 100000);
    light.position.set(250,-250,250);
    scene.add(light);
 
-   var light = new THREE.PointLight(0xffffff,1);
+   var light = new THREE.PointLight(0xffffff,1, 100000);
    light.position.set(250,250,-250);
    scene.add(light);
 
@@ -178,17 +178,20 @@ function init () {
 		square.vertices.push( new THREE.Vector3( x2+1,json_data.commits[i]/10 , 0 ) ); //top right
 		square.vertices.push( new THREE.Vector3(x2 ,0 , json_data.authors[i]/10 ) ); //bottom left
 		square.vertices.push( new THREE.Vector3( x2+1,0 , json_data.authors[i]/10) ); //bottom right
-		square.vertices.push( new THREE.Vector3( x2,0 ,0 ) );
-		square.vertices.push( new THREE.Vector3( x2+1,0 ,0 ) );
+		square.vertices.push( new THREE.Vector3( x2,0 ,0 ) ); //left face point
+		square.vertices.push( new THREE.Vector3( x2+1,0 ,0 ) );//right face point
 		    
-		square.faces.push( new THREE.Face3( 0, 1, 2 ) );
-		square.faces.push( new THREE.Face3( 2,3 , 1 ) );
-		square.faces.push( new THREE.Face3( 0,4 ,2 ) );
-		square.faces.push( new THREE.Face3( 1,5 ,3 ) );
+		square.faces.push( new THREE.Face3( 0, 1, 2 ) ); //front face 1
+		square.faces.push( new THREE.Face3( 2,3 , 1 ) ); //front face 2
+		square.faces.push( new THREE.Face3( 0,4 ,2 ) );  //left face
+		square.faces.push( new THREE.Face3( 1,5 ,3 ) );  //right face
 
-		var square_material = new THREE.MeshBasicMaterial( { color: get_random_color(), side: THREE.DoubleSide } );
+		var square_material = new THREE.MeshLambertMaterial( { color: "#00ff00", side: THREE.DoubleSide } );
+		//needed to render Lambert materials
+		square.computeFaceNormals();
+		//square.computeVertexNormals();
 		var square_mesh = new THREE.Mesh(square, square_material);
-		square_mesh.name = "Auts/Coms:"+(json_data.commits[i]/json_data.authors[i]).toFixed(2)+"-"+json_data.date[i];
+		square_mesh.name = "Coms/Auts:"+(json_data.commits[i]/json_data.authors[i]).toFixed(2)+"-"+json_data.date[i];
 
 		scene.add(square_mesh);
 		x2++;
@@ -330,8 +333,6 @@ function update()
 		context1.clearRect(0,0,300,300);
 		texture1.needsUpdate = true;
 	}
-
-	
 	controls.update();
 	//stats.update();
 }
