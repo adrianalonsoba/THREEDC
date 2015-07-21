@@ -20,7 +20,7 @@ var current_mini_chart2;
 
 // initialization
   //getJSON call, draw cubes with data
-   $.getJSON("jsons/scm-evolutionary.json", function(data) {
+   $.getJSON("../jsons/scm-evolutionary.json", function(data) {
       json_data=data;
       init();
       // animation loop / game loop
@@ -112,7 +112,7 @@ function init () {
    scene.add(axes);
 
    // note: 4x4 checkboard pattern scaled so that each square is 25 by 25 pixels.
-   var floorTexture = new THREE.ImageUtils.loadTexture( 'images/checkerboard.jpg' );
+   var floorTexture = new THREE.ImageUtils.loadTexture( '../images/checkerboard.jpg' );
    floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
    floorTexture.repeat.set( 10, 10 );
    // DoubleSide: render texture on both sides of mesh
