@@ -13,11 +13,12 @@ var clock = new THREE.Clock();
 // custom global variables
 var projector, mouse = { x: 0, y: 0 }, INTERSECTED;
 var sprite1;
-var targetList = [];
 
 var canvas1, context1, texture1;
 var current_mini_chart1;
 var current_mini_chart2;
+//displacement of fixed minichart
+var dis=60;
 
 
 // initialization
@@ -250,10 +251,9 @@ function onDocumentMouseDown( event )
 	if ( intersects.length > 0 )
 	{
 		console.log(intersects[0].object.name);
+		create_fixed_chart(intersects[0].object);
 	}
 }
-
-function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
 
 function animate() 
 {
@@ -269,28 +269,44 @@ function render()
 }
 
 function create_mini_chart (parameters) {
-		if(parameters.info){
-			scene.remove(current_mini_chart1);
-			scene.remove(current_mini_chart2);
+	if(parameters.info){
+		scene.remove(current_mini_chart1);
+		scene.remove(current_mini_chart2);
 
-			var geometry = new THREE.CubeGeometry( 10,parameters.info.commits/10 , 10);
-			var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
-			var cube = new THREE.Mesh(geometry, material);
-			cube.position.set(0, parameters.info.commits/10/2, 30);
-			cube.name = "Commits:"+parameters.info.commits+" - "+parameters.info.date;
-			scene.add(cube);
-			current_mini_chart1=cube;
+		var geometry = new THREE.CubeGeometry( 10,parameters.info.commits/10 , 10);
+		var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
+		var cube = new THREE.Mesh(geometry, material);
+		cube.position.set(0, parameters.info.commits/10/2, 30);
+		cube.name = "Commits:"+parameters.info.commits+" - "+parameters.info.date;
+		scene.add(cube);
+		current_mini_chart1=cube;
 
-			geometry = new THREE.CubeGeometry( 10,parameters.info.authors/10 , 10);
-			material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
-			cube = new THREE.Mesh(geometry, material);
-			cube.position.set(20, parameters.info.authors/10/2, 30);
-			cube.name = "Autors:"+parameters.info.authors+" - "+parameters.info.date;;
-			scene.add(cube);
-			current_mini_chart2=cube;
-		}
+		geometry = new THREE.CubeGeometry( 10,parameters.info.authors/10 , 10);
+		material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
+		cube = new THREE.Mesh(geometry, material);
+		cube.position.set(20, parameters.info.authors/10/2, 30);
+		cube.name = "Autors:"+parameters.info.authors+" - "+parameters.info.date;;
+		scene.add(cube);
+		current_mini_chart2=cube;
+	}
 }
 
+function create_fixed_chart (parameters) {
+	var geometry = new THREE.CubeGeometry( 10,parameters.info.commits/10 , 10);
+	var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
+	var cube = new THREE.Mesh(geometry, material);
+	cube.position.set(0, parameters.info.commits/10/2, dis);
+	cube.name = "Commits:"+parameters.info.commits+" - "+parameters.info.date;
+	scene.add(cube);
+
+	geometry = new THREE.CubeGeometry( 10,parameters.info.authors/10 , 10);
+	material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
+	cube = new THREE.Mesh(geometry, material);
+	cube.position.set(20, parameters.info.authors/10/2, dis);
+	cube.name = "Autors:"+parameters.info.authors+" - "+parameters.info.date;;
+	scene.add(cube);	
+	dis+=30;
+}
 
 
 function update()
