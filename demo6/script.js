@@ -13,11 +13,17 @@ var clock = new THREE.Clock();
 // custom global variables
 var projector, mouse = { x: 0, y: 0 }, INTERSECTED;
 var sprite1;
-var targetList = [];
+//graphical user interface
+var gui;
+var parameters;
+
 
 var canvas1, context1, texture1;
 var current_mini_chart1;
 var current_mini_chart2;
+//displacement of fixed minichart
+var dis=60;
+var fixed_minicharts=[];
 
 
 // initialization
@@ -138,7 +144,7 @@ function init () {
 
    // most objects displayed are a "mesh":
    //  a collection of points ("geometry") and
-   //  a set of surface parameters ("material")
+   //  a set of surface args ("material")
 
    		//COMMITS
    var z=-0.5;
@@ -208,7 +214,27 @@ function init () {
 
 	//////////////////////////////////////////
 
+	//GUI//
+	var gui = new dat.GUI();
+	
+	parameters = 
+	{
+		reset: function() { resetFixedcharts() }
+	};
+	
 
+	gui.add( parameters, 'reset' ).name("Reset fixed charts");
+	
+	gui.close();
+	//////
+
+}
+
+function resetFixedcharts (argument) {
+	dis=60;
+	for (var i = 0; i < fixed_minicharts.length; i++) {
+		scene.remove(fixed_minicharts[i]);
+	};
 }
 
 function get_random_color() {
@@ -250,10 +276,9 @@ function onDocumentMouseDown( event )
 	if ( intersects.length > 0 )
 	{
 		console.log(intersects[0].object.name);
+		create_fixed_chart(intersects[0].object);
 	}
 }
-
-function toString(v) { return "[ " + v.x + ", " + v.y + ", " + v.z + " ]"; }
 
 function animate() 
 {
@@ -268,29 +293,49 @@ function render()
    renderer.render( scene, camera );
 }
 
-function create_mini_chart (parameters) {
-		if(parameters.info){
-			scene.remove(current_mini_chart1);
-			scene.remove(current_mini_chart2);
+function create_mini_chart (args) {
+	if(args.info){
+		scene.remove(current_mini_chart1);
+		scene.remove(current_mini_chart2);
 
-			var geometry = new THREE.CubeGeometry( 10,parameters.info.commits/10 , 10);
-			var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
-			var cube = new THREE.Mesh(geometry, material);
-			cube.position.set(0, parameters.info.commits/10/2, 30);
-			cube.name = "Commits:"+parameters.info.commits+" - "+parameters.info.date;
-			scene.add(cube);
-			current_mini_chart1=cube;
+		var geometry = new THREE.CubeGeometry( 10,args.info.commits/10 , 10);
+		var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
+		var cube = new THREE.Mesh(geometry, material);
+		cube.position.set(0, args.info.commits/10/2, 30);
+		cube.name = "Commits:"+args.info.commits+" - "+args.info.date;
+		scene.add(cube);
+		current_mini_chart1=cube;
 
-			geometry = new THREE.CubeGeometry( 10,parameters.info.authors/10 , 10);
-			material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
-			cube = new THREE.Mesh(geometry, material);
-			cube.position.set(20, parameters.info.authors/10/2, 30);
-			cube.name = "Autors:"+parameters.info.authors+" - "+parameters.info.date;;
-			scene.add(cube);
-			current_mini_chart2=cube;
-		}
+		geometry = new THREE.CubeGeometry( 10,args.info.authors/10 , 10);
+		material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
+		cube = new THREE.Mesh(geometry, material);
+		cube.position.set(20, args.info.authors/10/2, 30);
+		cube.name = "Autors:"+args.info.authors+" - "+args.info.date;;
+		scene.add(cube);
+		current_mini_chart2=cube;
+	}
 }
 
+function create_fixed_chart (args) {
+	var geometry = new THREE.CubeGeometry( 10,args.info.commits/10 , 10);
+	var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
+	var cube = new THREE.Mesh(geometry, material);
+	cube.position.set(0, args.info.commits/10/2, dis);
+	cube.name = "Commits:"+args.info.commits+" - "+args.info.date;
+	scene.add(cube);
+
+	fixed_minicharts.push(cube);
+
+	geometry = new THREE.CubeGeometry( 10,args.info.authors/10 , 10);
+	material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
+	cube = new THREE.Mesh(geometry, material);
+	cube.position.set(20, args.info.authors/10/2, dis);
+	cube.name = "Autors:"+args.info.authors+" - "+args.info.date;;
+	scene.add(cube);
+
+	fixed_minicharts.push(cube);
+	dis+=30;
+}
 
 
 function update()
