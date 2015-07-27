@@ -4,7 +4,7 @@
 //////////
 
 // standard global variables
-var container, scene, camera, renderer, controls, stats;
+var container, scene, camera, camera2, renderer, controls, stats;
 //JSON data saved here
 var json_data;
 //var keyboard = new THREEx.KeyboardState();
@@ -66,6 +66,10 @@ function init () {
    camera.position.set(0,150,400);
    camera.lookAt(scene.position);
 
+	camera2 = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+   scene.add(camera2);
+   camera2.position.set(400,10,400);
+   camera2.lookAt(scene.position);
    //////////////
    // RENDERER //
    //////////////
@@ -135,8 +139,8 @@ function init () {
    // BackSide: render faces from inside of the cube, instead of from outside (default).
    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
    var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-  // scene.add(skyBox);
-   scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
+   scene.add(skyBox);
+  // scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
 
    //////////////
    // GEOMETRY //
@@ -228,6 +232,10 @@ function init () {
 	gui.close();
 	//////
 
+	renderer.setSize( window.innerWidth, window.innerHeight );
+	renderer.setClearColorHex( 0x000000, 1 );
+	renderer.autoClear = false;
+
 }
 
 function resetFixedcharts (argument) {
@@ -290,7 +298,25 @@ function animate()
 
 function render() 
 {  
-   renderer.render( scene, camera );
+	var SCREEN_WIDTH = window.innerWidth, SCREEN_HEIGHT = window.innerHeight;
+	camera2.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+	camera.aspect = 0.5 * SCREEN_WIDTH / SCREEN_HEIGHT;
+	camera2.updateProjectionMatrix();
+	camera.updateProjectionMatrix();
+	
+	// setViewport parameters:
+	//  lower_left_x, lower_left_y, viewport_width, viewport_height
+
+	renderer.setViewport( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT );
+	renderer.clear();
+	
+	// left side
+	renderer.setViewport( 1, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+	renderer.render( scene, camera2 );
+	
+	// right side
+	renderer.setViewport( 0.5 * SCREEN_WIDTH + 1, 1,   0.5 * SCREEN_WIDTH - 2, SCREEN_HEIGHT - 2 );
+	renderer.render( scene, camera );	
 }
 
 function create_mini_chart (args) {
