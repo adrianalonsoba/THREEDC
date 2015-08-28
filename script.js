@@ -17,6 +17,13 @@ var sprite1;
 var gui;
 var parameters;
 
+var pies = [];
+
+  var  extrudeOpts = {
+    size: 30, height: 4, curveSegments: 3,
+    bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+    material: 0, extrudeMaterial: 1
+  };
 
 var canvas1, context1, texture1;
 var current_mini_chart1;
@@ -24,8 +31,6 @@ var current_mini_chart2;
 //displacement of fixed minichart
 var dis=60;
 var fixed_minicharts=[];
-
-var texture = THREE.ImageUtils.loadTexture( 'images/lava.jpg' );
 
 // initialization
   //getJSON call, draw cubes with data
@@ -147,40 +152,38 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface args ("material")
 
-   		//COMMITS
-   var z=-0.5;
-   var y=0;
-   var x=0.5;
-   		//AUTHORS
 
-   var y1=-0.5;
-   var x1=0.5;
-   var z1;
+  //*** Adding pies
 
-   for (var i = 0; i < json_data.commits.length; i++) {
-		//commit values are normalized to optimal visualization(/10)
-		var geometry = new THREE.CubeGeometry( 1, json_data.commits[i]/10, 1);
-		y=json_data.commits[i]/10/2;
-		var material = new THREE.MeshLambertMaterial( {map:texture} );
-		var cube = new THREE.Mesh(geometry, material);
-		cube.position.set(x, y, z);
-		cube.name = "Commits:"+json_data.commits[i]+" - "+json_data.date[i];
-		cube.info={commits:json_data.commits[i],authors:json_data.authors[i],date:json_data.date[i]}; 
-		scene.add(cube);
-		x+=1;
+  	var val=3;
+  	var valTotal=30;
+  	var pieRadius=50;
+  	var angPrev=0;
+  	var angToMove=90;
 
-		//author values are normalized to optimal visualization(/10)
-		var geometry = new THREE.CubeGeometry( 1, 1, json_data.authors[i]/10);
-		z1=json_data.authors[i]/10/2;
-		var material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
-		var cube = new THREE.Mesh(geometry, material);
-		cube.position.set(x1, y1, z1);
-		cube.name = "Authors:"+json_data.authors[i]+" - "+json_data.date[i];
-		cube.info={commits:json_data.commits[i],authors:json_data.authors[i],date:json_data.date[i]}; 
-		scene.add(cube);
-		x1+=1;
+    var material = new THREE.MeshPhongMaterial( {color: 0xff0000} );
 
-   };
+
+    // Creats the shape, based on the value and the radius
+    var shape = new THREE.Shape();
+    var angToMove = (Math.PI*2*(val/valTotal));
+    shape.moveTo(0,0);
+    shape.arc(0,0,pieRadius,angPrev,
+              angPrev+angToMove,false);
+    shape.lineTo(0,0);
+    nextAng = this.angPrev + angToMove;
+
+    var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
+
+    var pieobj = new THREE.Mesh( geometry, material );
+    pieobj.rotation.set(90,0,0);
+                                          
+    // Creating the 3D object, positioning it and adding it to the scene
+    pieobj = new THREE.Mesh( geometry, material );
+    pieobj.rotation.set(Math.PI/2,0,0);
+    // Adds shadows if selected as an option
+
+    scene.add(pieobj );
 
 	// initialize object to perform world/screen calculations
 	projector = new THREE.Projector();
