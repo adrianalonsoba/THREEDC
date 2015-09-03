@@ -1,4 +1,3 @@
-
 //////////  
 // MAIN //
 //////////
@@ -118,16 +117,16 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
-	var  extrudeOpts = {
-		size: 30, height: 4, curveSegments: 3,
-		bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-		material: 0, extrudeMaterial: 1
-	};
-  	var val=3;
-  	var valTotal=50;
-  	var pieRadius=50;
-  	var angPrev=0;
-  	var angToMove;
+  var  extrudeOpts = {
+    size: 30, height: 40, curveSegments: 30,
+    bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+    material: 0, extrudeMaterial: 1
+  };
+    var val=3;
+    var valTotal=50;
+    var pieRadius=50;
+    var angPrev=0;
+    var angToMove;
 
     var material = new THREE.MeshPhongMaterial( {color: 0xff0000} );
 
