@@ -117,11 +117,7 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
-  var  extrudeOpts = {
-    size: 30, height: 40, curveSegments: 30,
-    bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-    material: 0, extrudeMaterial: 1
-  };
+  var  extrudeOpts = {curveSegments:30, amount: 8, bevelEnabled: true, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
     var val=3;
     var valTotal=50;
     var pieRadius=50;
