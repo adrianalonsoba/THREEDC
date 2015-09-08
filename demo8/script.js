@@ -10,6 +10,8 @@ var json_data;
 //var keyboard = new THREEx.KeyboardState();
 var clock = new THREE.Clock();
 
+
+var TIMER;
 // custom global variables
 var projector, mouse = { x: 0, y: 0 }, INTERSECTED;
 var sprite1;
@@ -252,11 +254,13 @@ function init () {
 	//////
 
 
-	setInterval(function(){
+	TIMER=setInterval(function(){
 		if(figures1[interval_index]){
 			scene.add(figures1[interval_index]);
 			scene.add(figures2[interval_index]);
 			interval_index++;
+		}else{
+			clearInterval(TIMER);
 		}
 	},5);
 	
@@ -269,11 +273,13 @@ function resetFixedcharts (argument) {
 
 	};
 	interval_index=0;
-	setInterval(function(){
+	TIMER=setInterval(function(){
 		if(figures1[interval_index]){
 			scene.add(figures1[interval_index]);
 			scene.add(figures2[interval_index]);
 			interval_index++;
+		}else{
+			clearInterval(TIMER);
 		}
 	},5);
 }
