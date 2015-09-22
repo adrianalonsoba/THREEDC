@@ -25,6 +25,9 @@ var current_mini_chart2;
 var dis=60;
 var fixed_minicharts=[];
 
+var  extrudeOpts = {curveSegments:300, amount: 8, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
+
+
 //CROSSFILTER VARS
 
 
@@ -202,7 +205,7 @@ function init () {
       var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
       var cube = new THREE.Mesh(geometry, material);
       cube.position.set(x, y, z);
-      cube.name = "Commits:"+p.value+" Month:"+p.key;
+      cube.name = "Commits:"+p.value+" "+p.key;
       cube.info={
         month:p.key,
         commits:p.value
@@ -212,28 +215,7 @@ function init () {
    });
 
     //by org
-
-    z=20;
-    y=0;
-    x=1;
-
-   groupByOrg.top(Infinity).forEach(function(p,i) {
-      //console.log(p.key + ": " + p.value);
-      if(p.value>31){
-        var geometry = new THREE.CubeGeometry( 1,  p.value/100, 10);
-        y= p.value/100/2;
-      }else{
-        var geometry = new THREE.CubeGeometry( 1,  p.value/10, 10);
-        y= p.value/10/2;
-      }
-      var material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(x, y, z);
-      cube.name = "Commits:"+p.value+" Org: "+p.key;
-      scene_objects1.push(cube);
-      scene.add(cube);
-      x+=1;
-   });
+  drawPie();
 
   // initialize object to perform world/screen calculations
   projector = new THREE.Projector();
@@ -248,7 +230,7 @@ function init () {
   context1 = canvas1.getContext('2d');
   context1.font = "Bold 20px Arial";
   context1.fillStyle = "rgba(0,0,0,0.95)";
-  context1.fillText('Hello, world!', 0, 20);
+    context1.fillText('Hello, world!', 0, 20);
     
   // canvas contents will be used for a texture
   texture1 = new THREE.Texture(canvas1) 
@@ -282,35 +264,54 @@ function init () {
 
 }
 
-function clearFilters () {
+function drawPie () {
 
+    var valTotal=dimByMonth.top(Infinity).length;
+    var pieRadius=50;
+    var angPrev=0;
+    var angToMove;
+
+   groupByOrg.top(Infinity).forEach(function(p,i) {
+
+      var material = new THREE.MeshPhongMaterial( {color: get_random_color()} );
+      // Creats the shape, based on the value and the radius
+      var shape = new THREE.Shape();
+      var angToMove = (Math.PI*2*(p.value/valTotal));
+      shape.moveTo(0,0);
+      shape.arc(0,0,pieRadius,angPrev,
+                angPrev+angToMove,false);
+      shape.lineTo(0,0);
+      var nextAng = angPrev + angToMove;
+
+      var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
+      var pieobj = new THREE.Mesh( geometry, material );
+      pieobj.rotation.set(0,0,0);
+      pieobj.position.set(-75,0,0);
+      pieobj.name = "Commits:"+p.value+" Org:"+p.key;
+
+      scene.add(pieobj );
+
+      scene_objects1.push(pieobj);
+      angPrev=nextAng;
+   });
+
+}
+
+
+function get_random_color() {
+  function c() {
+    return Math.floor(Math.random()*256).toString(16)
+  }
+  return "#"+c()+c()+c();
+}
+
+function clearFilters () {
   for (var i = 0; i < scene_objects1.length; i++) {
     scene.remove(scene_objects1[i]);
   };
   dimByMonth.filterAll();
-
-   var  z=20;
-   var  y=0;
-   var  x=1;
- 
-   groupByOrg.top(Infinity).forEach(function(p,i) {
-      //console.log(p.key + ": " + p.value);
-      if(p.value>31){
-        var geometry = new THREE.CubeGeometry( 1,  p.value/100, 10);
-        y= p.value/100/2;
-      }else{
-        var geometry = new THREE.CubeGeometry( 1,  p.value/10, 10);
-        y= p.value/10/2;
-      }
-      var material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(x, y, z);
-      cube.name = "Commits:"+p.value+" Org: "+p.key;
-      scene_objects1.push(cube);
-      scene.add(cube);
-      x+=1;
-   });
-
+  drawPie();
+   
 }
 
 function onDocumentMouseMove( event ) 
@@ -360,39 +361,11 @@ function redraw (argument) {
 
   console.log("Numero commits en ese mes"+dimByMonth.top(Infinity).length);
 
-  //groupByOrg = dimByOrg.group();
-
-  //??????????????????????
-  groupByOrg.top(Infinity).forEach(function(p, i) {
-    console.log(p.key + ": " + p.value);
-  });
-
   for (var i = 0; i < scene_objects1.length; i++) {
   	scene.remove(scene_objects1[i]);
   };
 
-   var  z=20;
-   var  y=0;
-   var  x=1;
- 
-   groupByOrg.top(Infinity).forEach(function(p,i) {
-      //console.log(p.key + ": " + p.value);
-      if(p.value>31){
-        var geometry = new THREE.CubeGeometry( 1,  p.value/100, 10);
-        y= p.value/100/2;
-      }else{
-        var geometry = new THREE.CubeGeometry( 1,  p.value/10, 10);
-        y= p.value/10/2;
-      }
-      var material = new THREE.MeshLambertMaterial( {color: "#ff0000"} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(x, y, z);
-      cube.name = "Commits:"+p.value+" Org: "+p.key;
-      scene_objects1.push(cube);
-      scene.add(cube);
-      x+=1;
-   });
-
+  drawPie();
 
   //HABRIA QUE LIMPIAR EL FILTRO DESPUES DE REPINTAR?¿?¿?¿
 
@@ -456,7 +429,7 @@ function update()
         context1.fillStyle = "rgba(0,0,0,1)"; // text color
         context1.fillText( message, 4,20 );
         texture1.needsUpdate = true;
-        //create_mini_chart(intersects[ 0 ].object);
+        //redraw(intersects[0].object.info.month);
       }
       else
       {
