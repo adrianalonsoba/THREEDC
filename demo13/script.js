@@ -1,5 +1,5 @@
 
-//////////  
+//////////
 // MAIN //
 //////////
 
@@ -39,10 +39,12 @@ var  extrudeOpts = {curveSegments:300, amount: 8, bevelEnabled: false, bevelSegm
 
 
   var dimByOrg;
-  
+
   var groupByOrg;
 
   var scene_objects1=[];
+
+  var scene_objects2=[];
 
 
 // initialization
@@ -70,7 +72,7 @@ function init () {
    ////////////
    // set the view size in pixels (custom or according to window size)
    var SCREEN_WIDTH = window.innerWidth;
-   var SCREEN_HEIGHT = window.innerHeight;  
+   var SCREEN_HEIGHT = window.innerHeight;
    // camera attributes
    var VIEW_ANGLE = 45;
    var ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
@@ -109,8 +111,8 @@ function init () {
    // CONTROLS //
    //////////////
 
-   // move mouse and: left   click to rotate, 
-   //                 middle click to zoom, 
+   // move mouse and: left   click to rotate,
+   //                 middle click to zoom,
    //                 right  click to pan
    controls = new THREE.OrbitControls( camera, renderer.domElement );
 
@@ -130,7 +132,7 @@ function init () {
 
    // note: 4x4 checkboard pattern scaled so that each square is 25 by 25 pixels.
    var floorTexture = new THREE.ImageUtils.loadTexture( '../images/checkerboard.jpg' );
-   floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping; 
+   floorTexture.wrapS = floorTexture.wrapT = THREE.RepeatWrapping;
    floorTexture.repeat.set( 10, 10 );
    // DoubleSide: render texture on both sides of mesh
    var floorMaterial = new THREE.MeshBasicMaterial( { map: floorTexture, side: THREE.DoubleSide } );
@@ -139,7 +141,7 @@ function init () {
    floor.position.y = -0.5;
    floor.rotation.x = Math.PI / 2;
   // scene.add(floor);
-   
+
    var skyBoxGeometry = new THREE.CubeGeometry( 10000, 10000, 10000 );
    // BackSide: render faces from inside of the cube, instead of from outside (default).
    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
@@ -187,32 +189,14 @@ function init () {
    //create a dimension by org
 
    dimByOrg= cf.dimension(function(p) {return p.org;});
-  
+
    groupByOrg= dimByOrg.group();
 
 
    //COMO ordeno por fecha?¿?¿?¿?¿
 
      //by month
-   var z=1;
-   var y=0;
-   var x=1;
-
-   groupByMonth.top(Infinity).forEach(function(p,i) {
-      //commit values are normalized to optimal visualization(/10)
-      var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
-      y=p.value/10/2;
-      var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.position.set(x, y, z);
-      cube.name = "Commits:"+p.value+" "+p.key;
-      cube.info={
-        month:p.key,
-        commits:p.value
-      }
-      scene.add(cube);
-      x+=1;
-   });
+  drawBars();
 
     //by org
   drawPie();
@@ -231,34 +215,34 @@ function init () {
   context1.font = "Bold 20px Arial";
   context1.fillStyle = "rgba(0,0,0,0.95)";
     context1.fillText('Hello, world!', 0, 20);
-    
+
   // canvas contents will be used for a texture
-  texture1 = new THREE.Texture(canvas1) 
+  texture1 = new THREE.Texture(canvas1)
   texture1.needsUpdate = true;
-  
+
   ////////////////////////////////////////
 
-  
+
   var spriteMaterial = new THREE.SpriteMaterial( { map: texture1, useScreenCoordinates: true, alignment: THREE.SpriteAlignment.topLeft } );
-  
+
   sprite1 = new THREE.Sprite( spriteMaterial );
   sprite1.scale.set(200,100,1.0);
   sprite1.position.set( 50, 50, 0 );
-  scene.add( sprite1 ); 
+  scene.add( sprite1 );
 
   //////////////////////////////////////////
 
   //GUI//
   var gui = new dat.GUI();
-  
-  parameters = 
+
+  parameters =
   {
     reset: function() { clearFilters() }
   };
-  
+
 
   gui.add( parameters, 'reset' ).name("Clear filters");
-  
+
   gui.close();
   //////
 
@@ -288,13 +272,40 @@ function drawPie () {
       pieobj.rotation.set(0,0,0);
       pieobj.position.set(-75,0,0);
       pieobj.name = "Commits:"+p.value+" Org:"+p.key;
-
+      pieobj.info={
+        org:p.key,
+        commits:p.value
+      }
       scene.add(pieobj );
 
       scene_objects1.push(pieobj);
       angPrev=nextAng;
    });
 
+}
+
+function drawBars () {
+
+   var z=1;
+   var y=0;
+   var x=1;
+
+   groupByMonth.top(Infinity).forEach(function(p,i) {
+      //commit values are normalized to optimal visualization(/10)
+      var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
+      y=p.value/10/2;
+      var material = new THREE.MeshLambertMaterial( {color: "#0000ff"} );
+      var cube = new THREE.Mesh(geometry, material);
+      cube.position.set(x, y, z);
+      cube.name = "Commits:"+p.value+" "+p.key;
+      cube.info={
+        month:p.key,
+        commits:p.value
+      };
+      scene_objects2.push(cube);
+      scene.add(cube);
+      x+=1;
+   });
 }
 
 
@@ -309,12 +320,19 @@ function clearFilters () {
   for (var i = 0; i < scene_objects1.length; i++) {
     scene.remove(scene_objects1[i]);
   };
+
+  for (var i = 0; i < scene_objects2.length; i++) {
+    scene.remove(scene_objects2[i]);
+  };
   dimByMonth.filterAll();
+  dimByOrg.filterAll();
+  drawBars();
   drawPie();
-   
+
+
 }
 
-function onDocumentMouseMove( event ) 
+function onDocumentMouseMove( event )
 {
   // the following line would stop any other event handler from firing
   // (such as the mouse's TrackballControls)
@@ -322,14 +340,14 @@ function onDocumentMouseMove( event )
 
   // update sprite position
   sprite1.position.set( event.clientX, event.clientY - 20, 0 );
-  
+
   // update the mouse variable
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 }
 
 
-function onDocumentMouseDown( event ) 
+function onDocumentMouseDown( event )
 {
   // find intersections
 
@@ -341,19 +359,27 @@ function onDocumentMouseDown( event )
 
   // create an array containing all objects in the scene with which the ray intersects
   var intersects = ray.intersectObjects( scene.children );
-  
+
   // if there is one (or more) intersections
   if ( intersects.length > 0 )
   {
     //create_fixed_chart(intersects[0].object);
-    redraw(intersects[0].object.info.month);
+    if(intersects[0].object.info.month){
+      redraw1(intersects[0].object.info.month);
+    }
+
+    if(intersects[0].object.info.org||intersects[0].object.info.org===0){
+      redraw2(intersects[0].object.info.org);
+    }
 
   }
 }
 
-function redraw (argument) {
-  
+function redraw1 (argument) {
+
   console.log(argument);
+
+   dimByMonth.filterAll();
 
   dimByMonth.filter(argument);
 
@@ -371,22 +397,46 @@ function redraw (argument) {
 
 }
 
-function animate() 
+function redraw2 (argument) {
+
+  console.log(argument);
+
+  dimByOrg.filterAll();
+
+
+  dimByOrg.filter(argument);
+
+  //POR QUE NO FUNCIONA SI LE APLICO EL FILTRO A DIMBYORG??????
+
+  console.log("Numero commits en ese mes en esa org"+dimByMonth.top(Infinity).length);
+
+  for (var i = 0; i < scene_objects2.length; i++) {
+    scene.remove(scene_objects2[i]);
+  };
+
+  drawBars();
+
+  //HABRIA QUE LIMPIAR EL FILTRO DESPUES DE REPINTAR?¿?¿?¿
+
+}
+
+
+function animate()
 {
    requestAnimationFrame( animate );
-   render();      
+   render();
    update();
 }
 
 
-function render() 
-{  
+function render()
+{
    renderer.render( scene, camera );
 }
 
 function update()
 {
-  
+
   // create a Ray with origin at the mouse position
   //   and direction into the scene (camera direction)
   var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
@@ -396,17 +446,17 @@ function update()
   // create an array containing all objects in the scene with which the ray intersects
   var intersects = ray.intersectObjects( scene.children );
 
-  // INTERSECTED = the object in the scene currently closest to the camera 
-  //    and intersected by the Ray projected from the mouse position  
-  
+  // INTERSECTED = the object in the scene currently closest to the camera
+  //    and intersected by the Ray projected from the mouse position
+
   // if there is one (or more) intersections
   if ( intersects.length > 0 )
   {
     // if the closest object intersected is not the currently stored intersection object
-    if ( intersects[ 0 ].object != INTERSECTED ) 
+    if ( intersects[ 0 ].object != INTERSECTED )
     {
         // restore previous intersection object (if it exists) to its original color
-      if ( INTERSECTED ) 
+      if ( INTERSECTED )
         INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
       // store reference to closest object as current intersection object
       INTERSECTED = intersects[ 0 ].object;
@@ -414,7 +464,7 @@ function update()
       INTERSECTED.currentHex = INTERSECTED.material.color.getHex();
       // set a new color for closest object
       INTERSECTED.material.color.setHex( 0xffff00 );
-      
+
       // update text, if it has a "name" field.
       if ( intersects[ 0 ].object.name )
       {
@@ -429,7 +479,6 @@ function update()
         context1.fillStyle = "rgba(0,0,0,1)"; // text color
         context1.fillText( message, 4,20 );
         texture1.needsUpdate = true;
-        //redraw(intersects[0].object.info.month);
       }
       else
       {
@@ -437,11 +486,11 @@ function update()
         texture1.needsUpdate = true;
       }
     }
-  } 
+  }
   else // there are no intersections
   {
     // restore previous intersection object (if it exists) to its original color
-    if ( INTERSECTED ) 
+    if ( INTERSECTED )
       INTERSECTED.material.color.setHex( INTERSECTED.currentHex );
     // remove previous intersection object reference
     //     by setting current intersection object to "nothing"
@@ -451,4 +500,3 @@ function update()
   }
   controls.update();
 }
-
