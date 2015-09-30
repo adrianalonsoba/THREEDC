@@ -92,6 +92,7 @@ function init () {
    //////////////
    renderer = new THREE.WebGLRenderer( {antialias:true} );
    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+   renderer.setClearColor( 0xf0f0f0 );
 
    // attach div element to variable to contain the renderer
    container = document.getElementById( 'ThreeJS' );
@@ -150,13 +151,15 @@ function init () {
    // BackSide: render faces from inside of the cube, instead of from outside (default).
    var skyBoxMaterial = new THREE.MeshBasicMaterial( { color: 0x9999ff, side: THREE.BackSide } );
    var skyBox = new THREE.Mesh( skyBoxGeometry, skyBoxMaterial );
-   scene.add(skyBox);
+   //scene.add(skyBox);
 
   //clear texture of infobox
+  /*
   domEvents.addEventListener(skyBox,'mouseover',function(event) {
       context1.clearRect(0,0,300,300);
       texture1.needsUpdate = true;
   },false);
+*/
 
    //scene.fog = new THREE.FogExp2( 0x9999ff, 0.00025 );
 
@@ -294,21 +297,12 @@ function drawPie () {
       scene_objects1.push(pieobj);
       angPrev=nextAng;
 
-      domEvents.addEventListener(pieobj,'click',function(event) {
-        redraw2(pieobj.info.org);
-      },false);
-
-      domEvents.addEventListener(pieobj,'mouseover',function(event) {
-        changeMeshColor(pieobj);
-        showInfo(pieobj);
-      },false);
-
-      domEvents.addEventListener(pieobj,'mouseout',function(event) {
-        pieobj.material.color.setHex('0x'+pieobj.origin_color);
-      },false);
 
    });
 }
+
+
+
 
 function drawBars () {
 
@@ -334,18 +328,14 @@ function drawBars () {
       scene.add(cube);
       x+=1;
 
-      domEvents.addEventListener(cube,'click',function(event) {
-        redraw1(cube.info.month);
-      },false);
+     // domEvents.addEventListener(cube,'click',callback1,false);
+    domEvents.bind(cube, 'click', function(object3d){ alert(cube.info.month) });
 
-      domEvents.addEventListener(cube,'mouseover',function(event) {
-        changeMeshColor(cube);
-        showInfo(cube);
-      },false);
+    //alert(1234);
 
-      domEvents.addEventListener(cube,'mouseout',function(event) {
-        cube.material.color.setHex(cube.origin_color);
-      },false);
+    //domEvents.unbind(cube, 'click', function(object3d){ alert(cube.info.month) });
+
+
    });
 }
 
@@ -384,11 +374,12 @@ function clearFilters () {
 
   for (var i = 0; i < scene_objects2.length; i++) {
     scene.remove(scene_objects2[i]);
+    domEvents.unbind(scene_objects2[i], 'click', function(object3d){ alert(scene_objects2[i].info.month) });
   };
   dimByMonth.filterAll();
   dimByOrg.filterAll();
-  drawBars();
-  drawPie();
+  //drawBars();
+  //drawPie();
 }
 
 function redraw1 (argument) {
