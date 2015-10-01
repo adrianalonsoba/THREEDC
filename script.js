@@ -266,6 +266,8 @@ function drawPie () {
     var angPrev=0;
     var angToMove;
 
+   scene_objects1=[];
+
    groupByOrg.top(Infinity).forEach(function(p,i) {
 
 		var hex_color=get_random_color();
@@ -318,6 +320,8 @@ function drawBars () {
    var z=1;
    var y=0;
    var x=1;
+
+   scene_objects2=[];
 
    groupByMonth.top(Infinity).forEach(function(p,i) {
       //commit values are normalized to optimal visualization(/10)
