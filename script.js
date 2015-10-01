@@ -191,8 +191,6 @@ function init () {
 
    cf=crossfilter(parsed_data);
 
-   console.log(parsed_data);
-
    //create a dimension by month
 
     dimByMonth= cf.dimension(function(p) {return p.month;});
@@ -270,39 +268,50 @@ function drawPie () {
 
    groupByOrg.top(Infinity).forEach(function(p,i) {
 
-      var hex_color=get_random_color();
-      var origin_color='#'+hex_color;
-      var material = new THREE.MeshPhongMaterial( {color:origin_color } );
-      // Creats the shape, based on the value and the radius
-      var shape = new THREE.Shape();
-      var angToMove = (Math.PI*2*(p.value/valTotal));
-      shape.moveTo(0,0);
-      shape.arc(0,0,pieRadius,angPrev,
-                angPrev+angToMove,false);
-      shape.lineTo(0,0);
-      var nextAng = angPrev + angToMove;
+		var hex_color=get_random_color();
+		var origin_color='#'+hex_color;
+		var material = new THREE.MeshPhongMaterial( {color:origin_color } );
+		// Creats the shape, based on the value and the radius
+		var shape = new THREE.Shape();
+		var angToMove = (Math.PI*2*(p.value/valTotal));
+		shape.moveTo(0,0);
+		shape.arc(0,0,pieRadius,angPrev,
+		        angPrev+angToMove,false);
+		shape.lineTo(0,0);
+		var nextAng = angPrev + angToMove;
 
-      var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
-      var pieobj = new THREE.Mesh( geometry, material );
-      pieobj.origin_color=hex_color;
-      pieobj.rotation.set(0,0,0);
-      pieobj.position.set(-75,0,0);
-      pieobj.name = "Commits:"+p.value+" Org:"+p.key;
-      pieobj.info={
-        org:p.key,
-        commits:p.value
-      }
-      scene.add(pieobj );
+		var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
+		var pieobj = new THREE.Mesh( geometry, material );
+		pieobj.origin_color=hex_color;
+		pieobj.rotation.set(0,0,0);
+		pieobj.position.set(-75,0,0);
+		pieobj.name = "Commits:"+p.value+" Org:"+p.key;
+		pieobj.info={
+		org:p.key,
+		commits:p.value
+		}
+		scene.add(pieobj );
 
-      scene_objects1.push(pieobj);
-      angPrev=nextAng;
+		scene_objects1.push(pieobj);
+		angPrev=nextAng;
+
+
+		domEvents.bind(pieobj, 'click', function(object3d){ 
+			redraw2(pieobj.info.org);
+		});
+
+		domEvents.bind(pieobj, 'mouseover', function(object3d){ 
+			//changeMeshColor(pieobj);
+			showInfo(pieobj);
+		});
+
+		domEvents.bind(pieobj, 'mouseout', function(object3d){ 
+			//pieobj.material.color.setHex(pieobj.origin_color);
+		});
 
 
    });
 }
-
-
-
 
 function drawBars () {
 
@@ -312,30 +321,34 @@ function drawBars () {
 
    groupByMonth.top(Infinity).forEach(function(p,i) {
       //commit values are normalized to optimal visualization(/10)
-      var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
-      y=p.value/10/2;
-      var origin_color=0x0000ff;
-      var material = new THREE.MeshLambertMaterial( {color: origin_color} );
-      var cube = new THREE.Mesh(geometry, material);
-      cube.origin_color=origin_color;
-      cube.position.set(x, y, z);
-      cube.name = "Commits:"+p.value+" "+p.key;
-      cube.info={
-        month:p.key,
-        commits:p.value
-      };
-      scene_objects2.push(cube);
-      scene.add(cube);
-      x+=1;
+		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
+		y=p.value/10/2;
+		var origin_color=0x0000ff;
+		var material = new THREE.MeshLambertMaterial( {color: origin_color} );
+		var cube = new THREE.Mesh(geometry, material);
+		cube.origin_color=origin_color;
+		cube.position.set(x, y, z);
+		cube.name = "Commits:"+p.value+" "+p.key;
+		cube.info={
+		month:p.key,
+		commits:p.value
+		};
+		scene_objects2.push(cube);
+		scene.add(cube);
+		x+=1;
 
-     // domEvents.addEventListener(cube,'click',callback1,false);
-    domEvents.bind(cube, 'click', function(object3d){ alert(cube.info.month) });
+		domEvents.bind(cube, 'click', function(object3d){ 
+			redraw1(cube.info.month);
+		});
 
-    //alert(1234);
+		domEvents.bind(cube, 'mouseover', function(object3d){ 
+			changeMeshColor(cube);
+			showInfo(cube);
+		});
 
-    //domEvents.unbind(cube, 'click', function(object3d){ alert(cube.info.month) });
-
-
+		domEvents.bind(cube, 'mouseout', function(object3d){ 
+			cube.material.color.setHex(cube.origin_color);
+		});
    });
 }
 
@@ -351,7 +364,7 @@ function showInfo (mesh) {
   context1.fillRect( 2,2, width+4,20+4 );
   context1.fillStyle = "rgba(0,0,0,1)"; // text color
   context1.fillText( message, 4,20 );
-  sprite1.position.set( mesh.position.x,mesh.position.y, mesh.position.z );
+  sprite1.position.set( 50,100,0);
   texture1.needsUpdate = true;
 }
 
@@ -369,17 +382,39 @@ function get_random_color() {
 
 function clearFilters () {
   for (var i = 0; i < scene_objects1.length; i++) {
+	domEvents.unbind(scene_objects1[i], 'click', function(object3d){ 
+		redraw2(scene_objects1[i].info.org);
+	});
+
+	domEvents.unbind(scene_objects1[i], 'mouseover', function(object3d){ 
+		changeMeshColor(scene_objects1[i]);
+		showInfo(scene_objects1[i]);
+	});
+
+	domEvents.unbind(scene_objects1[i], 'mouseout', function(object3d){ 
+		scene_objects1[i].material.color.setHex(scene_objects1[i].origin_color);
+	});
     scene.remove(scene_objects1[i]);
   };
 
   for (var i = 0; i < scene_objects2.length; i++) {
+    domEvents.unbind(scene_objects2[i], 'click', function(object3d){
+    	redraw1(cube.info.month);
+    });
+    domEvents.unbind(scene_objects2[i], 'mouseover', function(object3d){ 
+    	changeMeshColor(scene_objects2[i]);
+    	showInfo(scene_objects2[i]);
+    });
+	domEvents.unbind(scene_objects2[i], 'mouseout', function(object3d){ 
+		scene_objects2[i].material.color.setHex(scene_objects2[i].origin_color);
+	});
     scene.remove(scene_objects2[i]);
-    domEvents.unbind(scene_objects2[i], 'click', function(object3d){ alert(scene_objects2[i].info.month) });
+
   };
   dimByMonth.filterAll();
   dimByOrg.filterAll();
-  //drawBars();
-  //drawPie();
+  drawBars();
+  drawPie();
 }
 
 function redraw1 (argument) {
@@ -393,6 +428,18 @@ function redraw1 (argument) {
   console.log("Numero commits en ese mes"+dimByMonth.top(Infinity).length);
 
   for (var i = 0; i < scene_objects1.length; i++) {
+ 	domEvents.unbind(scene_objects1[i], 'click', function(object3d){ 
+		redraw2(scene_objects1[i].info.org);
+	});
+
+	domEvents.unbind(scene_objects1[i], 'mouseover', function(object3d){ 
+		changeMeshColor(scene_objects1[i]);
+		showInfo(scene_objects1[i]);
+	});
+
+	domEvents.unbind(scene_objects1[i], 'mouseout', function(object3d){ 
+		scene_objects1[i].material.color.setHex(scene_objects1[i].origin_color);
+	});
   	scene.remove(scene_objects1[i]);
   };
 
@@ -411,6 +458,16 @@ function redraw2 (argument) {
   console.log("Numero commits en ese mes en esa org"+dimByMonth.top(Infinity).length);
 
   for (var i = 0; i < scene_objects2.length; i++) {
+    domEvents.unbind(scene_objects2[i], 'click', function(object3d){
+    	redraw1(cube.info.month);
+    });
+    domEvents.unbind(scene_objects2[i], 'mouseover', function(object3d){ 
+    	changeMeshColor(scene_objects2[i]);
+    	showInfo(scene_objects2[i]);
+    });
+	domEvents.unbind(scene_objects2[i], 'mouseout', function(object3d){ 
+		scene_objects2[i].material.color.setHex(scene_objects2[i].origin_color);
+	});
     scene.remove(scene_objects2[i]);
   };
 
