@@ -271,8 +271,8 @@ function drawPie () {
    groupByOrg.top(Infinity).forEach(function(p,i) {
 
 		var hex_color=get_random_color();
-		var origin_color='#'+hex_color;
-		var material = new THREE.MeshPhongMaterial( {color:origin_color } );
+		var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
+		var material = new THREE.MeshPhongMaterial();
 		// Creats the shape, based on the value and the radius
 		var shape = new THREE.Shape();
 		var angToMove = (Math.PI*2*(p.value/valTotal));
@@ -284,7 +284,8 @@ function drawPie () {
 
 		var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
 		var pieobj = new THREE.Mesh( geometry, material );
-		pieobj.origin_color=hex_color;
+		pieobj.material.color.setHex(origin_color);
+		pieobj.origin_color=origin_color;
 		pieobj.rotation.set(0,0,0);
 		pieobj.position.set(-75,0,0);
 		pieobj.name = "Commits:"+p.value+" Org:"+p.key;
@@ -303,12 +304,12 @@ function drawPie () {
 		});
 
 		domEvents.bind(pieobj, 'mouseover', function(object3d){ 
-			//changeMeshColor(pieobj);
+			changeMeshColor(pieobj);
 			showInfo(pieobj);
 		});
 
 		domEvents.bind(pieobj, 'mouseout', function(object3d){ 
-			//pieobj.material.color.setHex(pieobj.origin_color);
+			pieobj.material.color.setHex(pieobj.origin_color);
 		});
 
 
@@ -356,6 +357,16 @@ function drawBars () {
    });
 }
 
+function decimalToHexString(number)
+{
+    if (number < 0)
+    {
+    	number = 0xFFFFFFFF + number + 1;
+    }
+
+    return number.toString(16).toUpperCase();
+}
+
 //shows message in a sprite
 function showInfo (mesh) {
   context1.clearRect(0,0,640,480);
@@ -381,7 +392,7 @@ function get_random_color() {
   function c() {
     return Math.floor(Math.random()*256).toString(16)
   }
-  return c()+c()+c();
+  return '#'+c()+c()+c();
 }
 
 function clearFilters () {
