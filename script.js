@@ -224,10 +224,10 @@ function init () {
   context1 = canvas1.getContext('2d');
   context1.font = "Bold 20px Arial";
   context1.fillStyle = "rgba(0,0,0,0.95)";
-  context1.fillText('', 0, 20);
+  context1.fillText('LALALALALLLALALALALAALALA', 0, 20);
 
   // canvas contents will be used for a texture
-  texture1 = new THREE.Texture(canvas1)
+  texture1 = new THREE.Texture(canvas1);
   texture1.needsUpdate = true;
 
 
@@ -259,60 +259,94 @@ function init () {
 
 }
 
+function createLabel(text, x, y, z, size, color, backGroundColor, backgroundMargin) {
+	if(!backgroundMargin)
+		backgroundMargin = 50;
+	var canvas = document.createElement("canvas");
+	var context = canvas.getContext("2d");
+	context.font = size + "pt Arial";
+	var textWidth = context.measureText(text).width;
+	canvas.width = textWidth + backgroundMargin;
+	canvas.height = size + backgroundMargin;
+	context = canvas.getContext("2d");
+	context.font = size + "pt Arial";
+	if(backGroundColor) {
+		context.fillStyle = backGroundColor;
+		context.fillRect(canvas.width / 2 - textWidth / 2 - backgroundMargin / 2, canvas.height / 2 - size / 2 - +backgroundMargin / 2, textWidth + backgroundMargin, size + backgroundMargin);
+	}
+	context.textAlign = "center";
+	context.textBaseline = "middle";
+	context.fillStyle = color;
+	context.fillText(text, canvas.width / 2, canvas.height / 2);
+	// context.strokeStyle = "black";
+	// context.strokeRect(0, 0, canvas.width, canvas.height);
+	var texture = new THREE.Texture(canvas);
+	texture.needsUpdate = true;
+	var material = new THREE.MeshBasicMaterial({
+		map : texture
+	});
+	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material);
+	// mesh.overdraw = true;
+	mesh.doubleSided = true;
+	mesh.position.x = x - canvas.width;
+	mesh.position.y = y - canvas.height;
+	mesh.position.z = z;
+	return mesh;
+}
+
 function drawPie () {
 
     var valTotal=dimByMonth.top(Infinity).length;
     var pieRadius=50;
     var angPrev=0;
-    var angToMove;
+    var angToMove=0;
 
    scene_objects1=[];
 
    groupByOrg.top(Infinity).forEach(function(p,i) {
+   		if(p.value){
+			var hex_color=get_random_color();
+			var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
+			var material = new THREE.MeshPhongMaterial();
+			// Creats the shape, based on the value and the radius
+			var shape = new THREE.Shape();
+			var angToMove = (Math.PI*2*(p.value/valTotal));
+			shape.moveTo(0,0);
+			shape.arc(0,0,pieRadius,angPrev,
+			        angPrev+angToMove,false);
+			shape.lineTo(0,0);
+			var nextAng = angPrev + angToMove;
 
-		var hex_color=get_random_color();
-		var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
-		var material = new THREE.MeshPhongMaterial();
-		// Creats the shape, based on the value and the radius
-		var shape = new THREE.Shape();
-		var angToMove = (Math.PI*2*(p.value/valTotal));
-		shape.moveTo(0,0);
-		shape.arc(0,0,pieRadius,angPrev,
-		        angPrev+angToMove,false);
-		shape.lineTo(0,0);
-		var nextAng = angPrev + angToMove;
+			var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
+			var pieobj = new THREE.Mesh( geometry, material );
+			pieobj.material.color.setHex(origin_color);
+			pieobj.origin_color=origin_color;
+			pieobj.rotation.set(0,0,0);
+			pieobj.position.set(-75,0,0);
+			pieobj.name = "Commits:"+p.value+" Org:"+p.key;
+			pieobj.info={
+			org:p.key,
+			commits:p.value
+			}
+			scene.add(pieobj );
 
-		var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
-		var pieobj = new THREE.Mesh( geometry, material );
-		pieobj.material.color.setHex(origin_color);
-		pieobj.origin_color=origin_color;
-		pieobj.rotation.set(0,0,0);
-		pieobj.position.set(-75,0,0);
-		pieobj.name = "Commits:"+p.value+" Org:"+p.key;
-		pieobj.info={
-		org:p.key,
-		commits:p.value
-		}
-		scene.add(pieobj );
-
-		scene_objects1.push(pieobj);
-		angPrev=nextAng;
-
-
-		domEvents.bind(pieobj, 'click', function(object3d){ 
-			redraw2(pieobj.info.org);
-		});
-
-		domEvents.bind(pieobj, 'mouseover', function(object3d){ 
-			changeMeshColor(pieobj);
-			showInfo(pieobj);
-		});
-
-		domEvents.bind(pieobj, 'mouseout', function(object3d){ 
-			pieobj.material.color.setHex(pieobj.origin_color);
-		});
+			scene_objects1.push(pieobj);
+			angPrev=nextAng;
 
 
+			domEvents.bind(pieobj, 'click', function(object3d){ 
+				redraw2(pieobj.info.org);
+			});
+
+			domEvents.bind(pieobj, 'mouseover', function(object3d){ 
+				changeMeshColor(pieobj);
+				showInfo(pieobj);
+			});
+
+			domEvents.bind(pieobj, 'mouseout', function(object3d){ 
+				pieobj.material.color.setHex(pieobj.origin_color);
+			});
+   		}
    });
 }
 
@@ -326,7 +360,8 @@ function drawBars () {
 
    groupByMonth.top(Infinity).forEach(function(p,i) {
       //commit values are normalized to optimal visualization(/10)
-		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
+      if(p.value){
+ 		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
 		y=p.value/10/2;
 		var origin_color=0x0000ff;
 		var material = new THREE.MeshLambertMaterial( {color: origin_color} );
@@ -354,6 +389,8 @@ function drawBars () {
 		domEvents.bind(cube, 'mouseout', function(object3d){ 
 			cube.material.color.setHex(cube.origin_color);
 		});
+      }
+
    });
 }
 
@@ -434,13 +471,9 @@ function clearFilters () {
 
 function redraw1 (argument) {
 
-  console.log(argument);
-
    dimByMonth.filterAll();
 
   dimByMonth.filter(argument);
-
-  console.log("Numero commits en ese mes"+dimByMonth.top(Infinity).length);
 
   for (var i = 0; i < scene_objects1.length; i++) {
  	domEvents.unbind(scene_objects1[i], 'click', function(object3d){ 
@@ -464,17 +497,13 @@ function redraw1 (argument) {
 
 function redraw2 (argument) {
 
-  console.log(argument);
-
   dimByOrg.filterAll();
 
   dimByOrg.filter(argument);
 
-  console.log("Numero commits en ese mes en esa org"+dimByMonth.top(Infinity).length);
-
   for (var i = 0; i < scene_objects2.length; i++) {
     domEvents.unbind(scene_objects2[i], 'click', function(object3d){
-    	redraw1(cube.info.month);
+    	redraw1(scene_objects2[i]);
     });
     domEvents.unbind(scene_objects2[i], 'mouseover', function(object3d){ 
     	changeMeshColor(scene_objects2[i]);
