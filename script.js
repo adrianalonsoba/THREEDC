@@ -29,6 +29,8 @@ var  extrudeOpts = {curveSegments:300, amount: 8, bevelEnabled: false, bevelSegm
 
 var domEvents;
 
+var labelobj;
+
 
 //CROSSFILTER VARS
 
@@ -203,45 +205,11 @@ function init () {
 
    groupByOrg= dimByOrg.group();
 
-     //by month
+  //by month
   drawBars();
 
   //by org
-
   drawPie();
-
-
-  // initialize object to perform world/screen calculations
-  //projector = new THREE.Projector();
-
-  // when the mouse moves, call the given function
-  //document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-  //document.addEventListener( 'mousedown', onDocumentMouseDown, false );
-  /////// draw text on canvas /////////
-
-  // create a canvas element
-  canvas1 = document.createElement('canvas');
-  context1 = canvas1.getContext('2d');
-  context1.font = "Bold 20px Arial";
-  context1.fillStyle = "rgba(0,0,0,0.95)";
-  context1.fillText('LALALALALLLALALALALAALALA', 0, 20);
-
-  // canvas contents will be used for a texture
-  texture1 = new THREE.Texture(canvas1);
-  texture1.needsUpdate = true;
-
-
-  var spriteMaterial = new THREE.SpriteMaterial( { map: texture1 } );
-  
-  sprite1 = new THREE.Sprite( spriteMaterial );
-  sprite1.scale.set(100,50,1.0);
-  sprite1.position.set( 50, 50, 0 );
-  scene.add( sprite1 ); 
-
-  ////////////////////////////////////////
-
-
-  //////////////////////////////////////////
 
   //GUI//
   var gui = new dat.GUI();
@@ -257,41 +225,6 @@ function init () {
   gui.close();
   //////
 
-}
-
-function createLabel(text, x, y, z, size, color, backGroundColor, backgroundMargin) {
-	if(!backgroundMargin)
-		backgroundMargin = 50;
-	var canvas = document.createElement("canvas");
-	var context = canvas.getContext("2d");
-	context.font = size + "pt Arial";
-	var textWidth = context.measureText(text).width;
-	canvas.width = textWidth + backgroundMargin;
-	canvas.height = size + backgroundMargin;
-	context = canvas.getContext("2d");
-	context.font = size + "pt Arial";
-	if(backGroundColor) {
-		context.fillStyle = backGroundColor;
-		context.fillRect(canvas.width / 2 - textWidth / 2 - backgroundMargin / 2, canvas.height / 2 - size / 2 - +backgroundMargin / 2, textWidth + backgroundMargin, size + backgroundMargin);
-	}
-	context.textAlign = "center";
-	context.textBaseline = "middle";
-	context.fillStyle = color;
-	context.fillText(text, canvas.width / 2, canvas.height / 2);
-	// context.strokeStyle = "black";
-	// context.strokeRect(0, 0, canvas.width, canvas.height);
-	var texture = new THREE.Texture(canvas);
-	texture.needsUpdate = true;
-	var material = new THREE.MeshBasicMaterial({
-		map : texture
-	});
-	var mesh = new THREE.Mesh(new THREE.PlaneGeometry(canvas.width, canvas.height), material);
-	// mesh.overdraw = true;
-	mesh.doubleSided = true;
-	mesh.position.x = x - canvas.width;
-	mesh.position.y = y - canvas.height;
-	mesh.position.z = z;
-	return mesh;
 }
 
 function drawPie () {
@@ -333,7 +266,6 @@ function drawPie () {
 			scene_objects1.push(pieobj);
 			angPrev=nextAng;
 
-
 			domEvents.bind(pieobj, 'click', function(object3d){ 
 				redraw2(pieobj.info.org);
 			});
@@ -348,6 +280,33 @@ function drawPie () {
 			});
    		}
    });
+}
+
+function showInfo (mesh) {
+
+	  scene.remove(labelobj);
+      var txt = mesh.name;
+      var curveSeg = 3;
+      var material = new THREE.MeshPhongMaterial( {color:0xFFFFFFFF,shading: THREE.FlatShading } );
+      
+      // Create a three.js text geometry
+      var geometry = new THREE.TextGeometry( txt, {
+        size: 4,
+        height: 1,
+        curveSegments: 3,
+        font: "helvetiker",
+        weight: "bold",
+        style: "normal",
+        bevelEnabled: false
+      });
+      
+      // Positions the text and adds it to the scene
+      labelobj = new THREE.Mesh( geometry, material );
+      labelobj.position.z = mesh.position.z;
+      labelobj.position.x = mesh.position.x-25;
+      labelobj.position.y = mesh.position.y+60;
+      //labelobj.rotation.set(3*Math.PI/2,0,0);
+      scene.add(labelobj );
 }
 
 function drawBars () {
@@ -404,25 +363,10 @@ function decimalToHexString(number)
     return number.toString(16).toUpperCase();
 }
 
-//shows message in a sprite
-function showInfo (mesh) {
-  context1.clearRect(0,0,640,480);
-  var message = mesh.name;
-  var metrics = context1.measureText(message);
-  var width = metrics.width;
-  context1.fillStyle = "rgba(0,0,0,0.95)"; // black border
-  context1.fillRect( 0,0, width+8,20+8);
-  context1.fillStyle = "rgba(255,255,255,0.95)"; // white filler
-  context1.fillRect( 2,2, width+4,20+4 );
-  context1.fillStyle = "rgba(0,0,0,1)"; // text color
-  context1.fillText( message, 4,20 );
-  sprite1.position.set( 50,100,0);
-  texture1.needsUpdate = true;
-}
-
 //changes mesh color when selected
 function changeMeshColor (mesh) {
   mesh.material.color.setHex(0xffff00);
+
 }
 
 function get_random_color() {
