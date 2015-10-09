@@ -206,10 +206,44 @@ function init () {
    groupByOrg= dimByOrg.group();
 
   //by month
-  drawBars();
+  //drawBars();
 
   //by org
-  drawPie();
+  //drawPie();
+
+
+
+	var geometry = new THREE.CubeGeometry( 50, 50, 50);
+	var material = new THREE.MeshPhongMaterial( {color: 0x0000ff} );
+	var cube = new THREE.Mesh(geometry, material);
+	scene.add(cube);
+
+
+	domEvents.bind(cube, 'click', function(object3d){ 
+		console.log('click');
+	});
+
+	domEvents.bind(cube, 'mouseover', function(object3d){ 
+		console.log('mouseover');
+	});
+
+	domEvents.bind(cube, 'mouseout', function(object3d){ 
+		console.log('mouseout');
+	});
+
+
+	domEvents.bind(cube, 'mousedown', function(object3d){ 
+		console.log('mousedown');
+		controls.enabled=false;
+	});
+
+	domEvents.bind(cube, 'mouseup', function(object3d){ 
+		console.log('mouseup');
+		controls.enabled=true;
+
+	});
+
+
 
   //GUI//
   var gui = new dat.GUI();
