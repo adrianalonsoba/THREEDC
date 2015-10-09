@@ -25,7 +25,7 @@ var current_mini_chart2;
 var dis=60;
 var fixed_minicharts=[];
 
-var  extrudeOpts = {curveSegments:300, amount: 8, bevelEnabled: false, bevelSegments: 2, steps: 2, bevelSize: 1, bevelThickness: 1 };
+var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
 var domEvents;
 
@@ -94,7 +94,7 @@ function init () {
    //////////////
    renderer = new THREE.WebGLRenderer( {antialias:true} );
    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-   renderer.setClearColor( 0xf0f0f0 );
+   renderer.setClearColor( 0x9999ff );
 
    // attach div element to variable to contain the renderer
    container = document.getElementById( 'ThreeJS' );
@@ -287,19 +287,18 @@ function showInfo (mesh) {
 	  scene.remove(labelobj);
       var txt = mesh.name;
       var curveSeg = 3;
-      var material = new THREE.MeshPhongMaterial( {color:0xFFFFFFFF,shading: THREE.FlatShading } );
+      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,shading: THREE.FlatShading } );
       
       // Create a three.js text geometry
       var geometry = new THREE.TextGeometry( txt, {
-        size: 4,
-        height: 1,
+        size: 8,
+        height: 2,
         curveSegments: 3,
         font: "helvetiker",
         weight: "bold",
         style: "normal",
         bevelEnabled: false
       });
-      
       // Positions the text and adds it to the scene
       labelobj = new THREE.Mesh( geometry, material );
       labelobj.position.z = mesh.position.z;
@@ -307,6 +306,7 @@ function showInfo (mesh) {
       labelobj.position.y = mesh.position.y+60;
       //labelobj.rotation.set(3*Math.PI/2,0,0);
       scene.add(labelobj );
+      
 }
 
 function drawBars () {
