@@ -32,6 +32,13 @@ var domEvents;
 var labelobj;
 
 
+// drag variables
+var objects = [], plane;
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2(),
+offset = new THREE.Vector3(),
+INTERSECTED, SELECTED;
+
 //CROSSFILTER VARS
 
 
@@ -173,6 +180,12 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
+  plane = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
+    new THREE.MeshBasicMaterial( { visible: false } )
+  );
+  scene.add( plane );
+
    var parsed_data=[];
 
     // Crossfilter and dc.js format
@@ -235,11 +248,17 @@ function init () {
 	domEvents.bind(cube, 'mousedown', function(object3d){ 
 		console.log('mousedown');
 		controls.enabled=false;
+    container.style.cursor = 'move';
+    cube.position.set()
 	});
 
 	domEvents.bind(cube, 'mouseup', function(object3d){ 
 		console.log('mouseup');
 		controls.enabled=true;
+    container.style.cursor = 'auto';
+
+
+
 
 	});
 
@@ -250,15 +269,30 @@ function init () {
 
   parameters =
   {
-    reset: function() { clearFilters() }
+    reset: function() { clearFilters() },
+    draggin:"Off"
   };
 
 
   gui.add( parameters, 'reset' ).name("Clear filters");
 
+  var dragChange = gui.add( parameters, 'draggin', [ "Off", "On" ] ).name('Draggin').listen();
+  dragChange.onChange(function(value) 
+  {   handleDrag();   });
+
+
+
   gui.close();
   //////
 
+}
+
+function handleDrag () {
+  if (parameters.draggin==='On'){
+    alert('on');
+  }else if(parameters.draggin==='Off'){
+    alert(parameters.draggin);
+  }
 }
 
 function drawPie () {
