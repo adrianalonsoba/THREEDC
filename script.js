@@ -131,31 +131,32 @@ function init () {
 
   window.addEventListener( 'mousemove', onMouseMove, false );
 
-	var geometry = new THREE.CubeGeometry( 100, 100, 100);
-	var material = new THREE.MeshPhongMaterial( {color: 0x0000ff} );
-	var cube = new THREE.Mesh(geometry, material);
-	scene.add(cube);
+  var geometry = new THREE.CubeGeometry( 100, 100, 100);
+  var material = new THREE.MeshPhongMaterial( {color: 0x0000ff} );
+  var cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
 
 
-	domEvents.bind(cube, 'click', function(object3d){ 
-		console.log('click');
-	});
+  domEvents.bind(cube, 'click', function(object3d){ 
+    console.log('click');
+  });
 
-	domEvents.bind(cube, 'mouseover', function(object3d){ 
-		console.log('mouseover');
-	});
+  domEvents.bind(cube, 'mouseover', function(object3d){ 
+    console.log('mouseover');
+  });
 
-	domEvents.bind(cube, 'mouseout', function(object3d){ 
-		console.log('mouseout');
-	});
+  domEvents.bind(cube, 'mouseout', function(object3d){ 
+    console.log('mouseout');
+  });
 
 
-	domEvents.bind(cube, 'mousedown', function(object3d){ 
-		console.log('mousedown');
-		controls.enabled=false;
+  domEvents.bind(cube, 'mousedown', function(object3d){ 
+    console.log('mousedown');
+    controls.enabled=false;
     container.style.cursor = 'move';
     SELECTED=cube;
 
+    plane.position.copy( cube.position );
     raycaster.setFromCamera( mouse, camera );
     var intersects = raycaster.intersectObject( plane );
 
@@ -164,15 +165,14 @@ function init () {
       offset.copy( intersects[ 0 ].point ).sub( plane.position );
 
     }
-	});
+  });
 
 /*
-	domEvents.bind(cube, 'mouseup', function(object3d){ 
-		console.log('mouseup');
-		controls.enabled=true;
+  domEvents.bind(cube, 'mouseup', function(object3d){ 
+    console.log('mouseup');
+    controls.enabled=true;
     container.style.cursor = 'auto';
-
-	});
+  });
 */
   //GUI//
   var gui = new dat.GUI();
