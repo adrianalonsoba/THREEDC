@@ -24,8 +24,29 @@ var mouse = new THREE.Vector2(),
 offset = new THREE.Vector3(),
 INTERSECTED, SELECTED;
 
-init();
-animate();
+//JSON data saved here
+var json_data;
+
+//CROSSFILTER VARS
+
+ var cf;
+
+ var dimByMonth;
+
+ var groupByMonth;
+
+  var dimByOrg;
+
+  var groupByOrg;
+
+// initialization
+  //getJSON call, draw meshes with data
+   $.getJSON("../jsons/scm-commits.json", function(data) {
+      json_data=data;
+      init();
+      // animation loop / game loop
+      animate();
+   });
 
 ///////////////
 // FUNCTIONS //
@@ -113,115 +134,61 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
-  plane = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
-    new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
-  );
-  plane.rotation.x = Math.PI / 2; //xz plane
-
-  domEvents.bind(plane, 'mouseup', function(object3d){ 
-    console.log('mouseup de plano');
-    controls.enabled=true;
-    container.style.cursor = 'auto';
-    SELECTED=null;
-    plane.material.visible=false;
-  });
-  scene.add( plane );
-
-  window.addEventListener( 'mousemove', onMouseMove, false );
-
-  var geometry = new THREE.CubeGeometry( 100, 100, 100);
-  var material = new THREE.MeshPhongMaterial( {color: 0x0000ff} );
-  var cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
 
 
-  domEvents.bind(cube, 'click', function(object3d){ 
-    console.log('click');
+
+  var parsed_data=[];
+
+  // Crossfilter and dc.js format
+  json_data.values.forEach(function (value) {
+    var record = {}
+    json_data.names.forEach(function (name, index) {
+        if (name == "date") {
+          var date = new Date(value[index]*1000);
+          record[name] = date;
+          record.month = new Date(date.getFullYear(), date.getMonth(), 1);
+          record.hour = date.getUTCHours();
+        } else {
+          record[name] = value[index];
+        }
+    });
+    parsed_data.push(record);
   });
 
-  domEvents.bind(cube, 'mouseover', function(object3d){ 
-    console.log('mouseover');
-  });
+  cf=crossfilter(parsed_data);
 
-  domEvents.bind(cube, 'mouseout', function(object3d){ 
-    console.log('mouseout');
-  });
+  //create a dimension by month
 
-  domEvents.bind(cube, 'mousedown', function(object3d){ 
-    console.log('mousedown');
-    controls.enabled=false;
-    if(parameters.activate){
-    	container.style.cursor = 'move';
-    }
-    SELECTED=cube;
+  dimByMonth= cf.dimension(function(p) {return p.month;});
 
-    plane.position.copy( cube.position );
-    raycaster.setFromCamera( mouse, camera );
-    var intersects = raycaster.intersectObject( plane );
+  groupByMonth= dimByMonth.group();
 
-    if ( intersects.length > 0 ) {
-      offset.copy( intersects[ 0 ].point ).sub( plane.position );
-    }
-  });
+  //create a dimension by org
 
-  //GUI//
-  var gui = new dat.GUI();
+  dimByOrg= cf.dimension(function(p) {return p.org;});
 
-  parameters =
-  {
-    plane:"XZ",
-    activate:true
-  };
+  groupByOrg= dimByOrg.group();
 
-  var folder1 = gui.addFolder('Drag');
-  var activateDrag = folder1.add( parameters, 'activate' ).name('On/Off').listen();
-  activateDrag.onChange(function(value) 
-		{ dragTrigger(); });
-  var dragChange = folder1.add( parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
-  dragChange.onChange(function(value) 
-  {   changePLane();   });
-  folder1.close();
+/*
+  var pie3 = new THREEDC.pieChart([0,0,0]);
+  console.log(pie3);
+  pie3.showCoords();
+  pie3.group=groupByOrg;
+  pie3.draw();
+*/
 
-  gui.close();
-  //////
 
-}
 
-function dragTrigger () {
-	if(parameters.activate){
-		window.addEventListener( 'mousemove', onMouseMove, false );
-	}else{
-		window.removeEventListener( 'mousemove', onMouseMove, false );
-	}
-}
+var bars= new THREEDC.barsChart([50,50,50]);
+bars.showCoords();
+bars.group=groupByMonth;
+bars.draw();
 
-function changePLane () {
-  if (parameters.plane==='XY'){
-    plane.rotation.set(0,0,0); //xy plane
-  }else if(parameters.plane==='XZ'){
-    plane.rotation.x = Math.PI / 2; //xz plane
-  }
-}
+var bars2= new THREEDC.barsChart([0,0,0]);
+bars2.showCoords();
+bars2.group=groupByMonth;
+bars2.draw();
 
-function onMouseMove( event ) {
-
-  // calculate mouse position in normalized device coordinates
-  // (-1 to +1) for both components
-
-  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
-
-  raycaster.setFromCamera( mouse, camera );
-
-  if(SELECTED){
-    plane.material.visible=true;
-    var intersects = raycaster.intersectObject( plane );
-    if ( intersects.length > 0 ) {
-      SELECTED.position.copy( intersects[ 0 ].point.sub( offset ) );
-    }
-    return;
-  }
 }
 
 function animate()
