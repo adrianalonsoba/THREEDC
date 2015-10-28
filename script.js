@@ -169,26 +169,28 @@ function init () {
 
   groupByOrg= dimByOrg.group();
 
-/*
-  var pie3 = new THREEDC.pieChart([0,0,0]);
-  console.log(pie3);
+
+  var pie3 = new THREEDC.pieChart([-50,-50,-50]);
   pie3.showCoords();
   pie3.group=groupByOrg;
   pie3.draw();
-*/
+
+  var pie3 = new THREEDC.pieChart([50,50,50]);
+  pie3.showCoords();
+  pie3.group=groupByOrg;
+  pie3.draw();
 
 
 
+/*
 var bars= new THREEDC.barsChart([50,50,50]);
-bars.showCoords();
 bars.group=groupByMonth;
 bars.draw();
 
 var bars2= new THREEDC.barsChart([0,0,0]);
-bars2.showCoords();
 bars2.group=groupByMonth;
 bars2.draw();
-
+*/
 }
 
 function animate()

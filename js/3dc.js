@@ -14,41 +14,40 @@ THREEDC.pieChart = function (coords) {
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
 
-    var _valTotal;
-    var _pieRadius=50;
-    var _angPrev=0;
-    var _angToMove=0;
+
 
     this.draw= function() {
-    	_valTotal=this.group.top(Infinity).length;
-    	console.log(_valTotal);
-    	this.group.top(Infinity).forEach(function(p,i) {
-	   		if(p.value){
-	   			console.log(p.value);
+   	    var valTotal=12677;//FALTA PARAMETRIZAR ESTO DE ALGUNA MANERA
+		var pieRadius=50;
+		var angPrev=0;
+		var angToMove=0;
+
+		this.group.top(Infinity).forEach(function(p,i) {
+				if(p.value){
 				var hex_color=get_random_color();
 				var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
 				var material = new THREE.MeshPhongMaterial();
 				// Creats the shape, based on the value and the radius
 				var shape = new THREE.Shape();
-				var angToMove = (Math.PI*2*(p.value/_valTotal));
+				var angToMove = (Math.PI*2*(p.value/valTotal));
 				shape.moveTo(0,0);
-				shape.arc(0,0,_pieRadius,_angPrev,
-				        _angPrev+_angToMove,false);
+				shape.arc(0,0,pieRadius,angPrev,
+				        angPrev+angToMove,false);
 				shape.lineTo(0,0);
-				var nextAng = _angPrev + _angToMove;
+				var nextAng = angPrev + angToMove;
 
 				var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
 				var pieobj = new THREE.Mesh( geometry, material );
 				pieobj.material.color.setHex(origin_color);
 				pieobj.origin_color=origin_color;
 				pieobj.rotation.set(0,0,0);
-				pieobj.position.set(-75,0,0);
+				pieobj.position.set(coords[0],coords[1],coords[2]);
 				pieobj.name = "Commits:"+p.value+" Org:"+p.key;
 				pieobj.info={
-					org:p.key,
-					commits:p.value
+				org:p.key,
+				commits:p.value
 				}
-				//scene.add(pieobj );
+				scene.add(pieobj );
 				angPrev=nextAng;
 			}
 		});
