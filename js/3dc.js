@@ -4,25 +4,38 @@ var THREEDC={
 
 var _allCharts=[];
 
-//DA ERROR DE TRIANGULACION POR ??FONTUTILS¿¿
-THREEDC.pieChart = function (coords) {
+THREEDC.renderAll=function() {
+	for (var i = 0; i < _allCharts.length; i++) {
+		_allCharts[i].render();
+	};
+}
+
+THREEDC.pieChart = function (coords,group) {
+
 	this.coords=coords;
-	this.showCoords=function() {
-		console.log('Coords: '+this.coords);
-	}
 
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
+	var chartParts=[];
 
+	buildChart();
+	_allCharts.push(this);
 
-
-    this.draw= function() {
+    function buildChart () {
    	    var valTotal=12677;//FALTA PARAMETRIZAR ESTO DE ALGUNA MANERA
 		var pieRadius=50;
 		var angPrev=0;
 		var angToMove=0;
 
-		this.group.top(Infinity).forEach(function(p,i) {
+	   if(group===undefined){
+	   	console.log('You must define a group for this chart');
+	   	return;
+	   }
+	   if(coords==undefined){
+	   	this.coords=[0,0,0];
+	   }
+
+		group.top(Infinity).forEach(function(p,i) {
 				if(p.value){
 				var hex_color=get_random_color();
 				var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
@@ -44,34 +57,47 @@ THREEDC.pieChart = function (coords) {
 				pieobj.position.set(coords[0],coords[1],coords[2]);
 				pieobj.name = "Commits:"+p.value+" Org:"+p.key;
 				pieobj.info={
-				org:p.key,
-				commits:p.value
+					org:p.key,
+					commits:p.value
 				}
-				scene.add(pieobj );
+				chartParts.push(pieobj);
 				angPrev=nextAng;
 			}
 		});
     }
+
+    this.render=function() {
+    	for (var i = 0; i < chartParts.length; i++) {
+    		scene.add(chartParts[i]);
+    	};
+    }
 }
 
-THREEDC.barsChart = function (coords){
+THREEDC.barsChart = function (coords,group){
+
+	var chartParts=[];
 
 	this.coords=coords;
-	this.showCoords=function() {
-		console.log('Coords: '+this.coords);
-	}
+	this.group=group;
 
-   this.draw=function () {
+	buildChart();
+	_allCharts.push(this);
+	
+	function buildChart () {
+	   	
 	   var z=1;
 	   var y=0;
 	   var x=1;
 
-	   if(this.group===undefined){
+	   if(group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
+	   if(coords==undefined){
+	   	this.coords=[0,0,0];
+	   }
 	   
-	   this.group.top(Infinity).forEach(function(p,i) {
+	   group.top(Infinity).forEach(function(p,i) {
 	      //commit values are normalized to optimal visualization(/10)
 	      if(p.value){
 	 		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
@@ -86,12 +112,17 @@ THREEDC.barsChart = function (coords){
 				month:p.key,
 				commits:p.value
 			};
-			scene.add(cube);
+			chartParts.push(cube);
 			x+=1;
 		   }
 		});
-   }
+    }
 
+    this.render=function() {
+    	for (var i = 0; i < chartParts.length; i++) {
+    		scene.add(chartParts[i]);
+    	};
+    }
 }
 
 function get_random_color() {
@@ -135,5 +166,5 @@ function showInfo (mesh) {
       labelobj.position.y = mesh.position.y+60;
       //labelobj.rotation.set(3*Math.PI/2,0,0);
       scene.add(labelobj );
-      
 }
+

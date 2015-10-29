@@ -169,7 +169,7 @@ function init () {
 
   groupByOrg= dimByOrg.group();
 
-
+/*
   var pie3 = new THREEDC.pieChart([-50,-50,-50]);
   pie3.showCoords();
   pie3.group=groupByOrg;
@@ -180,17 +180,11 @@ function init () {
   pie3.group=groupByOrg;
   pie3.draw();
 
-
-
-/*
-var bars= new THREEDC.barsChart([50,50,50]);
-bars.group=groupByMonth;
-bars.draw();
-
-var bars2= new THREEDC.barsChart([0,0,0]);
-bars2.group=groupByMonth;
-bars2.draw();
 */
+
+  var bars = new THREEDC.barsChart([50,50,50],groupByMonth);
+  var pie=new THREEDC.pieChart([-50,0,0],groupByOrg);
+  THREEDC.renderAll();
 }
 
 function animate()
