@@ -182,8 +182,15 @@ function init () {
 
 */
 
-  var bars = new THREEDC.barsChart([50,50,50],groupByMonth);
-  var pie=new THREEDC.pieChart([-50,0,0],groupByOrg);
+  var bars = new THREEDC.barsChart([50,50,50]);
+  bars.group(groupByMonth)
+      .dimension(dimByMonth);
+
+  var pie= new THREEDC.pieChart([0,0,0]);
+  pie.group(groupByOrg);
+
+  var pie= new THREEDC.pieChart([-100,0,0]);
+  pie.group(groupByOrg);
   THREEDC.renderAll();
 }
 

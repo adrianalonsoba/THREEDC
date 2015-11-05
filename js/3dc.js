@@ -14,11 +14,13 @@ THREEDC.pieChart = function (coords,group) {
 
 	this.coords=coords;
 
+	var _dimension;
+	var _group;
+
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 
-	var chartParts=[];
+	var _chartParts=[];
 
-	buildChart();
 	_allCharts.push(this);
 
     function buildChart () {
@@ -27,7 +29,7 @@ THREEDC.pieChart = function (coords,group) {
 		var angPrev=0;
 		var angToMove=0;
 
-	   if(group===undefined){
+	   if(_group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
@@ -35,7 +37,7 @@ THREEDC.pieChart = function (coords,group) {
 	   	this.coords=[0,0,0];
 	   }
 
-		group.top(Infinity).forEach(function(p,i) {
+		_group.top(Infinity).forEach(function(p,i) {
 				if(p.value){
 				var hex_color=get_random_color();
 				var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
@@ -60,27 +62,43 @@ THREEDC.pieChart = function (coords,group) {
 					org:p.key,
 					commits:p.value
 				}
-				chartParts.push(pieobj);
+				_chartParts.push(pieobj);
 				angPrev=nextAng;
 			}
 		});
     }
 
+    this.group= function (group) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_group=group;
+    	return this;
+    }
+
+    this.dimension= function (dimension) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_dimension=dimension;
+    	return this;
+    }
     this.render=function() {
-    	for (var i = 0; i < chartParts.length; i++) {
-    		scene.add(chartParts[i]);
+    	buildChart();
+    	for (var i = 0; i < _chartParts.length; i++) {
+    		scene.add(_chartParts[i]);
     	};
     }
 }
 
-THREEDC.barsChart = function (coords,group){
-
-	var chartParts=[];
+THREEDC.barsChart = function (coords){
 
 	this.coords=coords;
-	this.group=group;
 
-	buildChart();
+	var _chartParts=[];
+	var _dimension;
+	var _group;
+
 	_allCharts.push(this);
 	
 	function buildChart () {
@@ -89,17 +107,18 @@ THREEDC.barsChart = function (coords,group){
 	   var y=0;
 	   var x=1;
 
-	   if(group===undefined){
+	   if(_group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
 	   if(coords==undefined){
 	   	this.coords=[0,0,0];
 	   }
-	   
-	   group.top(Infinity).forEach(function(p,i) {
+
+	   _group.top(Infinity).forEach(function(p,i) {
 	      //commit values are normalized to optimal visualization(/10)
 	      if(p.value){
+	      	console.log(p.value);
 	 		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
 			y=p.value/10/2;
 			var origin_color=0x0000ff;
@@ -112,15 +131,32 @@ THREEDC.barsChart = function (coords,group){
 				month:p.key,
 				commits:p.value
 			};
-			chartParts.push(cube);
+			_chartParts.push(cube);
 			x+=1;
 		   }
 		});
     }
 
+    this.group= function (group) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_group=group;
+    	return this;
+    }
+
+    this.dimension= function (dimension) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_dimension=dimension;
+    	return this;
+    }
+
     this.render=function() {
-    	for (var i = 0; i < chartParts.length; i++) {
-    		scene.add(chartParts[i]);
+    	buildChart();
+    	for (var i = 0; i < _chartParts.length; i++) {
+    		scene.add(_chartParts[i]);
     	};
     }
 }
