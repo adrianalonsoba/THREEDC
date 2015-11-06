@@ -180,7 +180,7 @@ function init () {
   pie3.group=groupByOrg;
   pie3.draw();
 
-*/
+
 
   var bars = new THREEDC.barsChart([50,50,50]);
   bars.group(groupByMonth)
@@ -192,6 +192,13 @@ function init () {
   var pie= new THREEDC.pieChart([-100,0,0]);
   pie.group(groupByOrg);
   THREEDC.renderAll();
+
+  */
+
+  var bubble =new THREEDC.bubbleChart([0,0,0]);
+  bubble.group(groupByOrg);
+  THREEDC.renderAll();
+
 }
 
 function animate()

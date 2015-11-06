@@ -10,7 +10,7 @@ THREEDC.renderAll=function() {
 	};
 }
 
-THREEDC.pieChart = function (coords,group) {
+THREEDC.pieChart = function (coords) {
 
 	this.coords=coords;
 
@@ -34,7 +34,7 @@ THREEDC.pieChart = function (coords,group) {
 	   	return;
 	   }
 	   if(coords==undefined){
-	   	this.coords=[0,0,0];
+	   	coords=[0,0,0];
 	   }
 
 		_group.top(Infinity).forEach(function(p,i) {
@@ -112,7 +112,7 @@ THREEDC.barsChart = function (coords){
 	   	return;
 	   }
 	   if(coords==undefined){
-	   	this.coords=[0,0,0];
+	   	coords=[0,0,0];
 	   }
 
 	   _group.top(Infinity).forEach(function(p,i) {
@@ -136,6 +136,67 @@ THREEDC.barsChart = function (coords){
 		   }
 		});
     }
+
+    this.group= function (group) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_group=group;
+    	return this;
+    }
+
+    this.dimension= function (dimension) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_dimension=dimension;
+    	return this;
+    }
+
+    this.render=function() {
+    	buildChart();
+    	for (var i = 0; i < _chartParts.length; i++) {
+    		scene.add(_chartParts[i]);
+    	};
+    }
+}
+
+THREEDC.bubbleChart= function (coords) {
+
+	var _chartParts=[];
+	var _dimension;
+	var _group;
+
+	_allCharts.push(this);
+
+
+	function buildChart () {
+
+		var x=0;
+		var y=0;
+		var z=0;
+
+	   if(_group===undefined){
+	   	console.log('You must define a group for this chart');
+	   	return;
+	   }
+	   if(coords==undefined){
+	   	this.coords=[0,0,0];
+	   }
+	   
+		_group.top(Infinity).forEach(function(p,i) {
+			var geometry = new THREE.SphereGeometry(p.value/100,32,32);
+			var material = new THREE.MeshLambertMaterial( {} );
+			material.color.setHex( Math.random() * 0xffffff );
+			console.log(material.color);
+			var sphere = new THREE.Mesh( geometry, material );
+
+			sphere.position.set(x+coords[0],y+coords[1],z+coords[2]);
+			_chartParts.push(sphere);
+			x+=100;
+		});
+
+	}
 
     this.group= function (group) {
     	if(!arguments.length){
