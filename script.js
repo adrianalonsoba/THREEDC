@@ -185,18 +185,16 @@ function init () {
   var bars = new THREEDC.barsChart([50,50,50]);
   bars.group(groupByMonth)
       .dimension(dimByMonth);
-
+*/
   var pie= new THREEDC.pieChart([0,0,0]);
-  pie.group(groupByOrg);
+  pie.group(groupByOrg)
+  	 .dimension(dimByOrg);
+
 
   var pie= new THREEDC.pieChart([-100,0,0]);
-  pie.group(groupByOrg);
-  THREEDC.renderAll();
+  pie.group(groupByOrg)
+     .dimension(dimByOrg);
 
-  */
-
-  var bubble =new THREEDC.bubbleChart([0,0,0]);
-  bubble.group(groupByOrg);
   THREEDC.renderAll();
 
 }

@@ -24,7 +24,7 @@ THREEDC.pieChart = function (coords) {
 	_allCharts.push(this);
 
     function buildChart () {
-   	    var valTotal=12677;//FALTA PARAMETRIZAR ESTO DE ALGUNA MANERA
+   	    var valTotal=_dimension.top(Infinity).length;
 		var pieRadius=50;
 		var angPrev=0;
 		var angToMove=0;
