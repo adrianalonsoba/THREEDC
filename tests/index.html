@@ -78,13 +78,13 @@ $.getJSON("../jsons/scm-commits.json", function(data) {
 	.legend(dc.legend());
 
 
-	var chart2 =dc.barChart('#test2');
+	var chart2 =dc.lineChart('#test2');
 
 
 	chart2
 	.width(768)
 	.height(480)
-	.x(d3.scale.linear().domain([0, 2500]))
+	.x(d3.scale.linear().domain([dimByMonth.bottom(1)[0].month, dimByMonth.top(1)[0].month]))
 	.dimension(dimByMonth)
 	.group(groupByMonth)
 	.elasticY(true)
