@@ -195,6 +195,16 @@ function init () {
   pie.group(groupByOrg)
      .dimension(dimByOrg);
 
+/*
+  var bubbles= new THREEDC.bubbleChart([100,0,0]);
+
+  bubbles.group(groupByOrg)
+         .dimension(dimByOrg);
+*/
+
+  var line = new THREEDC.lineChart([-50,50,50]);
+  line.group(groupByMonth);
+
   THREEDC.renderAll();
 
 }

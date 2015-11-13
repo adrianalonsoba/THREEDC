@@ -10,6 +10,33 @@ THREEDC.renderAll=function() {
 	};
 }
 
+THREEDC.baseChart = function (_chart) {
+	var _chart;
+	var _chartParts=[];
+	var _dimension;
+	var _group;
+
+    _chart.group= function (group) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_group=group;
+    	console.log("1111");
+    	return _chart;
+    }
+
+    _chart.dimension= function (dimension) {
+    	if(!arguments.length){
+    		return _dimension;
+    	}
+    	_dimension=dimension;
+    	console.log("2222");
+    	return _chart;
+    }
+
+    return _chart;
+}
+
 THREEDC.pieChart = function (coords) {
 
 	this.coords=coords;
@@ -161,14 +188,87 @@ THREEDC.barsChart = function (coords){
     }
 }
 
-THREEDC.bubbleChart= function (coords) {
+THREEDC.lineChart= function (coords) {
+	this.coords=coords;
 
 	var _chartParts=[];
 	var _dimension;
 	var _group;
 
 	_allCharts.push(this);
+	
+	function buildChart () {
+	   	
+	   if(_group===undefined){
+	   	console.log('You must define a group for this chart');
+	   	return;
+	   }
+	   if(coords==undefined){
+	   	coords=[0,0,0];
+	   }
 
+		var chartShape = new THREE.Shape();
+		chartShape.moveTo( 0,0 );
+		var x=0;
+
+	   _group.top(Infinity).forEach(function(p,i) {
+			chartShape.lineTo( x, p.value/10 );
+			x+=1.5;
+		});
+		chartShape.lineTo( x, 0 );
+		chartShape.lineTo( 0, 0 );
+
+		var extrusionSettings = {
+			size: 30, height: 4, curveSegments: 3,
+			bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+			material: 0, extrudeMaterial: 1
+		};
+
+		var chartGeometry = new THREE.ExtrudeGeometry( chartShape, extrusionSettings );
+		var materialSide = new THREE.MeshLambertMaterial( { color: 0x0000ff } );
+  		var extrudeChart = new THREE.Mesh( chartGeometry, materialSide );
+
+		extrudeChart.position.set(coords[0],coords[1],coords[2]);
+		scene.add(extrudeChart);
+
+    }
+
+    this.group= function (group) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_group=group;
+    	return this;
+    }
+
+    this.dimension= function (dimension) {
+    	if(!arguments.length){
+    		return _group;
+    	}
+    	_dimension=dimension;
+    	return this;
+    }
+
+    this.render=function() {
+    	buildChart();
+    	for (var i = 0; i < _chartParts.length; i++) {
+    		scene.add(_chartParts[i]);
+    	};
+    }
+}
+
+THREEDC.bubbleChart= function (coords) {
+
+	var _chart = THREEDC.baseChart();
+
+	_allCharts.push(this);
+
+    this.render=function() {
+    	buildChart();
+    	for (var i = 0; i < _chartParts.length; i++) {
+    		scene.add(_chartParts[i]);
+    	};
+    }
 
 	function buildChart () {
 
@@ -195,31 +295,9 @@ THREEDC.bubbleChart= function (coords) {
 			_chartParts.push(sphere);
 			x+=100;
 		});
-
 	}
 
-    this.group= function (group) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_group=group;
-    	return this;
-    }
-
-    this.dimension= function (dimension) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_dimension=dimension;
-    	return this;
-    }
-
-    this.render=function() {
-    	buildChart();
-    	for (var i = 0; i < _chartParts.length; i++) {
-    		scene.add(_chartParts[i]);
-    	};
-    }
+	return _chart;
 }
 
 function get_random_color() {
