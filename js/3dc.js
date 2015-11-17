@@ -11,16 +11,14 @@ THREEDC.renderAll=function() {
 }
 
 THREEDC.baseChart = function (_chart) {
-	var _chart;
-	var _chartParts=[];
-	var _dimension;
-	var _group;
+
+	_chart.chartParts=[];
 
     _chart.group= function (group) {
     	if(!arguments.length){
     		return _group;
     	}
-    	_group=group;
+    	_chart._group=group;
     	console.log("1111");
     	return _chart;
     }
@@ -29,7 +27,7 @@ THREEDC.baseChart = function (_chart) {
     	if(!arguments.length){
     		return _dimension;
     	}
-    	_dimension=dimension;
+    	_chart._dimension=dimension;
     	console.log("2222");
     	return _chart;
     }
@@ -259,14 +257,14 @@ THREEDC.lineChart= function (coords) {
 
 THREEDC.bubbleChart= function (coords) {
 
-	var _chart = THREEDC.baseChart();
+	var _chart = THREEDC.baseChart({});
 
 	_allCharts.push(this);
 
     this.render=function() {
     	buildChart();
-    	for (var i = 0; i < _chartParts.length; i++) {
-    		scene.add(_chartParts[i]);
+    	for (var i = 0; i < _chart.chartParts.length; i++) {
+    		scene.add(_chart.chartParts[i]);
     	};
     }
 
@@ -276,7 +274,7 @@ THREEDC.bubbleChart= function (coords) {
 		var y=0;
 		var z=0;
 
-	   if(_group===undefined){
+	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
@@ -284,15 +282,15 @@ THREEDC.bubbleChart= function (coords) {
 	   	this.coords=[0,0,0];
 	   }
 	   
-		_group.top(Infinity).forEach(function(p,i) {
+		_chart._group.top(Infinity).forEach(function(p,i) {
+			console.log('key:'+p.key+' value: '+p.value);
 			var geometry = new THREE.SphereGeometry(p.value/100,32,32);
 			var material = new THREE.MeshLambertMaterial( {} );
 			material.color.setHex( Math.random() * 0xffffff );
-			console.log(material.color);
 			var sphere = new THREE.Mesh( geometry, material );
 
 			sphere.position.set(x+coords[0],y+coords[1],z+coords[2]);
-			_chartParts.push(sphere);
+			_chart.chartParts.push(sphere);
 			x+=100;
 		});
 	}
