@@ -14,6 +14,14 @@ THREEDC.baseChart = function (_chart) {
 
 	_chart.chartParts=[];
 
+    _chart.render=function() {
+    	//defined by each implementation
+    	_chart.buildChart();
+    	for (var i = 0; i < _chart.chartParts.length; i++) {
+    		scene.add(_chart.chartParts[i]);
+    	};
+    }
+
     _chart.group= function (group) {
     	if(!arguments.length){
     		return _group;
@@ -259,16 +267,9 @@ THREEDC.bubbleChart= function (coords) {
 
 	var _chart = THREEDC.baseChart({});
 
-	_allCharts.push(this);
+	_allCharts.push(_chart);
 
-    this.render=function() {
-    	buildChart();
-    	for (var i = 0; i < _chart.chartParts.length; i++) {
-    		scene.add(_chart.chartParts[i]);
-    	};
-    }
-
-	function buildChart () {
+	_chart.buildChart= function () {
 
 		var x=0;
 		var y=0;

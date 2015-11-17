@@ -185,7 +185,7 @@ function init () {
   var bars = new THREEDC.barsChart([50,50,50]);
   bars.group(groupByMonth)
       .dimension(dimByMonth);
-*/
+
   var pie= new THREEDC.pieChart([0,0,0]);
   pie.group(groupByOrg)
   	 .dimension(dimByOrg);
@@ -195,18 +195,27 @@ function init () {
   pie.group(groupByMonth)
      .dimension(dimByMonth);
 
+  var line = new THREEDC.lineChart([-50,50,50]);
+  line.group(groupByMonth);
 
+
+
+*/
   var bubbles= new THREEDC.bubbleChart([100,0,0]);
 
   bubbles.group(groupByOrg)
          .dimension(dimByOrg);
 
-
-  var line = new THREEDC.lineChart([-50,50,50]);
-  line.group(groupByMonth);
-
   THREEDC.renderAll();
 
+
+//GRIDS
+var gridXZ = new THREE.GridHelper(100,10 );
+  gridXZ.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
+  gridXZ.position.set( 100,0,100 );
+  gridXZ.rotation.x=Math.PI/2;
+  scene.add(gridXZ);
+  
 }
 
 function animate()
