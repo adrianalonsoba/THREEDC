@@ -206,16 +206,36 @@ function init () {
   bubbles.group(groupByOrg)
          .dimension(dimByOrg);
 
+
+  var pie= new THREEDC.pieChart([-100,0,0]);
+  pie.group(groupByOrg)
+     .dimension(dimByOrg);
+
+
+  var pie2= new THREEDC.pieChart([300,300,0]);
+  pie2.group(groupByOrg)
+     .dimension(dimByOrg)
+     .radius(500);
+
+
+  var bars = new THREEDC.barsChart([50,50,50]);
+  bars.group(groupByMonth)
+      .dimension(dimByMonth);
+
+   var bars = new THREEDC.barsChart([-50,50,50]);
+  bars.group(groupByMonth)
+      .dimension(dimByMonth);
+
+  var line = new THREEDC.simpleLineChart([-50,-50,50]);
+  line.group(groupByMonth);
+
+    var line = new THREEDC.lineChart([+150,-50,50]);
+  line.group(groupByMonth);
+
+
   THREEDC.renderAll();
 
 
-//GRIDS
-var gridXZ = new THREE.GridHelper(100,10 );
-  gridXZ.setColors( new THREE.Color(0x006600), new THREE.Color(0x006600) );
-  gridXZ.position.set( 100,0,100 );
-  gridXZ.rotation.x=Math.PI/2;
-  scene.add(gridXZ);
-  
 }
 
 function animate()

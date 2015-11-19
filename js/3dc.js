@@ -1,22 +1,24 @@
 var THREEDC={
-	version:'0'
+	version:'0.1-a',
+	allCharts:[]
 };
 
-var _allCharts=[];
-
 THREEDC.renderAll=function() {
-	for (var i = 0; i < _allCharts.length; i++) {
-		_allCharts[i].render();
+	for (var i = 0; i < THREEDC.allCharts.length; i++) {
+		THREEDC.allCharts[i].render();
 	};
 }
 
+/*base object whose methods are inherited by each implementation
+* the properties of a chart are given by a function chain
+*/
 THREEDC.baseChart = function (_chart) {
 
 	_chart.chartParts=[];
 
     _chart.render=function() {
     	//defined by each implementation
-    	_chart.buildChart();
+    	_chart.build();
     	for (var i = 0; i < _chart.chartParts.length; i++) {
     		scene.add(_chart.chartParts[i]);
     	};
@@ -24,19 +26,19 @@ THREEDC.baseChart = function (_chart) {
 
     _chart.group= function (group) {
     	if(!arguments.length){
-    		return _group;
+    		console.log('argument needed');
+    		return;
     	}
     	_chart._group=group;
-    	console.log("1111");
     	return _chart;
     }
 
     _chart.dimension= function (dimension) {
     	if(!arguments.length){
-    		return _dimension;
+    		console.log('argument needed');
+    		return;
     	}
     	_chart._dimension=dimension;
-    	console.log("2222");
     	return _chart;
     }
 
@@ -47,22 +49,25 @@ THREEDC.pieChart = function (coords) {
 
 	this.coords=coords;
 
-	var _dimension;
-	var _group;
-
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
+	//by default
+	var _radius=50;
+	var _chart = THREEDC.baseChart({});
 
-	var _chartParts=[];
+	THREEDC.allCharts.push(_chart);
 
-	_allCharts.push(this);
+	_chart.radius=function(radius){
+		_radius=radius;
+		return _chart;
 
-    function buildChart () {
-   	    var valTotal=_dimension.top(Infinity).length;
-		var pieRadius=50;
+	}
+
+    _chart.build=function () {
+   	    var valTotal=_chart._dimension.top(Infinity).length;
 		var angPrev=0;
 		var angToMove=0;
 
-	   if(_group===undefined){
+	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
@@ -70,16 +75,16 @@ THREEDC.pieChart = function (coords) {
 	   	coords=[0,0,0];
 	   }
 
-		_group.top(Infinity).forEach(function(p,i) {
+		_chart._group.top(Infinity).forEach(function(p,i) {
 				if(p.value){
 				var hex_color=get_random_color();
 				var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
 				var material = new THREE.MeshPhongMaterial();
-				// Creats the shape, based on the value and the radius
+				// Creats the shape, based on the value and the _radius
 				var shape = new THREE.Shape();
 				var angToMove = (Math.PI*2*(p.value/valTotal));
 				shape.moveTo(0,0);
-				shape.arc(0,0,pieRadius,angPrev,
+				shape.arc(0,0,_radius,angPrev,
 				        angPrev+angToMove,false);
 				shape.lineTo(0,0);
 				var nextAng = angPrev + angToMove;
@@ -95,52 +100,30 @@ THREEDC.pieChart = function (coords) {
 					org:p.key,
 					commits:p.value
 				}
-				_chartParts.push(pieobj);
+				_chart.chartParts.push(pieobj);
 				angPrev=nextAng;
 			}
 		});
     }
 
-    this.group= function (group) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_group=group;
-    	return this;
-    }
-
-    this.dimension= function (dimension) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_dimension=dimension;
-    	return this;
-    }
-    this.render=function() {
-    	buildChart();
-    	for (var i = 0; i < _chartParts.length; i++) {
-    		scene.add(_chartParts[i]);
-    	};
-    }
+	return _chart;
 }
 
 THREEDC.barsChart = function (coords){
 
 	this.coords=coords;
 
-	var _chartParts=[];
-	var _dimension;
-	var _group;
+	var _chart = THREEDC.baseChart({});
 
-	_allCharts.push(this);
-	
-	function buildChart () {
+	THREEDC.allCharts.push(_chart);
+
+	_chart.build = function() {
 	   	
 	   var z=1;
 	   var y=0;
 	   var x=1;
 
-	   if(_group===undefined){
+	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
@@ -148,10 +131,9 @@ THREEDC.barsChart = function (coords){
 	   	coords=[0,0,0];
 	   }
 
-	   _group.top(Infinity).forEach(function(p,i) {
+	   _chart._group.top(Infinity).forEach(function(p,i) {
 	      //commit values are normalized to optimal visualization(/10)
 	      if(p.value){
-	      	console.log(p.value);
 	 		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
 			y=p.value/10/2;
 			var origin_color=0x0000ff;
@@ -164,48 +146,26 @@ THREEDC.barsChart = function (coords){
 				month:p.key,
 				commits:p.value
 			};
-			_chartParts.push(cube);
+			_chart.chartParts.push(cube);
 			x+=1;
 		   }
 		});
     }
 
-    this.group= function (group) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_group=group;
-    	return this;
-    }
-
-    this.dimension= function (dimension) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_dimension=dimension;
-    	return this;
-    }
-
-    this.render=function() {
-    	buildChart();
-    	for (var i = 0; i < _chartParts.length; i++) {
-    		scene.add(_chartParts[i]);
-    	};
-    }
+    return _chart;
 }
 
-THREEDC.lineChart= function (coords) {
+THREEDC.simpleLineChart= function (coords) {
+
 	this.coords=coords;
 
-	var _chartParts=[];
-	var _dimension;
-	var _group;
+	var _chart = THREEDC.baseChart({});
 
-	_allCharts.push(this);
-	
-	function buildChart () {
+	THREEDC.allCharts.push(_chart);
+
+	_chart.build = function() {
 	   	
-	   if(_group===undefined){
+	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
@@ -217,7 +177,7 @@ THREEDC.lineChart= function (coords) {
 		chartShape.moveTo( 0,0 );
 		var x=0;
 
-	   _group.top(Infinity).forEach(function(p,i) {
+	   _chart._group.top(Infinity).forEach(function(p,i) {
 			chartShape.lineTo( x, p.value/10 );
 			x+=1.5;
 		});
@@ -239,37 +199,65 @@ THREEDC.lineChart= function (coords) {
 
     }
 
-    this.group= function (group) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_group=group;
-    	return this;
+    return _chart;
+
+}
+
+THREEDC.lineChart= function (coords) {
+
+	this.coords=coords;
+
+	var _chart = THREEDC.baseChart({});
+
+	THREEDC.allCharts.push(_chart);
+
+	_chart.build = function() {
+	   	
+	   if(_chart._group===undefined){
+	   	console.log('You must define a group for this chart');
+	   	return;
+	   }
+	   if(coords==undefined){
+	   	coords=[0,0,0];
+	   }
+
+		var chartShape = new THREE.Shape();
+		chartShape.moveTo( 0,0 );
+		var x=0;
+
+	   _chart._group.top(Infinity).forEach(function(p,i) {
+			chartShape.lineTo( x, p.value/10 );
+			x+=1.5;
+		});
+		chartShape.lineTo( x, 0 );
+		chartShape.lineTo( 0, 0 );
+
+		var extrusionSettings = {
+			size: 30, height: 4, curveSegments: 3,
+			bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+			material: 0, extrudeMaterial: 1
+		};
+
+		var chartGeometry = new THREE.ExtrudeGeometry( chartShape, extrusionSettings );
+		var materialSide = new THREE.MeshLambertMaterial( { color: 0x0000ff } );
+  		var extrudeChart = new THREE.Mesh( chartGeometry, materialSide );
+
+		extrudeChart.position.set(coords[0],coords[1],coords[2]);
+		scene.add(extrudeChart);
+
     }
 
-    this.dimension= function (dimension) {
-    	if(!arguments.length){
-    		return _group;
-    	}
-    	_dimension=dimension;
-    	return this;
-    }
+    return _chart;
 
-    this.render=function() {
-    	buildChart();
-    	for (var i = 0; i < _chartParts.length; i++) {
-    		scene.add(_chartParts[i]);
-    	};
-    }
 }
 
 THREEDC.bubbleChart= function (coords) {
 
 	var _chart = THREEDC.baseChart({});
 
-	_allCharts.push(_chart);
+	THREEDC.allCharts.push(_chart);
 
-	_chart.buildChart= function () {
+	_chart.build= function () {
 
 		var x=0;
 		var y=0;
@@ -284,7 +272,6 @@ THREEDC.bubbleChart= function (coords) {
 	   }
 	   
 		_chart._group.top(Infinity).forEach(function(p,i) {
-			console.log('key:'+p.key+' value: '+p.value);
 			var geometry = new THREE.SphereGeometry(p.value/100,32,32);
 			var material = new THREE.MeshLambertMaterial( {} );
 			material.color.setHex( Math.random() * 0xffffff );
