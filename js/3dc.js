@@ -1,6 +1,7 @@
 var THREEDC={
 	version:'0.1-a',
-	allCharts:[]
+	allCharts:[],
+	labelobj:{}
 };
 
 THREEDC.renderAll=function() {
@@ -12,9 +13,10 @@ THREEDC.renderAll=function() {
 /*base object whose methods are inherited by each implementation
 * the properties of a chart are given by a function chain
 */
-THREEDC.baseChart = function (_chart) {
-
-	_chart.chartParts=[];
+THREEDC.baseMixin = function (_chart) {
+	_chart={chartParts:[],
+			width:100,
+			height:100};
 
     _chart.render=function() {
     	//defined by each implementation
@@ -42,6 +44,24 @@ THREEDC.baseChart = function (_chart) {
     	return _chart;
     }
 
+    _chart.width=function(width){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._witdth=width;
+    	return _chart;
+    }
+
+    _chart.height=function(height){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._height=height;
+    	return _chart;
+    }
+
     return _chart;
 }
 
@@ -52,14 +72,13 @@ THREEDC.pieChart = function (coords) {
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 	//by default
 	var _radius=50;
-	var _chart = THREEDC.baseChart({});
+	var _chart = THREEDC.baseMixin({});
 
 	THREEDC.allCharts.push(_chart);
 
 	_chart.radius=function(radius){
 		_radius=radius;
 		return _chart;
-
 	}
 
     _chart.build=function () {
@@ -93,6 +112,7 @@ THREEDC.pieChart = function (coords) {
 				var pieobj = new THREE.Mesh( geometry, material );
 				pieobj.material.color.setHex(origin_color);
 				pieobj.origin_color=origin_color;
+				pieobj.height=_radius;
 				pieobj.rotation.set(0,0,0);
 				pieobj.position.set(coords[0],coords[1],coords[2]);
 				pieobj.name = "Commits:"+p.value+" Org:"+p.key;
@@ -100,6 +120,7 @@ THREEDC.pieChart = function (coords) {
 					org:p.key,
 					commits:p.value
 				}
+				showInfo(pieobj);
 				_chart.chartParts.push(pieobj);
 				angPrev=nextAng;
 			}
@@ -113,7 +134,7 @@ THREEDC.barsChart = function (coords){
 
 	this.coords=coords;
 
-	var _chart = THREEDC.baseChart({});
+	var _chart = THREEDC.baseMixin({});
 
 	THREEDC.allCharts.push(_chart);
 
@@ -159,7 +180,7 @@ THREEDC.simpleLineChart= function (coords) {
 
 	this.coords=coords;
 
-	var _chart = THREEDC.baseChart({});
+	var _chart = THREEDC.baseMixin({});
 
 	THREEDC.allCharts.push(_chart);
 
@@ -207,7 +228,7 @@ THREEDC.lineChart= function (coords) {
 
 	this.coords=coords;
 
-	var _chart = THREEDC.baseChart({});
+	var _chart = THREEDC.baseMixin({});
 
 	THREEDC.allCharts.push(_chart);
 
@@ -253,7 +274,7 @@ THREEDC.lineChart= function (coords) {
 
 THREEDC.bubbleChart= function (coords) {
 
-	var _chart = THREEDC.baseChart({});
+	var _chart = THREEDC.baseMixin({});
 
 	THREEDC.allCharts.push(_chart);
 
@@ -305,7 +326,7 @@ function decimalToHexString(number)
 
 function showInfo (mesh) {
 
-	  scene.remove(labelobj);
+	  scene.remove(THREEDC.labelobj);
       var txt = mesh.name;
       var curveSeg = 3;
       var material = new THREE.MeshPhongMaterial( {color:0xf3860a,shading: THREE.FlatShading } );
@@ -321,11 +342,11 @@ function showInfo (mesh) {
         bevelEnabled: false
       });
       // Positions the text and adds it to the scene
-      labelobj = new THREE.Mesh( geometry, material );
-      labelobj.position.z = mesh.position.z;
-      labelobj.position.x = mesh.position.x-25;
-      labelobj.position.y = mesh.position.y+60;
+      THREEDC.labelobj = new THREE.Mesh( geometry, material );
+      THREEDC.labelobj.position.z = mesh.position.z;
+      THREEDC.labelobj.position.x = mesh.position.x-mesh.height/2;
+      THREEDC.labelobj.position.y = mesh.position.y+mesh.height+5;
       //labelobj.rotation.set(3*Math.PI/2,0,0);
-      scene.add(labelobj );
+      scene.add(THREEDC.labelobj);
 }
 
