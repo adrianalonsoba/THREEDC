@@ -115,7 +115,7 @@ THREEDC.pieChart = function (coords) {
 				pieobj.height=_radius;
 				pieobj.rotation.set(0,0,0);
 				pieobj.position.set(coords[0],coords[1],coords[2]);
-				pieobj.name = "Commits:"+p.value+" Org:"+p.key;
+				pieobj.name = name = "key:"+p.key+" value"+p.value;
 				pieobj.info={
 					org:p.key,
 					commits:p.value
@@ -140,10 +140,6 @@ THREEDC.barsChart = function (coords){
 
 	_chart.build = function() {
 	   	
-	   var z=1;
-	   var y=0;
-	   var x=1;
-
 	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
@@ -152,25 +148,35 @@ THREEDC.barsChart = function (coords){
 	   	coords=[0,0,0];
 	   }
 
+	   var numberOfValues=_chart._group.top(Infinity).length;
+
+	   var cubeWidth=_chart._witdth/numberOfValues;
+
+	   console.log(cubeWidth);
+
+	   var y;
+	   var x=cubeWidth;
+
 	   _chart._group.top(Infinity).forEach(function(p,i) {
 	      //commit values are normalized to optimal visualization(/10)
 	      if(p.value){
-	 		var geometry = new THREE.CubeGeometry( 1, p.value/10, 10);
+	 		var geometry = new THREE.CubeGeometry( cubeWidth, p.value/10, 10); //funcion de height
 			y=p.value/10/2;
 			var origin_color=0x0000ff;
 			var material = new THREE.MeshLambertMaterial( {color: origin_color} );
 			var cube = new THREE.Mesh(geometry, material);
 			cube.origin_color=origin_color;
-			cube.position.set(x+coords[0],y+coords[1],z+coords[2]);
-			cube.name = "Commits:"+p.value+" "+p.key;
+			cube.position.set(x+coords[0],y+coords[1],coords[2]);
+			cube.name = "key:"+p.key+" value"+p.value;
 			cube.info={
 				month:p.key,
 				commits:p.value
 			};
 			_chart.chartParts.push(cube);
-			x+=1;
+			x+=cubeWidth;
 		   }
 		});
+
     }
 
     return _chart;

@@ -232,10 +232,20 @@ function init () {
   line.group(groupByMonth);
 
 */
-  var pie2= new THREEDC.pieChart([100,50,50]);
-  pie2.group(groupByOrg)
-     .dimension(dimByOrg)
-     .radius(100);
+
+  var bars =  THREEDC.barsChart([0,0,50]);
+  bars.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(100)
+      .height(100);
+
+  var bars =  THREEDC.barsChart([0,0,0]);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(100)
+      .height(100);
+
+
 
   THREEDC.renderAll();
 
