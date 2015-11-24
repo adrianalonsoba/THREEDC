@@ -236,16 +236,14 @@ function init () {
   var bars =  THREEDC.barsChart([0,0,50]);
   bars.group(groupByMonth)
       .dimension(dimByMonth)
-      .width(100)
-      .height(100);
+      .width(200)
+      .height(200);
 
   var bars =  THREEDC.barsChart([0,0,0]);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .width(100)
-      .height(100);
-
-
+      .height(200);
 
   THREEDC.renderAll();
 

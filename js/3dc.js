@@ -150,18 +150,20 @@ THREEDC.barsChart = function (coords){
 
 	   var numberOfValues=_chart._group.top(Infinity).length;
 
+	   var topValue=_chart._group.top(1)[0].value;
+
 	   var cubeWidth=_chart._witdth/numberOfValues;
 
 	   console.log(cubeWidth);
 
 	   var y;
-	   var x=cubeWidth;
+	   var x=0;
 
 	   _chart._group.top(Infinity).forEach(function(p,i) {
-	      //commit values are normalized to optimal visualization(/10)
 	      if(p.value){
-	 		var geometry = new THREE.CubeGeometry( cubeWidth, p.value/10, 10); //funcion de height
-			y=p.value/10/2;
+	      	var cubeHeight=(_chart._height*p.value)/topValue;
+	 		var geometry = new THREE.CubeGeometry( cubeWidth, cubeHeight, 10);
+			y=cubeHeight/2;
 			var origin_color=0x0000ff;
 			var material = new THREE.MeshLambertMaterial( {color: origin_color} );
 			var cube = new THREE.Mesh(geometry, material);
@@ -176,7 +178,6 @@ THREEDC.barsChart = function (coords){
 			x+=cubeWidth;
 		   }
 		});
-
     }
 
     return _chart;
@@ -355,4 +356,3 @@ function showInfo (mesh) {
       //labelobj.rotation.set(3*Math.PI/2,0,0);
       scene.add(THREEDC.labelobj);
 }
-
