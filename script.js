@@ -231,21 +231,29 @@ function init () {
     var line = new THREEDC.lineChart([+150,-50,50]);
   line.group(groupByMonth);
 
+
 */
 
-  var bars =  THREEDC.barsChart([0,0,50]);
-  bars.group(groupByMonth)
+  var bars1 =  THREEDC.barsChart([50,50,50]);
+  bars1.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200);
 
-  var bars =  THREEDC.barsChart([0,0,0]);
-  bars.group(groupByOrg)
+
+
+  var bars2 =  THREEDC.barsChart([0,0,0]);
+  bars2.group(groupByOrg)
       .dimension(dimByOrg)
-      .width(100)
+      .width(200)
       .height(200);
 
-  THREEDC.renderAll();
+  var pie= new THREEDC.pieChart([-200,0,0]);
+  pie.group(groupByOrg)
+     .radius(100)
+     .dimension(dimByOrg);
+
+THREEDC.renderAll();
 
 
 }

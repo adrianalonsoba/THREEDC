@@ -1,7 +1,7 @@
 var THREEDC={
 	version:'0.1-a',
 	allCharts:[],
-	labelobj:{}
+	textLabel:{},
 };
 
 THREEDC.renderAll=function() {
@@ -14,16 +14,67 @@ THREEDC.renderAll=function() {
 * the properties of a chart are given by a function chain
 */
 THREEDC.baseMixin = function (_chart) {
-	_chart={chartParts:[],
-			width:100,
-			height:100};
+	_chart={parts:[],
+			_width:100,
+			_height:100};
 
     _chart.render=function() {
     	//defined by each implementation
     	_chart.build();
-    	for (var i = 0; i < _chart.chartParts.length; i++) {
-    		scene.add(_chart.chartParts[i]);
+    	for (var i = 0; i < _chart.parts.length; i++) {
+    		scene.add(_chart.parts[i]);
     	};
+    }
+
+    _chart.addEvents=function(){
+    	for (var i = 0; i < _chart.parts.length; i++) {
+    		addEvents(_chart.parts[i]);
+    	};
+
+		function addEvents (mesh) {
+
+			//adds mouseover events
+			domEvents.bind(mesh, 'mouseover', function(object3d){ 
+				changeMeshColor(mesh);
+				showInfo(mesh);
+			});
+			//adds mouseout events
+			domEvents.bind(mesh, 'mouseout', function(object3d){ 
+				mesh.material.color.setHex(mesh.origin_color);
+			});	
+
+			function showInfo (mesh) {
+				  console.log(mesh.name);
+				  scene.remove(THREEDC.textLabel);
+			      var txt = mesh.name;
+			      var curveSeg = 3;
+			      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,shading: THREE.FlatShading } );
+			      
+			      // Create a three.js text geometry
+			      var geometry = new THREE.TextGeometry( txt, {
+			        size: 8,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			      });
+			      // Positions the text and adds it to the scene
+			      THREEDC.textLabel = new THREE.Mesh( geometry, material );
+			      THREEDC.textLabel.position.z = mesh.position.z;
+			      THREEDC.textLabel.position.x = _chart._width/2+_chart.coords[0];
+			      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords[1];
+			      //textLabel.rotation.set(3*Math.PI/2,0,0);
+			      console.log(_chart._width/2);
+
+			      scene.add(THREEDC.textLabel);
+			}
+
+			function changeMeshColor (mesh) {
+			  mesh.material.color.setHex(0xffff00);
+			}
+		}
     }
 
     _chart.group= function (group) {
@@ -49,7 +100,7 @@ THREEDC.baseMixin = function (_chart) {
     		console.log('argument needed');
     		return;
     	}
-    	_chart._witdth=width;
+    	_chart._width=width;
     	return _chart;
     }
 
@@ -67,17 +118,21 @@ THREEDC.baseMixin = function (_chart) {
 
 THREEDC.pieChart = function (coords) {
 
-	this.coords=coords;
-
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 	//by default
 	var _radius=50;
 	var _chart = THREEDC.baseMixin({});
+	_chart.coords=coords;
+	_chart._width=_radius;
+	_chart._height=_radius;
+	
 
 	THREEDC.allCharts.push(_chart);
 
 	_chart.radius=function(radius){
 		_radius=radius;
+		_chart._width=radius;
+		_chart._height=radius;
 		return _chart;
 	}
 
@@ -115,16 +170,16 @@ THREEDC.pieChart = function (coords) {
 				pieobj.height=_radius;
 				pieobj.rotation.set(0,0,0);
 				pieobj.position.set(coords[0],coords[1],coords[2]);
-				pieobj.name = name = "key:"+p.key+" value"+p.value;
+				pieobj.name ="key:"+p.key+" value"+p.value;
 				pieobj.info={
 					org:p.key,
 					commits:p.value
 				}
-				showInfo(pieobj);
-				_chart.chartParts.push(pieobj);
+				_chart.parts.push(pieobj);
 				angPrev=nextAng;
 			}
 		});
+		_chart.addEvents();
     }
 
 	return _chart;
@@ -132,9 +187,9 @@ THREEDC.pieChart = function (coords) {
 
 THREEDC.barsChart = function (coords){
 
-	this.coords=coords;
 
 	var _chart = THREEDC.baseMixin({});
+	_chart.coords=coords;
 
 	THREEDC.allCharts.push(_chart);
 
@@ -152,7 +207,7 @@ THREEDC.barsChart = function (coords){
 
 	   var topValue=_chart._group.top(1)[0].value;
 
-	   var cubeWidth=_chart._witdth/numberOfValues;
+	   var cubeWidth=_chart._width/numberOfValues;
 
 	   console.log(cubeWidth);
 
@@ -174,12 +229,14 @@ THREEDC.barsChart = function (coords){
 				month:p.key,
 				commits:p.value
 			};
-			_chart.chartParts.push(cube);
+			//addEvents(cube);
+			_chart.parts.push(cube);
 			x+=cubeWidth;
 		   }
 		});
+	    _chart.addEvents();
     }
-
+   
     return _chart;
 }
 
@@ -306,7 +363,7 @@ THREEDC.bubbleChart= function (coords) {
 			var sphere = new THREE.Mesh( geometry, material );
 
 			sphere.position.set(x+coords[0],y+coords[1],z+coords[2]);
-			_chart.chartParts.push(sphere);
+			_chart.parts.push(sphere);
 			x+=100;
 		});
 	}
@@ -331,28 +388,3 @@ function decimalToHexString(number)
     return number.toString(16).toUpperCase();
 }
 
-function showInfo (mesh) {
-
-	  scene.remove(THREEDC.labelobj);
-      var txt = mesh.name;
-      var curveSeg = 3;
-      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,shading: THREE.FlatShading } );
-      
-      // Create a three.js text geometry
-      var geometry = new THREE.TextGeometry( txt, {
-        size: 8,
-        height: 2,
-        curveSegments: 3,
-        font: "helvetiker",
-        weight: "bold",
-        style: "normal",
-        bevelEnabled: false
-      });
-      // Positions the text and adds it to the scene
-      THREEDC.labelobj = new THREE.Mesh( geometry, material );
-      THREEDC.labelobj.position.z = mesh.position.z;
-      THREEDC.labelobj.position.x = mesh.position.x-mesh.height/2;
-      THREEDC.labelobj.position.y = mesh.position.y+mesh.height+5;
-      //labelobj.rotation.set(3*Math.PI/2,0,0);
-      scene.add(THREEDC.labelobj);
-}
