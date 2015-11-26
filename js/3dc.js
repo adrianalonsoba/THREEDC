@@ -40,17 +40,17 @@ THREEDC.baseMixin = function (_chart) {
 			});
 			//adds mouseout events
 			domEvents.bind(mesh, 'mouseout', function(object3d){ 
+				//restores the original color
 				mesh.material.emissive.setHex(mesh.currentHex);
 			});	
 
+			//creates a 3D text label
 			function showInfo (mesh) {
-				  console.log(mesh.name);
 				  scene.remove(THREEDC.textLabel);
 			      var txt = mesh.name;
 			      var curveSeg = 3;
 			      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,shading: THREE.FlatShading } );
 			      
-			      // Create a three.js text geometry
 			      var geometry = new THREE.TextGeometry( txt, {
 			        size: 8,
 			        height: 2,
@@ -63,11 +63,9 @@ THREEDC.baseMixin = function (_chart) {
 			      // Positions the text and adds it to the scene
 			      THREEDC.textLabel = new THREE.Mesh( geometry, material );
 			      THREEDC.textLabel.position.z = mesh.position.z;
-			      THREEDC.textLabel.position.x = _chart._width/2+_chart.coords[0];
+			      THREEDC.textLabel.position.x = _chart.coords[0];
 			      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords[1];
 			      //textLabel.rotation.set(3*Math.PI/2,0,0);
-			      console.log(_chart._width/2);
-
 			      scene.add(THREEDC.textLabel);
 			}
 
@@ -153,10 +151,16 @@ THREEDC.pieChart = function (coords) {
 
 		_chart._group.top(Infinity).forEach(function(p,i) {
 				if(p.value){
-				var hex_color=get_random_color();
-				var origin_color='0x'+decimalToHexString(hex_color.slice(1,hex_color.length));
-				var material = new THREE.MeshPhongMaterial();
-				// Creats the shape, based on the value and the _radius
+				var origin_color=Math.random() * 0xffffff
+   		        var material = new THREE.MeshPhongMaterial( {
+                                                	        color: origin_color,
+                                                	        specular: 0x999999,
+                                                	        shininess: 100,
+                                                	        shading : THREE.SmoothShading,
+                                                   	 		 opacity:0.8,
+                                               				 transparent: true
+                                                } );				
+                 // Creats the shape, based on the value and the _radius
 				var shape = new THREE.Shape();
 				var angToMove = (Math.PI*2*(p.value/valTotal));
 				shape.moveTo(0,0);
@@ -166,18 +170,17 @@ THREEDC.pieChart = function (coords) {
 				var nextAng = angPrev + angToMove;
 
 				var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
-				var pieobj = new THREE.Mesh( geometry, material );
-				pieobj.material.color.setHex(origin_color);
-				pieobj.origin_color=origin_color;
-				pieobj.height=_radius;
-				pieobj.rotation.set(0,0,0);
-				pieobj.position.set(coords[0],coords[1],coords[2]);
-				pieobj.name ="key:"+p.key+" value"+p.value;
-				pieobj.info={
+				var piePart = new THREE.Mesh( geometry, material );
+				piePart.material.color.setHex(origin_color);
+				piePart.origin_color=origin_color;
+				piePart.rotation.set(0,0,0);
+				piePart.position.set(coords[0],coords[1],coords[2]);
+				piePart.name ="key:"+p.key+" value"+p.value;
+				piePart.info={
 					org:p.key,
 					commits:p.value
 				}
-				_chart.parts.push(pieobj);
+				_chart.parts.push(piePart);
 				angPrev=nextAng;
 			}
 		});
@@ -211,8 +214,6 @@ THREEDC.barsChart = function (coords){
 
 	   var cubeWidth=_chart._width/numberOfValues;
 
-	   console.log(cubeWidth);
-
 	   var y;
 	   var x=0;
 
@@ -222,7 +223,15 @@ THREEDC.barsChart = function (coords){
 	 		var geometry = new THREE.CubeGeometry( cubeWidth, cubeHeight, 10);
 			y=cubeHeight/2;
 			var origin_color=0x0000ff;
-			var material = new THREE.MeshLambertMaterial( {color: origin_color} );
+			//var material = new THREE.MeshLambertMaterial( {color: origin_color} );
+   		    var material = new THREE.MeshPhongMaterial( {
+                                                	 color: origin_color,
+                                                	 specular: 0x999999,
+                                                	 shininess: 100,
+                                                	 shading : THREE.SmoothShading,
+                                                   	 opacity:0.8,
+                                               		 transparent: true
+                                                } );
 			var cube = new THREE.Mesh(geometry, material);
 			cube.origin_color=origin_color;
 			cube.position.set(x+coords[0],y+coords[1],coords[2]);
