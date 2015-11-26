@@ -40,7 +40,7 @@ THREEDC.baseMixin = function (_chart) {
 			});
 			//adds mouseout events
 			domEvents.bind(mesh, 'mouseout', function(object3d){ 
-				mesh.material.color.setHex(mesh.origin_color);
+				mesh.material.emissive.setHex(mesh.currentHex);
 			});	
 
 			function showInfo (mesh) {
@@ -72,7 +72,9 @@ THREEDC.baseMixin = function (_chart) {
 			}
 
 			function changeMeshColor (mesh) {
-			  mesh.material.color.setHex(0xffff00);
+			 // mesh.material.color.setHex(0xffff00);
+			  mesh.currentHex=mesh.material.emissive.getHex();
+			  mesh.material.emissive.setHex(mesh.origin_color);
 			}
 		}
     }
