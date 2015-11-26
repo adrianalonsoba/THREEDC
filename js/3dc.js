@@ -49,8 +49,12 @@ THREEDC.baseMixin = function (_chart) {
 				  scene.remove(THREEDC.textLabel);
 			      var txt = mesh.name;
 			      var curveSeg = 3;
-			      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,shading: THREE.FlatShading } );
-			      
+			      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,
+			      											   specular: 0x999999,
+                                                	           shininess: 100,
+                                                	           shading : THREE.SmoothShading			      											   
+
+			      } );			                    	      
 			      var geometry = new THREE.TextGeometry( txt, {
 			        size: 8,
 			        height: 2,
