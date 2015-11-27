@@ -233,14 +233,11 @@ function init () {
 
 
 */
-
   var bars1 =  THREEDC.barsChart([50,50,50]);
   bars1.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200);
-
-
 
   var bars2 =  THREEDC.barsChart([0,0,0]);
   bars2.group(groupByOrg)
@@ -248,14 +245,36 @@ function init () {
       .width(200)
       .height(200);
 
+
+
   var pie= new THREEDC.pieChart([-200,0,0]);
   pie.group(groupByOrg)
      .radius(100)
      .dimension(dimByOrg);
+     pie.removeEvents();
 
-THREEDC.renderAll();
+  THREEDC.renderAll();
+  //pie.remove();
 
 
+
+
+/*
+  var geometry = new THREE.CubeGeometry( 100, 100, 100);
+  var material = new THREE.MeshPhongMaterial( {color: 0x0000ff} );
+  var cube = new THREE.Mesh(geometry, material);
+  scene.add(cube);
+domEvents.bind(cube, 'mouseover', function(object3d){ 
+	console.log(11111);
+});
+
+domEvents.bind(cube, 'click', function(object3d){ 
+	domEvents.unbind(cube, 'mouseover', function(object3d){ 
+		console.log(11111);
+	});
+});
+
+*/
 }
 
 function animate()

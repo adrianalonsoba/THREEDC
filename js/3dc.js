@@ -1,5 +1,5 @@
 var THREEDC={
-	version:'0.1-a',
+	version:'0.1-b',
 	allCharts:[],
 	textLabel:{},
 };
@@ -15,6 +15,7 @@ THREEDC.renderAll=function() {
 */
 THREEDC.baseMixin = function (_chart) {
 	_chart={parts:[],
+			//by default
 			_width:100,
 			_height:100};
 
@@ -26,7 +27,34 @@ THREEDC.baseMixin = function (_chart) {
     	};
     }
 
+    _chart.remove=function(){
+    	_chart.removeEvents();
+    	for (var i = 0; i < _chart.parts.length; i++) {
+    		scene.remove(_chart.parts[i]);
+    	};
+    	//eliminar de THREEDC.allCharts
+    	var index = THREEDC.allCharts.indexOf(_chart);
+
+    	THREEDC.allCharts.splice(index, 1);
+
+    }
+
+    _chart.removeEvents=function(){
+
+    	for (var i = 0; i < _chart.parts.length; i++) {
+    		removeEvents(_chart.parts[i]);
+    	};
+
+		function removeEvents(mesh){
+			//removes mouseover events
+			domEvents.unbind(mesh, 'mouseover');
+			domEvents.unbind(mesh, 'mouseout');
+			domEvents.unbind(mesh, 'click');
+		}
+    }
+
     _chart.addEvents=function(){
+
     	for (var i = 0; i < _chart.parts.length; i++) {
     		addEvents(_chart.parts[i]);
     	};
@@ -38,46 +66,59 @@ THREEDC.baseMixin = function (_chart) {
 				changeMeshColor(mesh);
 				showInfo(mesh);
 			});
-			//adds mouseout events
+
 			domEvents.bind(mesh, 'mouseout', function(object3d){ 
 				//restores the original color
 				mesh.material.emissive.setHex(mesh.currentHex);
-			});	
+			});
 
-			//creates a 3D text label
-			function showInfo (mesh) {
-				  scene.remove(THREEDC.textLabel);
-			      var txt = mesh.name;
-			      var curveSeg = 3;
-			      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,
-			      											   specular: 0x999999,
-                                                	           shininess: 100,
-                                                	           shading : THREE.SmoothShading			      											   
+			domEvents.bind(mesh, 'click', function(object3d){ 
+				_chart.removeEvents();
+				//addFilter()
+			});
+		}
 
-			      } );			                    	      
-			      var geometry = new THREE.TextGeometry( txt, {
-			        size: 8,
-			        height: 2,
-			        curveSegments: 3,
-			        font: "helvetiker",
-			        weight: "bold",
-			        style: "normal",
-			        bevelEnabled: false
-			      });
-			      // Positions the text and adds it to the scene
-			      THREEDC.textLabel = new THREE.Mesh( geometry, material );
-			      THREEDC.textLabel.position.z = mesh.position.z;
-			      THREEDC.textLabel.position.x = _chart.coords[0];
-			      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords[1];
-			      //textLabel.rotation.set(3*Math.PI/2,0,0);
-			      scene.add(THREEDC.textLabel);
-			}
+		function addFilter (mesh) {
+			console.log(mesh.data.key);
+			_chart._dimension.filter(mesh.data.key);
+			_chart.removeEvents();
+			//unbind de eventos de charts asociados
+			//quitar charts asociados
+			//repintar charts asociados
+		}	
 
-			function changeMeshColor (mesh) {
-			 // mesh.material.color.setHex(0xffff00);
-			  mesh.currentHex=mesh.material.emissive.getHex();
-			  mesh.material.emissive.setHex(mesh.origin_color);
-			}
+		//creates a 3D text label
+		function showInfo (mesh) {
+			  scene.remove(THREEDC.textLabel);
+		      var txt = mesh.name;
+		      var curveSeg = 3;
+		      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,
+		      											   specular: 0x999999,
+                                            	           shininess: 100,
+                                            	           shading : THREE.SmoothShading			      											   
+		      } );			                    	      
+		      var geometry = new THREE.TextGeometry( txt, {
+		        size: 8,
+		        height: 2,
+		        curveSegments: 3,
+		        font: "helvetiker",
+		        weight: "bold",
+		        style: "normal",
+		        bevelEnabled: false
+		      });
+		      // Positions the text and adds it to the scene
+		      THREEDC.textLabel = new THREE.Mesh( geometry, material );
+		      THREEDC.textLabel.position.z = mesh.position.z;
+		      THREEDC.textLabel.position.x = _chart.coords[0];
+		      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords[1];
+		      //textLabel.rotation.set(3*Math.PI/2,0,0);
+		      scene.add(THREEDC.textLabel);
+		}
+
+		function changeMeshColor (mesh) {
+		 // mesh.material.color.setHex(0xffff00);
+		  mesh.currentHex=mesh.material.emissive.getHex();
+		  mesh.material.emissive.setHex(mesh.origin_color);
 		}
     }
 
@@ -156,14 +197,13 @@ THREEDC.pieChart = function (coords) {
 		_chart._group.top(Infinity).forEach(function(p,i) {
 				if(p.value){
 				var origin_color=Math.random() * 0xffffff
-   		        var material = new THREE.MeshPhongMaterial( {
-                                                	        color: origin_color,
+   		        var material = new THREE.MeshPhongMaterial( {color: origin_color,
                                                 	        specular: 0x999999,
                                                 	        shininess: 100,
                                                 	        shading : THREE.SmoothShading,
-                                                   	 		 opacity:0.8,
-                                               				 transparent: true
-                                                } );				
+                                                   	 		opacity:0.8,
+                                               				transparent: true
+                } );				
                  // Creats the shape, based on the value and the _radius
 				var shape = new THREE.Shape();
 				var angToMove = (Math.PI*2*(p.value/valTotal));
@@ -177,12 +217,12 @@ THREEDC.pieChart = function (coords) {
 				var piePart = new THREE.Mesh( geometry, material );
 				piePart.material.color.setHex(origin_color);
 				piePart.origin_color=origin_color;
-				piePart.rotation.set(0,0,0);
+				//piePart.rotation.set(0,0,0);
 				piePart.position.set(coords[0],coords[1],coords[2]);
-				piePart.name ="key:"+p.key+" value"+p.value;
-				piePart.info={
-					org:p.key,
-					commits:p.value
+				piePart.name ="key:"+p.key+" value:"+p.value;
+				piePart.data={
+					key:p.key,
+					value:p.value
 				}
 				_chart.parts.push(piePart);
 				angPrev=nextAng;
@@ -216,37 +256,34 @@ THREEDC.barsChart = function (coords){
 
 	   var topValue=_chart._group.top(1)[0].value;
 
-	   var cubeWidth=_chart._width/numberOfValues;
+	   var barWidth=_chart._width/numberOfValues;
 
 	   var y;
 	   var x=0;
 
 	   _chart._group.top(Infinity).forEach(function(p,i) {
 	      if(p.value){
-	      	var cubeHeight=(_chart._height*p.value)/topValue;
-	 		var geometry = new THREE.CubeGeometry( cubeWidth, cubeHeight, 10);
-			y=cubeHeight/2;
+	      	var barHeight=(_chart._height*p.value)/topValue;
+	 		var geometry = new THREE.CubeGeometry( barWidth, barHeight, 5);
+			y=barHeight/2;
 			var origin_color=0x0000ff;
-			//var material = new THREE.MeshLambertMaterial( {color: origin_color} );
-   		    var material = new THREE.MeshPhongMaterial( {
-                                                	 color: origin_color,
-                                                	 specular: 0x999999,
-                                                	 shininess: 100,
-                                                	 shading : THREE.SmoothShading,
-                                                   	 opacity:0.8,
-                                               		 transparent: true
-                                                } );
-			var cube = new THREE.Mesh(geometry, material);
-			cube.origin_color=origin_color;
-			cube.position.set(x+coords[0],y+coords[1],coords[2]);
-			cube.name = "key:"+p.key+" value"+p.value;
-			cube.info={
-				month:p.key,
-				commits:p.value
+   		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
+                                                	     specular: 0x999999,
+                                                	     shininess: 100,
+                                                	     shading : THREE.SmoothShading,
+                                                   	     opacity:0.8,
+                                               		     transparent: true
+            } );
+			var bar = new THREE.Mesh(geometry, material);
+			bar.origin_color=origin_color;
+			bar.position.set(x+coords[0],y+coords[1],coords[2]);
+			bar.name = "key:"+p.key+" value: "+p.value;
+			bar.data={
+				key:p.key,
+				value:p.value
 			};
-			//addEvents(cube);
-			_chart.parts.push(cube);
-			x+=cubeWidth;
+			_chart.parts.push(bar);
+			x+=barWidth;
 		   }
 		});
 	    _chart.addEvents();
