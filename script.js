@@ -251,10 +251,13 @@ function init () {
   pie.group(groupByOrg)
      .radius(100)
      .dimension(dimByOrg);
-     pie.removeEvents();
+     //pie.removeEvents();
 
   THREEDC.renderAll();
-  //pie.remove();
+
+  THREEDC.removeAll();
+
+  //pie.removeEvents();
 
 
 

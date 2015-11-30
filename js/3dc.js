@@ -10,6 +10,17 @@ THREEDC.renderAll=function() {
 	};
 }
 
+THREEDC.removeAll=function() {
+	for (var i = 0; i < THREEDC.allCharts.length; i++) {
+		THREEDC.allCharts[i].removeEvents();
+    	for (var j = 0; j < THREEDC.allCharts[i].parts.length; j++) {
+    		scene.remove(THREEDC.allCharts[i].parts[j]);
+    	};
+	};
+	THREEDC.allCharts=[];
+}
+
+
 /*base object whose methods are inherited by each implementation
 * the properties of a chart are given by a function chain
 */
