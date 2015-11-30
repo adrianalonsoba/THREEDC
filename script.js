@@ -41,7 +41,7 @@ var json_data;
 
 // initialization
   //getJSON call, draw meshes with data
-   $.getJSON("../jsons/scm-commits.json", function(data) {
+   $.getJSON("jsons/scm-commits.json", function(data) {
       json_data=data;
       init();
       // animation loop / game loop
