@@ -5,7 +5,7 @@
 
 // standard global variables
 var container, scene, camera, renderer, controls, stats;
-
+var pie;
 // custom global variables
 var projector, mouse = { x: 0, y: 0 };
 var sprite1;
@@ -247,7 +247,7 @@ function init () {
 
 
 
-  var pie= new THREEDC.pieChart([-200,0,0]);
+   pie= new THREEDC.pieChart([-200,0,0]);
   pie.group(groupByOrg)
      .radius(100)
      .dimension(dimByOrg);
@@ -255,7 +255,10 @@ function init () {
 
   THREEDC.renderAll();
 
-  THREEDC.removeAll();
+
+  //pie.reBuild();
+
+  //THREEDC.removeAll();
 
   //pie.removeEvents();
 

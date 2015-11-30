@@ -43,11 +43,18 @@ THREEDC.baseMixin = function (_chart) {
     	for (var i = 0; i < _chart.parts.length; i++) {
     		scene.remove(_chart.parts[i]);
     	};
-    	//eliminar de THREEDC.allCharts
     	var index = THREEDC.allCharts.indexOf(_chart);
 
     	THREEDC.allCharts.splice(index, 1);
+    }
 
+    _chart.reBuild=function(){
+     	_chart.removeEvents();
+    	for (var i = 0; i < _chart.parts.length; i++) {
+    		scene.remove(_chart.parts[i]);
+    	}; 
+    	_chart.parts=[];
+    	_chart.render();
     }
 
     _chart.removeEvents=function(){
@@ -84,18 +91,17 @@ THREEDC.baseMixin = function (_chart) {
 			});
 
 			domEvents.bind(mesh, 'click', function(object3d){ 
-				_chart.removeEvents();
-				//addFilter()
+				addFilter(mesh);
 			});
 		}
 
 		function addFilter (mesh) {
 			console.log(mesh.data.key);
+			_chart._dimension.filterAll();
 			_chart._dimension.filter(mesh.data.key);
-			_chart.removeEvents();
-			//unbind de eventos de charts asociados
-			//quitar charts asociados
-			//repintar charts asociados
+			for (var i = 0; i < THREEDC.allCharts.length; i++) {
+				THREEDC.allCharts[i].reBuild();
+			};
 		}	
 
 		//creates a 3D text label
@@ -206,7 +212,7 @@ THREEDC.pieChart = function (coords) {
 	   }
 
 		_chart._group.top(Infinity).forEach(function(p,i) {
-				if(p.value){
+			if(p.value){
 				var origin_color=Math.random() * 0xffffff
    		        var material = new THREE.MeshPhongMaterial( {color: origin_color,
                                                 	        specular: 0x999999,
@@ -264,6 +270,7 @@ THREEDC.barsChart = function (coords){
 	   }
 
 	   var numberOfValues=_chart._group.top(Infinity).length;
+	   console.log(numberOfValues);
 
 	   var topValue=_chart._group.top(1)[0].value;
 
