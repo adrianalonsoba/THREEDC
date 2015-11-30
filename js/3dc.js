@@ -175,6 +175,15 @@ THREEDC.baseMixin = function (_chart) {
     	return _chart;
     }
 
+    _chart.color= function (color) {
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._color=color;
+    	return _chart;
+    }
+
     return _chart;
 }
 
@@ -256,6 +265,7 @@ THREEDC.barsChart = function (coords){
 
 	var _chart = THREEDC.baseMixin({});
 	_chart.coords=coords;
+	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
 
@@ -284,7 +294,7 @@ THREEDC.barsChart = function (coords){
 	      	var barHeight=(_chart._height*p.value)/topValue;
 	 		var geometry = new THREE.CubeGeometry( barWidth, barHeight, 5);
 			y=barHeight/2;
-			var origin_color=0x0000ff;
+			var origin_color=_chart._color;
    		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
                                                 	     specular: 0x999999,
                                                 	     shininess: 100,

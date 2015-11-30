@@ -115,8 +115,8 @@ function init () {
    ///////////
    // LIGHT //
    ///////////
-   var light = new THREE.PointLight(0xffffff,1);
-   light.position.set(250,250,250);
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(0,100,250);
    scene.add(light);
    var ambientLight = new THREE.AmbientLight(0x111111);
    // scene.add(ambientLight);
@@ -233,28 +233,45 @@ function init () {
 
 
 */
-  var bars1 =  THREEDC.barsChart([50,50,50]);
+  var bars1 =  THREEDC.barsChart([0,0,0]);
   bars1.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200);
 
-  var bars2 =  THREEDC.barsChart([0,0,0]);
+  var bars2 =  THREEDC.barsChart([-50,-220,0]);
   bars2.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
-      .height(200);
+      .height(200)
+      .color(0xff0000);
 
 
 
-   pie= new THREEDC.pieChart([-200,0,0]);
-  pie.group(groupByOrg)
+   pie= new THREEDC.pieChart([-120,100,0]);
+   pie.group(groupByOrg)
      .radius(100)
      .dimension(dimByOrg);
      //pie.removeEvents();
 
   THREEDC.renderAll();
 
+  var geometry = new THREE.CubeGeometry( 500, 500, 2);
+  var origin_color=0x0000ff;
+  var material = new THREE.MeshPhongMaterial( {
+                                               specular: 0x999999,
+                                               shininess: 100,
+                                               shading : THREE.SmoothShading,
+                                               opacity:0.3,
+                                               transparent: true
+    } );
+
+  var bar = new THREE.Mesh(geometry, material);
+  scene.add(bar);
+
+   var gridXY = new THREE.GridHelper(250, 10);
+  gridXY.rotation.x = Math.PI/2;
+  scene.add(gridXY);
 
   //pie.reBuild();
 
