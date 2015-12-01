@@ -20,6 +20,11 @@ THREEDC.removeAll=function() {
 	THREEDC.allCharts=[];
 }
 
+THREEDC.removeEvents=function(){
+	for (var i = 0; i < THREEDC.allCharts.length; i++) {
+		THREEDC.allCharts[i].removeEvents();
+	};	
+}
 
 /*base object whose methods are inherited by each implementation
 * the properties of a chart are given by a function chain
@@ -97,7 +102,7 @@ THREEDC.baseMixin = function (_chart) {
 
 		function addFilter (mesh) {
 			console.log(mesh.data.key);
-			_chart._dimension.filterAll();
+			//_chart._dimension.filterAll();
 			_chart._dimension.filter(mesh.data.key);
 			for (var i = 0; i < THREEDC.allCharts.length; i++) {
 				THREEDC.allCharts[i].reBuild();
