@@ -2,6 +2,7 @@ var THREEDC={
 	version:'0.1-b',
 	allCharts:[],
 	textLabel:{},
+	chartToDrag:{}
 };
 
 THREEDC.renderAll=function() {
@@ -72,7 +73,8 @@ THREEDC.baseMixin = function (_chart) {
 			//removes mouseover events
 			domEvents.unbind(mesh, 'mouseover');
 			domEvents.unbind(mesh, 'mouseout');
-			domEvents.unbind(mesh, 'click');
+		//	domEvents.unbind(mesh, 'click');
+			domEvents.unbind(mesh, 'mousedown');
 		}
     }
 
@@ -95,9 +97,27 @@ THREEDC.baseMixin = function (_chart) {
 				mesh.material.emissive.setHex(mesh.currentHex);
 			});
 
-			domEvents.bind(mesh, 'click', function(object3d){ 
-				addFilter(mesh);
+		//	domEvents.bind(mesh, 'click', function(object3d){ 
+		//		addFilter(mesh);
+		//	});
+
+			domEvents.bind(mesh, 'mousedown', function(object3d){ 
+				console.log('mousedown');
+				controls.enabled=false;
+				if(parameters.activate){
+					container.style.cursor = 'move';
+				}
+				SELECTED=mesh;
+				THREEDC.chartToDrag=_chart;
+			    plane.position.copy( mesh.position );
+			    raycaster.setFromCamera( mouse, camera );
+			    var intersects = raycaster.intersectObject( plane );
+			    if ( intersects.length > 0 ) {
+			      offset.copy( intersects[ 0 ].point ).sub( plane.position );
+			      console.log(offset);
+			    }
 			});
+
 		}
 
 		function addFilter (mesh) {
@@ -131,8 +151,8 @@ THREEDC.baseMixin = function (_chart) {
 		      // Positions the text and adds it to the scene
 		      THREEDC.textLabel = new THREE.Mesh( geometry, material );
 		      THREEDC.textLabel.position.z = mesh.position.z;
-		      THREEDC.textLabel.position.x = _chart.coords[0];
-		      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords[1];
+		      THREEDC.textLabel.position.x = _chart.coords.x;
+		      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
 		      //textLabel.rotation.set(3*Math.PI/2,0,0);
 		      scene.add(THREEDC.textLabel);
 		}
@@ -194,11 +214,15 @@ THREEDC.baseMixin = function (_chart) {
 
 THREEDC.pieChart = function (coords) {
 
+   if(coords==undefined){
+   	coords=[0,0,0];
+   }
+
 	var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
 	//by default
 	var _radius=50;
 	var _chart = THREEDC.baseMixin({});
-	_chart.coords=coords;
+	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	_chart._width=_radius;
 	_chart._height=_radius;
 	
@@ -220,9 +244,6 @@ THREEDC.pieChart = function (coords) {
 	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
-	   }
-	   if(coords==undefined){
-	   	coords=[0,0,0];
 	   }
 
 		_chart._group.top(Infinity).forEach(function(p,i) {
@@ -249,7 +270,7 @@ THREEDC.pieChart = function (coords) {
 				piePart.material.color.setHex(origin_color);
 				piePart.origin_color=origin_color;
 				//piePart.rotation.set(0,0,0);
-				piePart.position.set(coords[0],coords[1],coords[2]);
+				piePart.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z);
 				piePart.name ="key:"+p.key+" value:"+p.value;
 				piePart.data={
 					key:p.key,
@@ -267,21 +288,21 @@ THREEDC.pieChart = function (coords) {
 
 THREEDC.barsChart = function (coords){
 
+   if(coords==undefined){
+   	coords=[0,0,0];
+   }
 
 	var _chart = THREEDC.baseMixin({});
-	_chart.coords=coords;
+	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
 
 	_chart.build = function() {
-	   	
+
 	   if(_chart._group===undefined){
 	   	console.log('You must define a group for this chart');
 	   	return;
-	   }
-	   if(coords==undefined){
-	   	coords=[0,0,0];
 	   }
 
 	   var numberOfValues=_chart._group.top(Infinity).length;
@@ -309,7 +330,7 @@ THREEDC.barsChart = function (coords){
             } );
 			var bar = new THREE.Mesh(geometry, material);
 			bar.origin_color=origin_color;
-			bar.position.set(x+coords[0],y+coords[1],coords[2]);
+			bar.position.set(x+_chart.coords.x,y+_chart.coords.y,_chart.coords.z);
 			bar.name = "key:"+p.key+" value: "+p.value;
 			bar.data={
 				key:p.key,

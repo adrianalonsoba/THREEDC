@@ -135,6 +135,7 @@ function init () {
    //  a set of surface parameters ("material")
 
 
+  window.addEventListener( 'mousemove', onMouseMove, false );
 
 
   var parsed_data=[];
@@ -169,7 +170,7 @@ function init () {
 
   groupByOrg= dimByOrg.group();
 
-
+/*
   var bars1 =  THREEDC.barsChart([0,0,0]);
   bars1.group(groupByMonth)
       .dimension(dimByMonth)
@@ -184,40 +185,114 @@ function init () {
       .color(0xff0000);
 
 
+*/
 
-   pie= new THREEDC.pieChart([-120,100,0]);
+  plane = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
+    new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
+  );
+  plane.rotation.x = Math.PI / 2; //xz plane
+
+
+domEvents.bind(plane, 'mouseup', function(object3d){
+    THREEDC.chartToDrag.reBuild();
+    controls.enabled=true;
+    container.style.cursor = 'auto';
+    SELECTED=null;
+    THREEDC.chartToDrag=null;
+    plane.material.visible=false;
+  });
+
+  scene.add( plane );
+
+
+   pie= new THREEDC.pieChart([0,0,0]);
    pie.group(groupByOrg)
      .radius(100)
      .dimension(dimByOrg);
      //pie.removeEvents();
 
+  var bars2 =  THREEDC.barsChart([-500,0,0]);
+  bars2.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .color(0xff0000);
+
   THREEDC.renderAll();
 
-  var geometry = new THREE.CubeGeometry( 500, 500, 2);
-  var origin_color=0x0000ff;
-  var material = new THREE.MeshPhongMaterial( {
-                                               specular: 0x999999,
-                                               shininess: 100,
-                                               shading : THREE.SmoothShading,
-                                               opacity:0.3,
-                                               transparent: true
-    } );
 
-  var bar = new THREE.Mesh(geometry, material);
-  scene.add(bar);
+  //GUI//
+  var gui = new dat.GUI();
 
-   var gridXY = new THREE.GridHelper(250, 10);
-  gridXY.rotation.x = Math.PI/2;
-  scene.add(gridXY);
+  parameters =
+  {
+    plane:"XZ",
+    activate:true
+  };
 
-  //pie.reBuild();
+  var folder1 = gui.addFolder('Drag');
+  var activateDrag = folder1.add( parameters, 'activate' ).name('On/Off').listen();
+  activateDrag.onChange(function(value) 
+    { dragTrigger(); });
+  var dragChange = folder1.add( parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
+  dragChange.onChange(function(value) 
+  {   changePLane();   });
+  folder1.close();
 
-  //THREEDC.removeAll();
-
-  //pie.removeEvents();
-
+  gui.close();
 
 }
+
+function dragTrigger () {
+  if(parameters.activate){
+    window.addEventListener( 'mousemove', onMouseMove, false );
+  }else{
+    window.removeEventListener( 'mousemove', onMouseMove, false );
+  }
+}
+
+function changePLane () {
+  if (parameters.plane==='XY'){
+    plane.rotation.set(0,0,0); //xy plane
+  }else if(parameters.plane==='XZ'){
+    plane.rotation.x = Math.PI / 2; //xz plane
+  }
+}
+
+function onMouseMove( event ) {
+
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+
+  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
+
+  raycaster.setFromCamera( mouse, camera );
+
+  if(SELECTED){
+    plane.material.visible=true;
+    var intersects = raycaster.intersectObject( plane );
+    if ( intersects.length > 0 ) {
+      //SELECTED.position.copy( intersects[ 0 ].point.sub( offset ) );
+      // AL HACERLO PUNTO A PUNTO SE CREA UN DESPLAZAMIENTO QUE NO PASA CON EL position.copy
+      //SELECTED.position.x=intersects[ 0 ].point.sub( offset ).x;
+      //SELECTED.position.y=intersects[ 0 ].point.sub( offset ).y;
+      //SELECTED.position.z=intersects[ 0 ].point.sub( offset ).z;
+
+     // THREEDC.chartToDrag.coords[0]=intersects[ 0 ].point.sub( offset ).x;
+      //THREEDC.chartToDrag.coords[1]=intersects[ 0 ].point.sub( offset ).y;
+      //THREEDC.chartToDrag.coords[2]=intersects[ 0 ].point.sub( offset ).z;
+      //for (var i = 0; i < THREEDC.chartToDrag.parts.length; i++) {
+        //THREEDC.chartToDrag.parts[i].position.copy(intersects[ 0 ].point.sub( offset ) );
+      //};
+      THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
+      THREEDC.chartToDrag.reBuild();
+    }
+    return;
+  }
+}
+
 
 function animate()
 {
