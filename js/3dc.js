@@ -1,8 +1,8 @@
 var THREEDC={
 	version:'0.1-b',
 	allCharts:[],
-	textLabel:{},
-	chartToDrag:{}
+	textLabel:null,
+	chartToDrag:null
 };
 
 THREEDC.renderAll=function() {
@@ -73,7 +73,7 @@ THREEDC.baseMixin = function (_chart) {
 			//removes mouseover events
 			domEvents.unbind(mesh, 'mouseover');
 			domEvents.unbind(mesh, 'mouseout');
-		//	domEvents.unbind(mesh, 'click');
+			domEvents.unbind(mesh, 'click');
 			domEvents.unbind(mesh, 'mousedown');
 		}
     }
@@ -97,9 +97,9 @@ THREEDC.baseMixin = function (_chart) {
 				mesh.material.emissive.setHex(mesh.currentHex);
 			});
 
-		//	domEvents.bind(mesh, 'click', function(object3d){ 
-		//		addFilter(mesh);
-		//	});
+			domEvents.bind(mesh, 'click', function(object3d){ 
+				addFilter(mesh);
+			});
 
 			domEvents.bind(mesh, 'mousedown', function(object3d){ 
 				console.log('mousedown');
@@ -121,7 +121,7 @@ THREEDC.baseMixin = function (_chart) {
 		}
 
 		function addFilter (mesh) {
-			console.log(mesh.data.key);
+			console.log('click');
 			//_chart._dimension.filterAll();
 			_chart._dimension.filter(mesh.data.key);
 			for (var i = 0; i < THREEDC.allCharts.length; i++) {

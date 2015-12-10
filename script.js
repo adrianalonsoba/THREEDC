@@ -134,10 +134,6 @@ function init () {
    //  a collection of points ("geometry") and
    //  a set of surface parameters ("material")
 
-
-  window.addEventListener( 'mousemove', onMouseMove, false );
-
-
   var parsed_data=[];
 
   // Crossfilter and dc.js format
@@ -193,31 +189,23 @@ function init () {
   );
   plane.rotation.x = Math.PI / 2; //xz plane
 
-
-domEvents.bind(plane, 'mouseup', function(object3d){
-    THREEDC.chartToDrag.reBuild();
-    controls.enabled=true;
-    container.style.cursor = 'auto';
-    SELECTED=null;
-    THREEDC.chartToDrag=null;
-    plane.material.visible=false;
-  });
-
-  scene.add( plane );
-
-
-   pie= new THREEDC.pieChart([0,0,0]);
+   pie= new THREEDC.pieChart([-150,0,0]);
    pie.group(groupByOrg)
      .radius(100)
      .dimension(dimByOrg);
      //pie.removeEvents();
 
-  var bars2 =  THREEDC.barsChart([-500,0,0]);
-  bars2.group(groupByOrg)
-      .dimension(dimByOrg)
+  var bars2 =  THREEDC.barsChart([0,0,0]);
+  bars2.group(groupByMonth)
+      .dimension(dimByMonth)
       .width(200)
       .height(200)
       .color(0xff0000);
+
+  var bars =  THREEDC.barsChart([0,0,100]);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+
 
   THREEDC.renderAll();
 
@@ -228,7 +216,7 @@ domEvents.bind(plane, 'mouseup', function(object3d){
   parameters =
   {
     plane:"XZ",
-    activate:true
+    activate:false
   };
 
   var folder1 = gui.addFolder('Drag');
@@ -246,9 +234,23 @@ domEvents.bind(plane, 'mouseup', function(object3d){
 
 function dragTrigger () {
   if(parameters.activate){
+    scene.add( plane );
+    domEvents.bind(plane, 'mouseup', function(object3d){
+      console.log('mouseup de plano');
+      if(THREEDC.chartToDrag){
+        THREEDC.chartToDrag.reBuild();
+        controls.enabled=true;
+        container.style.cursor = 'auto';
+        SELECTED=null;
+        THREEDC.chartToDrag=null;
+        plane.material.visible=false;
+      }
+    });    
     window.addEventListener( 'mousemove', onMouseMove, false );
   }else{
     window.removeEventListener( 'mousemove', onMouseMove, false );
+    scene.remove( plane );
+    domEvents.unbind(plane, 'mouseup');
   }
 }
 
