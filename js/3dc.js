@@ -102,20 +102,19 @@ THREEDC.baseMixin = function (_chart) {
 			});
 
 			domEvents.bind(mesh, 'mousedown', function(object3d){ 
-				console.log('mousedown');
-				controls.enabled=false;
 				if(parameters.activate){
 					container.style.cursor = 'move';
+					console.log('mousedown');
+					controls.enabled=false;
+					SELECTED=mesh;
+					THREEDC.chartToDrag=_chart;
+				    plane.position.copy( mesh.position );
+				    raycaster.setFromCamera( mouse, camera );
+				    var intersects = raycaster.intersectObject( plane );
+				    if ( intersects.length > 0 ) {
+				      offset.copy( intersects[ 0 ].point ).sub( plane.position );
+				    }
 				}
-				SELECTED=mesh;
-				THREEDC.chartToDrag=_chart;
-			    plane.position.copy( mesh.position );
-			    raycaster.setFromCamera( mouse, camera );
-			    var intersects = raycaster.intersectObject( plane );
-			    if ( intersects.length > 0 ) {
-			      offset.copy( intersects[ 0 ].point ).sub( plane.position );
-			      console.log(offset);
-			    }
 			});
 
 		}
