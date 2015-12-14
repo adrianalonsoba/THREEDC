@@ -395,46 +395,51 @@ THREEDC.simpleLineChart= function (coords) {
 
 THREEDC.lineChart= function (coords) {
 
-	this.coords=coords;
+	if(coords==undefined){
+		coords=[0,0,0];
+	}
 
 	var _chart = THREEDC.baseMixin({});
+	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
 
+	var _data;
+
 	_chart.build = function() {
-	   	
-	   if(_chart._group===undefined){
-	   	console.log('You must define a group for this chart');
-	   	return;
-	   }
-	   if(coords==undefined){
-	   	coords=[0,0,0];
-	   }
 
-		var chartShape = new THREE.Shape();
-		chartShape.moveTo( 0,0 );
 		var x=0;
+	   	_data=_chart._group.top(Infinity);
+	   	for (var i = 0; i < _data.length; i++) {
+	   		if(_data[i+1]){
+	   			var charShape = new THREE.Shape();
+				charShape.moveTo(0,0);
+				charShape.lineTo( 0, _data[i].value/10 );
+				charShape.lineTo( 1.5, _data[i+1].value/10 );
 
-	   _chart._group.top(Infinity).forEach(function(p,i) {
-			chartShape.lineTo( x, p.value/10 );
-			x+=1.5;
-		});
-		chartShape.lineTo( x, 0 );
-		chartShape.lineTo( 0, 0 );
+				charShape.lineTo( 1.5, 0 );
+				charShape.lineTo( 0, 0 );
+				var extrusionSettings = {
+					size: 30, height: 4, curveSegments: 3,
+					bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
+					material: 0, extrudeMaterial: 1
+				};
+				var charGeometry = new THREE.ExtrudeGeometry( charShape, extrusionSettings );
+				var materialSide = new THREE.MeshLambertMaterial( { color: 0x0000ff} );
+				var linePart = new THREE.Mesh( charGeometry, materialSide );
+				linePart.position.set(x+_chart.coords.x,_chart.coords.y,_chart.coords.z);
+				linePart.name="key:"+_data[i].key+" value: "+_data[i].value;
+				linePart.data={
+					key:_data[i].key,
+					value:_data[i].value
+				};
+				x+=1.5;
+				_chart.parts.push(linePart);
+	   		}
+	   	};
 
-		var extrusionSettings = {
-			size: 30, height: 4, curveSegments: 3,
-			bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-			material: 0, extrudeMaterial: 1
-		};
-
-		var chartGeometry = new THREE.ExtrudeGeometry( chartShape, extrusionSettings );
-		var materialSide = new THREE.MeshLambertMaterial( { color: 0x0000ff } );
-  		var extrudeChart = new THREE.Mesh( chartGeometry, materialSide );
-
-		extrudeChart.position.set(coords[0],coords[1],coords[2]);
-		scene.add(extrudeChart);
-
+		_chart.addEvents();
     }
 
     return _chart;

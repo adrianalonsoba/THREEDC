@@ -166,22 +166,6 @@ function init () {
 
   groupByOrg= dimByOrg.group();
 
-/*
-  var bars1 =  THREEDC.barsChart([0,0,0]);
-  bars1.group(groupByMonth)
-      .dimension(dimByMonth)
-      .width(200)
-      .height(200);
-
-  var bars2 =  THREEDC.barsChart([-50,-220,0]);
-  bars2.group(groupByOrg)
-      .dimension(dimByOrg)
-      .width(200)
-      .height(200)
-      .color(0xff0000);
-
-
-*/
 
   plane = new THREE.Mesh(
     new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
@@ -206,6 +190,9 @@ function init () {
   bars.group(groupByOrg)
       .dimension(dimByOrg)
 
+var line =THREEDC.lineChart([100,100,100]);
+    line.dimension(dimByMonth)
+        .group(groupByMonth);
 
   THREEDC.renderAll();
 
