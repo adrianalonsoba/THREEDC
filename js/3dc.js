@@ -305,7 +305,6 @@ THREEDC.barsChart = function (coords){
 	   }
 
 	   var numberOfValues=_chart._group.top(Infinity).length;
-	   console.log(numberOfValues);
 
 	   var topValue=_chart._group.top(1)[0].value;
 
@@ -409,33 +408,58 @@ THREEDC.lineChart= function (coords) {
 
 	_chart.build = function() {
 
-		var x=0;
-	   	_data=_chart._group.top(Infinity);
-	   	for (var i = 0; i < _data.length; i++) {
-	   		if(_data[i+1]){
-	   			var charShape = new THREE.Shape();
-				charShape.moveTo(0,0);
-				charShape.lineTo( 0, _data[i].value/10 );
-				charShape.lineTo( 1.5, _data[i+1].value/10 );
 
-				charShape.lineTo( 1.5, 0 );
-				charShape.lineTo( 0, 0 );
-				var extrusionSettings = {
-					size: 30, height: 4, curveSegments: 3,
-					bevelThickness: 1, bevelSize: 2, bevelEnabled: false,
-					material: 0, extrudeMaterial: 1
-				};
-				var charGeometry = new THREE.ExtrudeGeometry( charShape, extrusionSettings );
-				var materialSide = new THREE.MeshLambertMaterial( { color: 0x0000ff} );
-				var linePart = new THREE.Mesh( charGeometry, materialSide );
+		var topValue=_chart._group.top(1)[0].value;
+
+		var numberOfValues=_chart._group.top(Infinity).length;
+
+		var barWidth=_chart._width/numberOfValues;
+
+		var x=0;
+
+	   	_data=_chart._group.top(Infinity);
+
+	   	for (var i = 0; i < _data.length; i++) {
+	   		//datos con cero incluidos
+	   		if(_data[i+1]){
+	   			var barHeight1=(_chart._height*_data[i].value)/topValue;
+	   			var barHeight2=(_chart._height*_data[i+1].value)/topValue;
+
+	   			var lineShape = new THREE.Shape();
+				lineShape.moveTo(0,0);
+				lineShape.lineTo( 0, barHeight1);
+				lineShape.lineTo( barWidth, barHeight2 );
+
+				lineShape.lineTo( barWidth, 0 );
+				lineShape.lineTo( 0, 0 );
+				var extrusionSettings = {curveSegments:1,
+				 						 amount: 4,
+				 						 bevelEnabled: true,
+				 						 bevelSegments: 4,
+				 						 steps: 2,
+				 						 bevelSize: 1,
+				 						 bevelThickness: 1 };
+				var charGeometry = new THREE.ExtrudeGeometry( lineShape, extrusionSettings );
+				var origin_color=_chart._color;
+   		    	var material = new THREE.MeshPhongMaterial( {color: origin_color,
+                                                	     	 specular: 0x999999,
+                                                	    	 shininess: 100,
+                                                	     	 shading : THREE.SmoothShading,
+                                                   	     	 opacity:0.8,
+                                               		    	 transparent: true
+          	  } );
+				var linePart = new THREE.Mesh( charGeometry, material );
 				linePart.position.set(x+_chart.coords.x,_chart.coords.y,_chart.coords.z);
 				linePart.name="key:"+_data[i].key+" value: "+_data[i].value;
 				linePart.data={
 					key:_data[i].key,
 					value:_data[i].value
 				};
-				x+=1.5;
-				_chart.parts.push(linePart);
+				x+=barWidth;
+				if(_data[i].value){
+					_chart.parts.push(linePart);
+				}
+				
 	   		}
 	   	};
 
