@@ -224,6 +224,7 @@ THREEDC.pieChart = function (coords) {
 	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	_chart._width=_radius;
 	_chart._height=_radius;
+	var _data;
 	
 
 	THREEDC.allCharts.push(_chart);
@@ -236,49 +237,52 @@ THREEDC.pieChart = function (coords) {
 	}
 
     _chart.build=function () {
+    	var _data=_chart._group.top(Infinity);
+
    	    var valTotal=_chart._dimension.top(Infinity).length;
 		var angPrev=0;
 		var angToMove=0;
 
-	   if(_chart._group===undefined){
-	   	console.log('You must define a group for this chart');
-	   	return;
-	   }
-
-		_chart._group.top(Infinity).forEach(function(p,i) {
-			if(p.value){
-				var origin_color=Math.random() * 0xffffff
-   		        var material = new THREE.MeshPhongMaterial( {color: origin_color,
-                                                	        specular: 0x999999,
-                                                	        shininess: 100,
-                                                	        shading : THREE.SmoothShading,
-                                                   	 		opacity:0.8,
-                                               				transparent: true
-                } );				
-                 // Creats the shape, based on the value and the _radius
-				var shape = new THREE.Shape();
-				var angToMove = (Math.PI*2*(p.value/valTotal));
-				shape.moveTo(0,0);
-				shape.arc(0,0,_radius,angPrev,
-				        angPrev+angToMove,false);
-				shape.lineTo(0,0);
-				var nextAng = angPrev + angToMove;
-
-				var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
-				var piePart = new THREE.Mesh( geometry, material );
-				piePart.material.color.setHex(origin_color);
-				piePart.origin_color=origin_color;
-				//piePart.rotation.set(0,0,0);
-				piePart.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z);
-				piePart.name ="key:"+p.key+" value:"+p.value;
-				piePart.data={
-					key:p.key,
-					value:p.value
-				}
-				_chart.parts.push(piePart);
-				angPrev=nextAng;
+		if(_chart._group===undefined){
+			console.log('You must define a group for this chart');
+			return;
+		}
+		for (var i = 0; i < _data.length; i++) {
+			if(_data[i].value===0){
+				break;
 			}
-		});
+			var origin_color=Math.random() * 0xffffff
+		        var material = new THREE.MeshPhongMaterial( {color: origin_color,
+                                            	        specular: 0x999999,
+                                            	        shininess: 100,
+                                            	        shading : THREE.SmoothShading,
+                                               	 		opacity:0.8,
+                                           				transparent: true
+            } );				
+             // Creats the shape, based on the value and the _radius
+			var shape = new THREE.Shape();
+			var angToMove = (Math.PI*2*(_data[i].value/valTotal));
+			shape.moveTo(0,0);
+			shape.arc(0,0,_radius,angPrev,
+			        angPrev+angToMove,false);
+			shape.lineTo(0,0);
+			var nextAng = angPrev + angToMove;
+
+			var geometry = new THREE.ExtrudeGeometry( shape, extrudeOpts );
+			var piePart = new THREE.Mesh( geometry, material );
+			piePart.material.color.setHex(origin_color);
+			piePart.origin_color=origin_color;
+			//piePart.rotation.set(0,0,0);
+			piePart.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z);
+			piePart.name ="key:"+_data[i].key+" value:"+_data[i].value;
+			piePart.data={
+				key:_data[i].key,
+				value:_data[i].value
+			}
+			_chart.parts.push(piePart);
+			angPrev=nextAng;
+		}
+
 		_chart.addEvents();
     }
 
@@ -292,10 +296,12 @@ THREEDC.barsChart = function (coords){
    }
 
 	var _chart = THREEDC.baseMixin({});
+	var _data;
 	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
+
 
 	_chart.build = function() {
 
@@ -303,6 +309,8 @@ THREEDC.barsChart = function (coords){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
+
+	   _data=_chart._group.top(Infinity);
 
 	   var numberOfValues=_chart._group.top(Infinity).length;
 
@@ -313,9 +321,11 @@ THREEDC.barsChart = function (coords){
 	   var y;
 	   var x=0;
 
-	   _chart._group.top(Infinity).forEach(function(p,i) {
-	      if(p.value){
-	      	var barHeight=(_chart._height*p.value)/topValue;
+		for (var i = 0; i < _data.length; i++) {
+			if(_data[i].value===0){
+				break;
+			}
+	      	var barHeight=(_chart._height*_data[i].value)/topValue;
 	 		var geometry = new THREE.CubeGeometry( barWidth, barHeight, 5);
 			y=barHeight/2;
 			var origin_color=_chart._color;
@@ -329,15 +339,16 @@ THREEDC.barsChart = function (coords){
 			var bar = new THREE.Mesh(geometry, material);
 			bar.origin_color=origin_color;
 			bar.position.set(x+_chart.coords.x,y+_chart.coords.y,_chart.coords.z);
-			bar.name = "key:"+p.key+" value: "+p.value;
+			bar.name = "key:"+_data[i].key+" value: "+_data[i].value;
 			bar.data={
-				key:p.key,
-				value:p.value
+				key:_data[i].key,
+				value:_data[i].value
 			};
 			_chart.parts.push(bar);
 			x+=barWidth;
-		   }
-		});
+
+		};
+
 	    _chart.addEvents();
     }
    
@@ -420,7 +431,9 @@ THREEDC.lineChart= function (coords) {
 	   	_data=_chart._group.top(Infinity);
 
 	   	for (var i = 0; i < _data.length; i++) {
-	   		//datos con cero incluidos
+			if(_data[i].value===0){
+				break;
+			}
 	   		if(_data[i+1]){
 	   			var barHeight1=(_chart._height*_data[i].value)/topValue;
 	   			var barHeight2=(_chart._height*_data[i+1].value)/topValue;
@@ -456,10 +469,7 @@ THREEDC.lineChart= function (coords) {
 					value:_data[i].value
 				};
 				x+=barWidth;
-				if(_data[i].value){
-					_chart.parts.push(linePart);
-				}
-				
+				_chart.parts.push(linePart);
 	   		}
 	   	};
 
