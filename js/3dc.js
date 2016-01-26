@@ -296,7 +296,7 @@ THREEDC.barsChart = function (coords){
    }
 
 	var _chart = THREEDC.baseMixin({});
-	var _data;
+	var unsort_data;
 	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	_chart._color=0x0000ff;
 
@@ -309,12 +309,40 @@ THREEDC.barsChart = function (coords){
 	   	console.log('You must define a group for this chart');
 	   	return;
 	   }
+	   //key/value del grupo de mayor a menor
+	   unsort_data=_chart._group.top(Infinity);
+	  // var _data=_chart._group.top(Infinity);
 
-	   _data=_chart._group.top(Infinity);
+		//var date_min = _chart._dimension.bottom(1)[0].month;
+		//var date_max = _chart._dimension.top(1)[0].month;
 
+		var dates=[];
+		//en dates guardo las fechas(keys)
+		for (var i = 0; i <  unsort_data.length; i++) {
+				dates[i]= unsort_data[i].key;
+		};
+		//ordeno fechas(keys) de menor a mayor
+		dates.sort(function(a, b){return a-b});
+
+	    //ordeno el grupo de menor a mayor usando 
+	    //las posiciones de dates
+		var _data=[];
+		for (var i = 0; i < dates.length; i++) {
+			for (var j = 0; j <  unsort_data.length; j++) {
+				if(dates[i] === unsort_data[j].key){
+					_data[i]={key:unsort_data[j].key,
+						      value:unsort_data[j].value};
+			        console.log(_data[i]);
+				}
+			};
+		};
+		
 	   var numberOfValues=_chart._group.top(Infinity).length;
+	   console.log('numberOfValues: ' +numberOfValues);
 
 	   var topValue=_chart._group.top(1)[0].value;
+	   console.log('topValue: '+topValue);
+
 
 	   var barWidth=_chart._width/numberOfValues;
 
@@ -322,9 +350,9 @@ THREEDC.barsChart = function (coords){
 	   var x=0;
 
 		for (var i = 0; i < _data.length; i++) {
-			if(_data[i].value===0){
-				break;
-			}
+			//if(_data[i].value===0){
+			//	break;
+			//}
 	      	var barHeight=(_chart._height*_data[i].value)/topValue;
 	 		var geometry = new THREE.CubeGeometry( barWidth, barHeight, 5);
 			y=barHeight/2;

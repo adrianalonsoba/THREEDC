@@ -173,11 +173,7 @@ function init () {
   );
   plane.rotation.x = Math.PI / 2; //xz plane
 
-   pie= new THREEDC.pieChart([-150,0,0]);
-   pie.group(groupByOrg)
-     .radius(100)
-     .dimension(dimByOrg);
-     //pie.removeEvents();
+
 
   var bars2 =  THREEDC.barsChart([0,0,0]);
   bars2.group(groupByMonth)
@@ -189,12 +185,6 @@ function init () {
   var bars =  THREEDC.barsChart([0,0,100]);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
-
-var line =THREEDC.lineChart([100,100,100]);
-    line.dimension(dimByMonth)
-        .group(groupByMonth)
-        .width(400)
-        .height(200)
 
 
   THREEDC.renderAll();
@@ -228,7 +218,7 @@ function dragTrigger () {
     domEvents.bind(plane, 'mouseup', function(object3d){
       console.log('mouseup de plano');
       if(THREEDC.chartToDrag){
-        THREEDC.chartToDrag.reBuild();
+      //  THREEDC.chartToDrag.reBuild();
         controls.enabled=true;
         container.style.cursor = 'auto';
         SELECTED=null;

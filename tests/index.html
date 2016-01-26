@@ -84,9 +84,9 @@ $.getJSON("../jsons/scm-commits.json", function(data) {
 	chart2
 	.width(768)
 	.height(480)
-	.x(d3.scale.linear().domain([dimByMonth.bottom(1)[0].month, dimByMonth.top(1)[0].month]))
-	.dimension(dimByMonth)
-	.group(groupByMonth)
+	.x(d3.scale.linear().domain([dimByOrg.bottom(1)[0].org, dimByOrg.top(1)[0].org]))
+	.dimension(dimByOrg)
+	.group(groupByOrg)
 	.elasticY(true)
 	.legend(dc.legend());
 
