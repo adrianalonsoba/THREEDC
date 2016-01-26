@@ -184,7 +184,14 @@ function init () {
 
   var bars =  THREEDC.barsChart([0,0,100]);
   bars.group(groupByOrg)
-      .dimension(dimByOrg)
+      .dimension(dimByOrg);
+
+  var line= THREEDC.lineChart([0,0,-50]);
+    line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .height(200)
+      .color(0xff00ff);
 
 
   THREEDC.renderAll();
