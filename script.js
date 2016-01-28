@@ -175,23 +175,20 @@ function init () {
 
 
 
-  var bars2 =  THREEDC.barsChart([0,0,0]);
-  bars2.group(groupByMonth)
+  var bars =  THREEDC.barsChart([0,0,0]);
+  bars.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200)
       .color(0xff0000);
 
-  var bars =  THREEDC.barsChart([0,0,100]);
-  bars.group(groupByOrg)
-      .dimension(dimByOrg);
-
-  var line= THREEDC.lineChart([0,0,-50]);
-    line.group(groupByMonth)
+    var line =  THREEDC.lineChart([0,0,100]);
+       line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200)
       .color(0xff00ff);
+
 
 
   THREEDC.renderAll();

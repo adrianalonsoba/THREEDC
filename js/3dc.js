@@ -32,6 +32,7 @@ THREEDC.removeEvents=function(){
 */
 THREEDC.baseMixin = function (_chart) {
 	_chart={parts:[],
+			labels:[],
 			//by default
 			_width:100,
 			_height:100};
@@ -46,6 +47,7 @@ THREEDC.baseMixin = function (_chart) {
 
     _chart.remove=function(){
     	_chart.removeEvents();
+    	_chart.removeLabels();
     	for (var i = 0; i < _chart.parts.length; i++) {
     		scene.remove(_chart.parts[i]);
     	};
@@ -56,6 +58,7 @@ THREEDC.baseMixin = function (_chart) {
 
     _chart.reBuild=function(){
      	_chart.removeEvents();
+     	_chart.removeLabels();
     	for (var i = 0; i < _chart.parts.length; i++) {
     		scene.remove(_chart.parts[i]);
     	}; 
@@ -76,6 +79,52 @@ THREEDC.baseMixin = function (_chart) {
 			domEvents.unbind(mesh, 'click');
 			domEvents.unbind(mesh, 'mousedown');
 		}
+    }
+
+    _chart.addLabels=function(){
+
+    	putLabel(_chart.coords);
+    	_chart.renderLabels();
+
+    	//coords:THREE.Vector3
+    	function putLabel (coords) {
+		      var txt = 0;
+		      var curveSeg = 3;
+		      var material = new THREE.MeshPhongMaterial( {color:0x000000,
+		      											   specular: 0x999999,
+                                            	           shininess: 100,
+                                            	           shading : THREE.SmoothShading			      											   
+		      } );			                    	      
+		      var geometry = new THREE.TextGeometry( txt, {
+		        size: 4,
+		        height: 2,
+		        curveSegments: 3,
+		        font: "helvetiker",
+		        weight: "bold",
+		        style: "normal",
+		        bevelEnabled: false
+		      });
+		      // Positions the text and adds it to the scene
+		      var label = new THREE.Mesh( geometry, material );
+		      label.position.z = _chart.coords.z;
+		      label.position.x = _chart.coords.x-15;
+		      label.position.y = _chart.coords.y;
+		     // label.rotation.set(3*Math.PI/2,0,0);
+		      _chart.labels.push(label);
+    	}
+    }
+
+    _chart.renderLabels=function(){
+    	for (var i = 0; i < _chart.labels.length; i++) {
+    		scene.add(_chart.labels[i]);
+    	};
+    }
+
+    _chart.removeLabels=function() {
+    	for (var i = 0; i < _chart.labels.length; i++) {
+    		scene.remove(_chart.labels[i]);
+    	};
+    	_chart.labels=[];
     }
 
     _chart.addEvents=function(){
@@ -334,7 +383,6 @@ THREEDC.barsChart = function (coords){
 				if(dates[i] === unsort_data[j].key){
 					_data[i]={key:unsort_data[j].key,
 						      value:unsort_data[j].value};
-			        console.log(_data[i]);
 				}
 			};
 		};
@@ -375,6 +423,7 @@ THREEDC.barsChart = function (coords){
 		};
 
 	    _chart.addEvents();
+	    _chart.addLabels();
     }
    
     return _chart;
@@ -455,7 +504,6 @@ THREEDC.lineChart= function (coords) {
 
 	   	unsort_data=_chart._group.top(Infinity);
 
-
 		var dates=[];
 		//en dates guardo las fechas(keys)
 		for (var i = 0; i <  unsort_data.length; i++) {
@@ -472,11 +520,9 @@ THREEDC.lineChart= function (coords) {
 				if(dates[i] === unsort_data[j].key){
 					_data[i]={key:unsort_data[j].key,
 						      value:unsort_data[j].value};
-			        console.log(_data[i]);
 				}
 			};
 		};
-
 
 	   	for (var i = 0; i < _data.length; i++) {
 	   		if(_data[i+1]){
@@ -520,6 +566,7 @@ THREEDC.lineChart= function (coords) {
 	   	};
 
 		_chart.addEvents();
+		_chart.addLabels();
     }
 
     return _chart;
