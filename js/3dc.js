@@ -81,14 +81,46 @@ THREEDC.baseMixin = function (_chart) {
 		}
     }
 
-    _chart.addLabels=function(){
+    _chart.addLabels=function(){ 
 
-    	putLabel(_chart.coords);
+    	var topYValue=_chart._group.top(1)[0].value;
+    	var numberOfValues= _chart._group.top(Infinity).length;
+    	var numerOfYLabels=9;
+    	var stepY=_chart._height/numerOfYLabels;
+    	var maxYLabelWidth=getMaxWidth(1000000);
+
+    	for (var i = 0; i < numerOfYLabels+1; i++) {
+    		putLabel(i*stepY,1000000);
+    	};
+    	
     	_chart.renderLabels();
 
+    	function getMaxWidth (axis) {
+			var txt = axis;
+			var curveSeg = 3;
+			var material = new THREE.MeshPhongMaterial( {color:0x000000,
+														   specular: 0x999999,
+			                            	           shininess: 100,
+			                            	           shading : THREE.SmoothShading			      											   
+			} );			                    	      
+			var geometry = new THREE.TextGeometry( txt, {
+			size: 4,
+			height: 2,
+			curveSegments: 3,
+			font: "helvetiker",
+			weight: "bold",
+			style: "normal",
+			bevelEnabled: false
+			});
+			var label = new THREE.Mesh( geometry, material );
+		    var box = new THREE.Box3().setFromObject(label);
+			return box.size().x ;
+    	}
+
     	//coords:THREE.Vector3
-    	function putLabel (coords) {
-		      var txt = 0;
+    	function putLabel (step,value) {
+
+		      var txt = value;
 		      var curveSeg = 3;
 		      var material = new THREE.MeshPhongMaterial( {color:0x000000,
 		      											   specular: 0x999999,
@@ -107,8 +139,9 @@ THREEDC.baseMixin = function (_chart) {
 		      // Positions the text and adds it to the scene
 		      var label = new THREE.Mesh( geometry, material );
 		      label.position.z = _chart.coords.z;
-		      label.position.x = _chart.coords.x-15;
-		      label.position.y = _chart.coords.y;
+		      label.position.x = _chart.coords.x-maxYLabelWidth-10;
+		      console.log(maxYLabelWidth);
+		      label.position.y = _chart.coords.y+step;
 		     // label.rotation.set(3*Math.PI/2,0,0);
 		      _chart.labels.push(label);
     	}

@@ -84,7 +84,7 @@ function init () {
    //////////////
    renderer = new THREE.WebGLRenderer( {antialias:true} );
    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
-   renderer.setClearColor( 0x9999ff );
+   renderer.setClearColor( 0xd8d8d8 );
 
    // attach div element to variable to contain the renderer
    container = document.getElementById( 'ThreeJS' );
@@ -125,6 +125,13 @@ function init () {
    //    specify length in pixels in each direction
    var axes = new THREE.AxisHelper(1000);
    scene.add(axes);
+
+  //STATS
+  stats = new Stats();
+  stats.domElement.style.position = 'absolute';
+  stats.domElement.style.bottom = '0px';
+  stats.domElement.style.zIndex = 100;
+  container.appendChild( stats.domElement );
 
    //////////////
    // CUSTOM //
@@ -174,15 +181,15 @@ function init () {
   plane.rotation.x = Math.PI / 2; //xz plane
 
 
-
+/*
   var bars =  THREEDC.barsChart([0,0,0]);
   bars.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200)
       .color(0xff0000);
-
-    var line =  THREEDC.lineChart([0,0,100]);
+*/
+    var line =  THREEDC.lineChart([0,0,0]);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
@@ -245,11 +252,12 @@ function changePLane () {
     plane.rotation.x = Math.PI / 2; //xz plane
   }
 }
-
+var paint=true;
 function onMouseMove( event ) {
 
   // calculate mouse position in normalized device coordinates
   // (-1 to +1) for both components
+
 
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
@@ -273,7 +281,10 @@ function onMouseMove( event ) {
         //THREEDC.chartToDrag.parts[i].position.copy(intersects[ 0 ].point.sub( offset ) );
       //};
       THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
-      THREEDC.chartToDrag.reBuild();
+      if(paint){
+        THREEDC.chartToDrag.reBuild();
+      } 
+      !paint;
     }
     return;
   }
@@ -295,4 +306,5 @@ function render()
 function update()
 {
   controls.update();
+  stats.update();
 }

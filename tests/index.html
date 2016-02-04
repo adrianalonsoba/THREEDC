@@ -73,8 +73,8 @@ $.getJSON("../jsons/scm-commits.json", function(data) {
 	.height(480)
 	.slicesCap(4)
 	.innerRadius(100)
-	.dimension(dimByOrg)
-	.group(groupByOrg)
+	.dimension(dimByMonth)
+	.group(groupByMonth)
 	.legend(dc.legend());
 
 
@@ -91,6 +91,10 @@ $.getJSON("../jsons/scm-commits.json", function(data) {
 	.legend(dc.legend());
 
 	dc.renderAll();
+
+	var scale=d3.scale.linear().domain([dimByOrg.bottom(1)[0].org, dimByOrg.top(1)[0].org]);
+	console.log(scale.range);
+	console.log(d3.scale.linear)
 
 });
 
