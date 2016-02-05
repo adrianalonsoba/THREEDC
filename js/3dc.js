@@ -82,15 +82,20 @@ THREEDC.baseMixin = function (_chart) {
     }
 
     _chart.addLabels=function(){ 
-
+    	//Y AXIS
     	var topYValue=_chart._group.top(1)[0].value;
     	var numberOfValues= _chart._group.top(Infinity).length;
-    	var numerOfYLabels=9;
+    	var numerOfYLabels=Math.round(_chart._height/15);
     	var stepY=_chart._height/numerOfYLabels;
-    	var maxYLabelWidth=getMaxWidth(1000000);
+    	var maxYLabelWidth=getMaxWidth(topYValue);
+    	//X AXIS
+    	var topXValue=_chart._group.top(1)[0].key;
+    	var numerOfXLabels=Math.round(_chart._width/15);
+    	var stepX=_chart._width/numerOfXLabels;
+    	var maxXLabelWidth=getMaxWidth(topXValue);
 
     	for (var i = 0; i < numerOfYLabels+1; i++) {
-    		putLabel(i*stepY,1000000);
+    		putLabel(i*stepY,topYValue);
     	};
     	
     	_chart.renderLabels();
@@ -428,7 +433,7 @@ THREEDC.barsChart = function (coords){
 	   var barWidth=_chart._width/numberOfValues;
 
 	   var y;
-	   var x=0;
+	   var x=barWidth/2;
 
 		for (var i = 0; i < _data.length; i++) {
 	      	var barHeight=(_chart._height*_data[i].value)/topValue;

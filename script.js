@@ -181,14 +181,13 @@ function init () {
   plane.rotation.x = Math.PI / 2; //xz plane
 
 
-/*
-  var bars =  THREEDC.barsChart([0,0,0]);
-  bars.group(groupByMonth)
-      .dimension(dimByMonth)
+  var bars =  THREEDC.barsChart([0,0,100]);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
       .width(200)
       .height(200)
       .color(0xff0000);
-*/
+
     var line =  THREEDC.lineChart([0,0,0]);
        line.group(groupByMonth)
       .dimension(dimByMonth)
