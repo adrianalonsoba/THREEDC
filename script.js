@@ -180,7 +180,7 @@ function init () {
   );
   plane.rotation.x = Math.PI / 2; //xz plane
 
-
+/*
   var bars =  THREEDC.barsChart([300,0,0]);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
@@ -194,7 +194,20 @@ function init () {
       .width(200)
       .height(200)
       .color(0xff00ff);
+      */
+  var bars =  THREEDC.smoothCurveChart([300,0,0]);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .color(0xf000ff);
 
+  var line =  THREEDC.lineChart([0,0,0]);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .height(200)
+      .color(0x0000ff);
 
 
   THREEDC.renderAll();

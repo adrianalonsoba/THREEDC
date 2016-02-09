@@ -710,6 +710,86 @@ THREEDC.lineChart= function (coords) {
 
 }
 
+//problema con emissive al cambiar de color(probablemente por ser linebasic material)
+THREEDC.smoothCurveChart= function (coords) {
+
+	if(coords==undefined){
+		coords=[0,0,0];
+	}
+
+	var _chart = THREEDC.baseMixin({});
+	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	_chart._color=0x0000ff;
+
+	THREEDC.allCharts.push(_chart);
+
+	var unsort_data;
+
+	_chart.build = function() {
+
+
+		var topValue=_chart._group.top(1)[0].value;
+
+		var numberOfValues=_chart._group.top(Infinity).length;
+
+		var barWidth=_chart._width/numberOfValues;
+
+		var x=0;
+
+	   	unsort_data=_chart._group.top(Infinity);
+
+		var dates=[];
+		//en dates guardo las fechas(keys)
+		for (var i = 0; i <  unsort_data.length; i++) {
+				dates[i]= unsort_data[i].key;
+		};
+		//ordeno fechas(keys) de menor a mayor
+		dates.sort(function(a, b){return a-b});
+
+	    //ordeno el grupo de menor a mayor usando 
+	    //las posiciones de dates
+		var _data=[];
+		for (var i = 0; i < dates.length; i++) {
+			for (var j = 0; j <  unsort_data.length; j++) {
+				if(dates[i] === unsort_data[j].key){
+					_data[i]={key:unsort_data[j].key,
+						      value:unsort_data[j].value};
+				}
+			};
+		};
+
+		var points=[];
+		var x=0;
+		var step=_chart._width/numberOfValues;
+
+		for (var i = 0; i < _data.length; i++) {
+			points.push(new THREE.Vector3( x,(_chart._height*_data[i].value)/topValue, 0 ));
+			x+=step;
+		};
+
+		var curve = new THREE.CatmullRomCurve3(points);
+
+		var geometry = new THREE.Geometry();
+		geometry.vertices = curve.getPoints( 512 );
+
+		var origin_color=_chart._color;
+
+		var material = new THREE.LineBasicMaterial( { color : origin_color,linewidth:1 } );
+
+		var splineObject = new THREE.Line( geometry, material );
+		splineObject.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z)
+
+		_chart.parts.push(splineObject);
+
+
+		_chart.addEvents();
+		_chart.addLabels();
+    }
+
+    return _chart;
+
+}
+
 THREEDC.bubbleChart= function (coords) {
 
 	var _chart = THREEDC.baseMixin({});
