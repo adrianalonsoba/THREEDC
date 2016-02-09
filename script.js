@@ -181,7 +181,7 @@ function init () {
   plane.rotation.x = Math.PI / 2; //xz plane
 
 
-  var bars =  THREEDC.barsChart([0,0,100]);
+  var bars =  THREEDC.barsChart([300,0,0]);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
@@ -206,7 +206,8 @@ function init () {
   parameters =
   {
     plane:"XZ",
-    activate:false
+    activate:false,
+    activateFilter:false
   };
 
   var folder1 = gui.addFolder('Drag');
@@ -217,6 +218,11 @@ function init () {
   dragChange.onChange(function(value) 
   {   changePLane();   });
   folder1.close();
+
+  var folder2 = gui.addFolder('Interval filter');
+  var activateFilter = folder2.add( parameters, 'activateFilter' ).name('On/Off').listen();
+  folder2.close();
+
 
   gui.close();
 

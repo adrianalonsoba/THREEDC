@@ -2,7 +2,8 @@ var THREEDC={
 	version:'0.1-b',
 	allCharts:[],
 	textLabel:null,
-	chartToDrag:null
+	chartToDrag:null,
+	intervalFilter:[]
 };
 
 THREEDC.renderAll=function() {
@@ -79,6 +80,7 @@ THREEDC.baseMixin = function (_chart) {
 			domEvents.unbind(mesh, 'mouseout');
 			domEvents.unbind(mesh, 'click');
 			domEvents.unbind(mesh, 'mousedown');
+			domEvents.unbind(mesh, 'mouseup');
 		}
     }
 
@@ -97,6 +99,8 @@ THREEDC.baseMixin = function (_chart) {
     		putYLabel(i*stepY,i*stepYValue);
     	};
 
+
+    	/*
     	//X AXIS
     	var topXValue=_chart._group.top(1)[0].key;
     	console.log(topXValue);
@@ -109,6 +113,7 @@ THREEDC.baseMixin = function (_chart) {
  	 	for (var i = 0; i < numerOfXLabels+1; i++) {
     		putXLabel(i*stepX,i*stepXValue);
     	};
+    	*/
     	
     	_chart.renderLabels();
 
@@ -177,7 +182,7 @@ THREEDC.baseMixin = function (_chart) {
 		      // Positions the text and adds it to the scene
 		      var label = new THREE.Mesh( geometry, material );
 		      label.position.z = _chart.coords.z;
-		      label.position.x = _chart.coords.x-maxYLabelWidth-10;
+		      label.position.x = _chart.coords.x-maxYLabelWidth-15;
 		      label.position.y = _chart.coords.y+step;
 		     // label.rotation.set(3*Math.PI/2,0,0);
 		      _chart.yLabels.push(label);
@@ -261,7 +266,6 @@ THREEDC.baseMixin = function (_chart) {
 			domEvents.bind(mesh, 'mousedown', function(object3d){ 
 				if(parameters.activate){
 					container.style.cursor = 'move';
-					console.log('mousedown');
 					controls.enabled=false;
 					SELECTED=mesh;
 					THREEDC.chartToDrag=_chart;
@@ -272,18 +276,43 @@ THREEDC.baseMixin = function (_chart) {
 				      offset.copy( intersects[ 0 ].point ).sub( plane.position );
 				    }
 				}
+				if(parameters.activateFilter){
+					container.style.cursor = 'move';
+					controls.enabled=false;
+					console.log(mesh);
+					THREEDC.intervalFilter[0]=mesh.data.key;
+				}
+			});
+
+			domEvents.bind(mesh, 'mouseup', function(object3d){ 
+				if(parameters.activateFilter){
+					container.style.cursor = 'auto';
+					controls.enabled=true;
+					console.log(mesh);
+					THREEDC.intervalFilter[1]=mesh.data.key;
+					addIntervalFilter(mesh);
+				}
 			});
 
 		}
 
 		function addFilter (mesh) {
 			console.log('click');
-			//_chart._dimension.filterAll();
+			_chart._dimension.filterAll();
 			_chart._dimension.filter(mesh.data.key);
 			for (var i = 0; i < THREEDC.allCharts.length; i++) {
 				THREEDC.allCharts[i].reBuild();
 			};
-		}	
+		}
+
+		function addIntervalFilter (mesh) {
+			console.log('click');
+			//_chart._dimension.filterAll();
+			_chart._dimension.filter(THREEDC.intervalFilter);
+			for (var i = 0; i < THREEDC.allCharts.length; i++) {
+				THREEDC.allCharts[i].reBuild();
+			};
+		}		
 
 		//creates a 3D text label
 		function showInfo (mesh) {
