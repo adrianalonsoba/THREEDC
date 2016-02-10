@@ -194,6 +194,13 @@ THREEDC.baseMixin = function (_chart) {
 		}
     }
 
+
+    _chart.addGrids=function(){
+
+
+    }
+
+    
     _chart.addLabels=function(){ 
     	var numberOfValues= _chart._group.top(Infinity).length;
 
@@ -207,7 +214,26 @@ THREEDC.baseMixin = function (_chart) {
 
  	 	for (var i = 0; i < numerOfYLabels+1; i++) {
     		putYLabel(i*stepY,i*stepYValue);
+    		putYGrid(i*stepY);
     	};
+
+    	function putYGrid (step) {
+			var material = new THREE.LineBasicMaterial({
+				color: 0x000000,
+				linewidth:1
+			});
+
+			var geometry = new THREE.Geometry();
+			geometry.vertices.push(
+				new THREE.Vector3( -10, 0, 0 ),
+				new THREE.Vector3( _chart._width, 0, 0 )
+			);
+
+			var line = new THREE.Line( geometry, material );
+			line.position.set(_chart.coords.x,_chart.coords.y+step,_chart.coords.z);
+			scene.add( line );
+    	}
+
 
 
     	/*
