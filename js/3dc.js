@@ -68,6 +68,116 @@ THREEDC.baseMixin = function (_chart) {
     	_chart.render();
     }
 
+    _chart.addEvents=function(){
+
+    	for (var i = 0; i < _chart.parts.length; i++) {
+    		addEvents(_chart.parts[i]);
+    	};
+
+		function addEvents (mesh) {
+
+			//adds mouseover events
+			domEvents.bind(mesh, 'mouseover', function(object3d){ 
+				changeMeshColor(mesh);
+				showInfo(mesh);
+			});
+
+			domEvents.bind(mesh, 'mouseout', function(object3d){ 
+				//restores the original color
+				mesh.material.emissive.setHex(mesh.currentHex);
+			});
+
+			//domEvents.bind(mesh, 'click', function(object3d){ 
+			//	addFilter(mesh);
+			//});
+
+			domEvents.bind(mesh, 'mousedown', function(object3d){ 
+				if(parameters.activate){
+					container.style.cursor = 'move';
+					controls.enabled=false;
+					SELECTED=mesh;
+					THREEDC.chartToDrag=_chart;
+				    plane.position.copy( mesh.position );
+				    raycaster.setFromCamera( mouse, camera );
+				    var intersects = raycaster.intersectObject( plane );
+				    if ( intersects.length > 0 ) {
+				      offset.copy( intersects[ 0 ].point ).sub( plane.position );
+				    }
+				}else{
+					container.style.cursor = 'move';
+					controls.enabled=false;
+					THREEDC.intervalFilter[0]=mesh.data.key;
+				}
+			});
+
+			domEvents.bind(mesh, 'mouseup', function(object3d){ 
+				if(!parameters.activate){
+					container.style.cursor = 'auto';
+					controls.enabled=true;
+					THREEDC.intervalFilter[1]=mesh.data.key;
+					addIntervalFilter();
+				}
+			});
+
+		}
+
+		function addFilter (mesh) {
+			console.log('click');
+			_chart._dimension.filterAll();
+			_chart._dimension.filter(mesh.data.key);
+			for (var i = 0; i < THREEDC.allCharts.length; i++) {
+				THREEDC.allCharts[i].reBuild();
+			};
+		}
+
+		function addIntervalFilter () {
+			console.log('mouseup');
+			_chart._dimension.filterAll();
+			if(THREEDC.intervalFilter[0]===THREEDC.intervalFilter[1]){
+				_chart._dimension.filter(THREEDC.intervalFilter[0]);
+			}else{
+				_chart._dimension.filter(THREEDC.intervalFilter);
+			}
+			for (var i = 0; i < THREEDC.allCharts.length; i++) {
+				THREEDC.allCharts[i].reBuild();
+			};
+		}		
+
+		//creates a 3D text label
+		function showInfo (mesh) {
+			  scene.remove(THREEDC.textLabel);
+		      var txt = mesh.name;
+		      var curveSeg = 3;
+		      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,
+		      											   specular: 0x999999,
+                                            	           shininess: 100,
+                                            	           shading : THREE.SmoothShading			      											   
+		      } );			                    	      
+		      var geometry = new THREE.TextGeometry( txt, {
+		        size: 8,
+		        height: 2,
+		        curveSegments: 3,
+		        font: "helvetiker",
+		        weight: "bold",
+		        style: "normal",
+		        bevelEnabled: false
+		      });
+		      // Positions the text and adds it to the scene
+		      THREEDC.textLabel = new THREE.Mesh( geometry, material );
+		      THREEDC.textLabel.position.z = mesh.position.z;
+		      THREEDC.textLabel.position.x = _chart.coords.x;
+		      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
+		      //textLabel.rotation.set(3*Math.PI/2,0,0);
+		      scene.add(THREEDC.textLabel);
+		}
+
+		function changeMeshColor (mesh) {
+		 // mesh.material.color.setHex(0xffff00);
+		  mesh.currentHex=mesh.material.emissive.getHex();
+		  mesh.material.emissive.setHex(mesh.origin_color);
+		}
+    }
+
     _chart.removeEvents=function(){
 
     	for (var i = 0; i < _chart.parts.length; i++) {
@@ -78,7 +188,7 @@ THREEDC.baseMixin = function (_chart) {
 			//removes mouseover events
 			domEvents.unbind(mesh, 'mouseover');
 			domEvents.unbind(mesh, 'mouseout');
-			domEvents.unbind(mesh, 'click');
+			//domEvents.unbind(mesh, 'click');
 			domEvents.unbind(mesh, 'mousedown');
 			domEvents.unbind(mesh, 'mouseup');
 		}
@@ -214,8 +324,6 @@ THREEDC.baseMixin = function (_chart) {
 		     // label.rotation.set(3*Math.PI/2,0,0);
 		      _chart.xLabels.push(label);
     	}
-
-
     }
 
     _chart.renderLabels=function(){
@@ -240,114 +348,6 @@ THREEDC.baseMixin = function (_chart) {
     	_chart.yLabels=[];
     }
 
-    _chart.addEvents=function(){
-
-    	for (var i = 0; i < _chart.parts.length; i++) {
-    		addEvents(_chart.parts[i]);
-    	};
-
-		function addEvents (mesh) {
-
-			//adds mouseover events
-			domEvents.bind(mesh, 'mouseover', function(object3d){ 
-				changeMeshColor(mesh);
-				showInfo(mesh);
-			});
-
-			domEvents.bind(mesh, 'mouseout', function(object3d){ 
-				//restores the original color
-				mesh.material.emissive.setHex(mesh.currentHex);
-			});
-
-			domEvents.bind(mesh, 'click', function(object3d){ 
-				addFilter(mesh);
-			});
-
-			domEvents.bind(mesh, 'mousedown', function(object3d){ 
-				if(parameters.activate){
-					container.style.cursor = 'move';
-					controls.enabled=false;
-					SELECTED=mesh;
-					THREEDC.chartToDrag=_chart;
-				    plane.position.copy( mesh.position );
-				    raycaster.setFromCamera( mouse, camera );
-				    var intersects = raycaster.intersectObject( plane );
-				    if ( intersects.length > 0 ) {
-				      offset.copy( intersects[ 0 ].point ).sub( plane.position );
-				    }
-				}
-				if(parameters.activateFilter){
-					container.style.cursor = 'move';
-					controls.enabled=false;
-					console.log(mesh);
-					THREEDC.intervalFilter[0]=mesh.data.key;
-				}
-			});
-
-			domEvents.bind(mesh, 'mouseup', function(object3d){ 
-				if(parameters.activateFilter){
-					container.style.cursor = 'auto';
-					controls.enabled=true;
-					console.log(mesh);
-					THREEDC.intervalFilter[1]=mesh.data.key;
-					addIntervalFilter(mesh);
-				}
-			});
-
-		}
-
-		function addFilter (mesh) {
-			console.log('click');
-			_chart._dimension.filterAll();
-			_chart._dimension.filter(mesh.data.key);
-			for (var i = 0; i < THREEDC.allCharts.length; i++) {
-				THREEDC.allCharts[i].reBuild();
-			};
-		}
-
-		function addIntervalFilter (mesh) {
-			console.log('click');
-			//_chart._dimension.filterAll();
-			_chart._dimension.filter(THREEDC.intervalFilter);
-			for (var i = 0; i < THREEDC.allCharts.length; i++) {
-				THREEDC.allCharts[i].reBuild();
-			};
-		}		
-
-		//creates a 3D text label
-		function showInfo (mesh) {
-			  scene.remove(THREEDC.textLabel);
-		      var txt = mesh.name;
-		      var curveSeg = 3;
-		      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,
-		      											   specular: 0x999999,
-                                            	           shininess: 100,
-                                            	           shading : THREE.SmoothShading			      											   
-		      } );			                    	      
-		      var geometry = new THREE.TextGeometry( txt, {
-		        size: 8,
-		        height: 2,
-		        curveSegments: 3,
-		        font: "helvetiker",
-		        weight: "bold",
-		        style: "normal",
-		        bevelEnabled: false
-		      });
-		      // Positions the text and adds it to the scene
-		      THREEDC.textLabel = new THREE.Mesh( geometry, material );
-		      THREEDC.textLabel.position.z = mesh.position.z;
-		      THREEDC.textLabel.position.x = _chart.coords.x;
-		      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
-		      //textLabel.rotation.set(3*Math.PI/2,0,0);
-		      scene.add(THREEDC.textLabel);
-		}
-
-		function changeMeshColor (mesh) {
-		 // mesh.material.color.setHex(0xffff00);
-		  mesh.currentHex=mesh.material.emissive.getHex();
-		  mesh.material.emissive.setHex(mesh.origin_color);
-		}
-    }
 
     _chart.group= function (group) {
     	if(!arguments.length){

@@ -232,11 +232,6 @@ function init () {
   {   changePLane();   });
   folder1.close();
 
-  var folder2 = gui.addFolder('Interval filter');
-  var activateFilter = folder2.add( parameters, 'activateFilter' ).name('On/Off').listen();
-  folder2.close();
-
-
   gui.close();
 
 }
