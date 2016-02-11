@@ -207,6 +207,8 @@ function init () {
       .dimension(dimByMonth)
       .width(200)
       .height(200)
+      .numberOfXLabels(20)
+      .numberOfYLabels(10)
       .color(0x0000ff);
 
 

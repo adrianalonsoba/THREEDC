@@ -1,5 +1,5 @@
 var THREEDC={
-	version:'0.1-b',
+	version:'0.1-c',
 	allCharts:[],
 	textLabel:null,
 	chartToDrag:null,
@@ -219,6 +219,11 @@ THREEDC.baseMixin = function (_chart) {
 
 
     	var stepX=_chart._width/_chart._numberOfXLabels;
+
+    	console.log('ylabels: '+_chart._numberOfYLabels);
+
+
+    	console.log('xlabels: '+_chart._numberOfXLabels);
 
  	 	for (var i = 0; i <_chart._numberOfXLabels+1; i++) {
     		putXGrid(i*stepX);
@@ -479,14 +484,13 @@ THREEDC.baseMixin = function (_chart) {
     	return _chart;
     }
 
-    return _chart;
 
     _chart.numberOfXLabels=function(number){
     	if(!arguments.length){
     		console.log('argument needed');
     		return;
     	}
-    	_chart._numerOfXLabels=number;
+    	_chart._numberOfXLabels=number;
     	return _chart;
     }
 
@@ -498,6 +502,8 @@ THREEDC.baseMixin = function (_chart) {
     	_chart._numberOfYLabels=number;
     	return _chart;
     }
+
+	return _chart;
 
 }
 
