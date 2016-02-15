@@ -220,10 +220,6 @@ THREEDC.baseMixin = function (_chart) {
 
     	var stepX=_chart._width/_chart._numberOfXLabels;
 
-    	console.log('ylabels: '+_chart._numberOfYLabels);
-
-
-    	console.log('xlabels: '+_chart._numberOfXLabels);
 
  	 	for (var i = 0; i <_chart._numberOfXLabels+1; i++) {
     		putXGrid(i*stepX);
@@ -539,9 +535,10 @@ THREEDC.pieChart = function (coords) {
 	}
 
     _chart.build=function () {
-    	var _data=_chart._group.top(Infinity);
-
+		_chart._dimension.filterAll();
+    	var _data=_chart._group.top(Infinity).filter(function(d) { return d.value > 0; });
    	    var valTotal=_chart._dimension.top(Infinity).length;
+   	    console.log('length'+_chart._dimension.top(Infinity).length);
 		var angPrev=0;
 		var angToMove=0;
 
@@ -551,7 +548,7 @@ THREEDC.pieChart = function (coords) {
 		}
 		for (var i = 0; i < _data.length; i++) {
 			if(_data[i].value===0){
-				break;
+				//break;
 			}
 			var origin_color=Math.random() * 0xffffff
 		        var material = new THREE.MeshPhongMaterial( {color: origin_color,

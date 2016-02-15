@@ -180,37 +180,46 @@ function init () {
   );
   plane.rotation.x = Math.PI / 2; //xz plane
 
-/*
-  var bars =  THREEDC.barsChart([300,0,0]);
+
+  var bars =  THREEDC.barsChart([0,0,0]);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .color(0xff8000);
+
+    var line =  THREEDC.lineChart([-250,0,0]);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .height(200)
+      .color(0x0000ff);
+
+    var line =  THREEDC.barsChart([-500,0,0]);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
       .width(200)
       .height(200)
       .color(0xff0000);
 
-    var line =  THREEDC.lineChart([0,0,0]);
+    var line =  THREEDC.smoothCurveChart([500,0,0]);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .height(200)
-      .color(0xff00ff);
-      */
-  var bars =  THREEDC.smoothCurveChart([300,0,0]);
+      .color('violet');
+
+
+      
+
+
+  var bars =  THREEDC.pieChart([325,50,0]);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
-      .width(200)
-      .height(200)
-      .color(0xf000ff);
-
-  var line =  THREEDC.lineChart([0,0,0]);
-       line.group(groupByMonth)
-      .dimension(dimByMonth)
-      .width(200)
-      .height(200)
-      .numberOfXLabels(20)
-      .numberOfYLabels(10)
-      .color(0x0000ff);
-
+      .radius(100)
+      .color(0xff0000);
 
   THREEDC.renderAll();
 
