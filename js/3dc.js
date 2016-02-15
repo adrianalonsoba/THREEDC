@@ -130,7 +130,7 @@ THREEDC.baseMixin = function (_chart) {
 
 		function addFilter (mesh) {
 			console.log('click');
-			_chart._dimension.filterAll();
+			//_chart._dimension.filterAll();
 			_chart._dimension.filter(mesh.data.key);
 			for (var i = 0; i < THREEDC.allCharts.length; i++) {
 				THREEDC.allCharts[i].reBuild();
@@ -139,7 +139,7 @@ THREEDC.baseMixin = function (_chart) {
 
 		function addIntervalFilter () {
 			console.log('mouseup');
-			_chart._dimension.filterAll();
+			//_chart._dimension.filterAll();
 			if(THREEDC.intervalFilter[0]===THREEDC.intervalFilter[1]){
 				_chart._dimension.filter(THREEDC.intervalFilter[0]);
 			}else{
