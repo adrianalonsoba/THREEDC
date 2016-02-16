@@ -38,6 +38,7 @@ THREEDC.baseMixin = function (_chart) {
 			xGrids:[],
 			yGrids:[],
 			//by default
+			_gridsOn:false,
 			_numberOfXLabels:9,
 			_numberOfYLabels:9,
 			_width:100,
@@ -64,6 +65,9 @@ THREEDC.baseMixin = function (_chart) {
     	THREEDC.allCharts.splice(index, 1);
     }
 
+    /*rebuild the chart when a filter is added
+    * or a chart is moved
+    */
     _chart.reBuild=function(){
      	_chart.removeEvents();
      	_chart.removeLabels();
@@ -201,6 +205,17 @@ THREEDC.baseMixin = function (_chart) {
 		}
     }
 
+    _chart.gridsOn=function() {
+    	_chart._gridsOn=true;
+
+    	return _chart;
+    }
+
+    _chart.gridsOff=function() {
+    	_chart._gridsOn=false;
+
+    	return _chart;
+    }
 
     _chart.addGrids=function(){
 
@@ -293,7 +308,6 @@ THREEDC.baseMixin = function (_chart) {
 
  	 	for (var i = 0; i <_chart._numberOfYLabels+1; i++) {
     		putYLabel(i*stepY,i*stepYValue);
-    		//putYGrid(i*stepY);
     	};
 
     	/*
@@ -313,6 +327,9 @@ THREEDC.baseMixin = function (_chart) {
     	
     	_chart.renderLabels();
 
+	    /* gets the max width of an axis label to calculate the separation 
+   		*  between the chart border and the label
+		*/
     	function getMaxWidth (axis) {
 			var txt = axis;
 			var curveSeg = 3;
@@ -538,7 +555,9 @@ THREEDC.pieChart = function (coords) {
 		_chart._dimension.filterAll();
     	var _data=_chart._group.top(Infinity).filter(function(d) { return d.value > 0; });
    	    var valTotal=_chart._dimension.top(Infinity).length;
-   	    console.log('length'+_chart._dimension.top(Infinity).length);
+   	    console.log('length dimension'+_chart._dimension.top(Infinity).length);
+   	    console.log('length group'+_chart._group.top(Infinity).length);
+
 		var angPrev=0;
 		var angToMove=0;
 
@@ -668,7 +687,7 @@ THREEDC.barsChart = function (coords){
 
 	    _chart.addEvents();
 	    _chart.addLabels();
-	    _chart.addGrids();
+		if (_chart._gridsOn) _chart.addGrids();
     }
    
     return _chart;
@@ -812,7 +831,8 @@ THREEDC.lineChart= function (coords) {
 
 		_chart.addEvents();
 		_chart.addLabels();
-	    _chart.addGrids();
+		if (_chart._gridsOn) _chart.addGrids();
+	    
 
     }
 
@@ -894,7 +914,7 @@ THREEDC.smoothCurveChart= function (coords) {
 
 		_chart.addEvents();
 		_chart.addLabels();
-		_chart.addGrids();
+		if (_chart._gridsOn) _chart.addGrids();
     }
 
     return _chart;

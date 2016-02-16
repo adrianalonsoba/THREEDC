@@ -188,15 +188,17 @@ function init () {
       .height(200)
       .numberOfXLabels(7)
       .numberOfYLabels(4)
+      .gridsOn()
       .color(0xff8000);
 
-    var line =  THREEDC.lineChart([-250,0,0]);
-       line.group(groupByMonth)
+    var line1 =  THREEDC.lineChart([-250,0,0]);
+       line1.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
       .numberOfXLabels(50)
       .numberOfYLabels(5)
       .height(200)
+      .gridsOn()
       .color(0x0000ff);
 
     var line =  THREEDC.barsChart([-500,0,0]);
@@ -204,12 +206,14 @@ function init () {
       .dimension(dimByMonth)
       .width(200)
       .height(200)
+      .gridsOn()
       .color(0xff0000);
 
     var line =  THREEDC.smoothCurveChart([500,0,0]);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
+      .gridsOn()
       .height(200)
       .color('violet');
 
@@ -220,9 +224,9 @@ function init () {
       .color(0xff0000);
 
 
-
   THREEDC.renderAll();
 
+     
 
   //GUI//
   var gui = new dat.GUI();
