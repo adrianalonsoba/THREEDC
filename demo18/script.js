@@ -187,6 +187,7 @@ function init () {
       .width(200)
       .height(200)
       .numberOfXLabels(7)
+      .gridsOn()
       .numberOfYLabels(4)
       .color(0xff8000);
 
@@ -196,6 +197,7 @@ function init () {
       .width(200)
       .numberOfXLabels(50)
       .numberOfYLabels(5)
+      .gridsOn()
       .height(200)
       .color(0x0000ff);
 
@@ -204,11 +206,13 @@ function init () {
       .dimension(dimByMonth)
       .width(200)
       .height(200)
+      .gridsOn()
       .color(0xff0000);
 
     var line =  THREEDC.smoothCurveChart([500,0,0]);
        line.group(groupByMonth)
       .dimension(dimByMonth)
+      .gridsOn()
       .width(200)
       .height(200)
       .color('violet');

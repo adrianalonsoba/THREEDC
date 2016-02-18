@@ -9,12 +9,9 @@ var THREEDC={
 
 //it creates a panel to put the charts which are related
 THREEDC.addPanel=function (coords,numberOfCharts) {
+ //_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 
-  var xSize=500;
-  var ySize=500;
-
-
-  var geometry = new THREE.CubeGeometry( xSize, ySize, 2);
+  var geometry = new THREE.CubeGeometry( 500, 500, 2);
   var material = new THREE.MeshPhongMaterial( {
   											   //color:0xff00ff,
                                                specular: 0x999999,
@@ -25,14 +22,8 @@ THREEDC.addPanel=function (coords,numberOfCharts) {
     } );
 
   var panel = new THREE.Mesh(geometry, material);
-  panel.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
-  panel.anchorPoints=[];
-  panel.anchorPoints[0]=new THREE.Vector3( coords[0]-xSize/2, coords[1]-ySize/2, coords[2] );;
-  panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
 
   scene.add(panel);
-
-  return panel;
 }
 
 THREEDC.renderAll=function() {
@@ -636,20 +627,15 @@ THREEDC.pieChart = function (coords) {
 	return _chart;
 }
 
-THREEDC.barsChart = function (coords,panel){
+THREEDC.barsChart = function (coords){
 
-	if(coords==undefined){
-		coords=[0,0,0];
-	}
+   if(coords==undefined){
+   	coords=[0,0,0];
+   }
 
 	var _chart = THREEDC.baseMixin({});
 	var unsort_data;
-
-	if(panel){
-		_chart.coords=panel.anchorPoints[0];
-	}else{
-		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
-	}
+	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
