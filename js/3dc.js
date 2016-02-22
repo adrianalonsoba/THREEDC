@@ -27,10 +27,27 @@ THREEDC.addPanel=function (coords,numberOfCharts) {
   var panel = new THREE.Mesh(geometry, material);
   panel.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
   panel.anchorPoints=[];
-  panel.anchorPoints[0]=new THREE.Vector3( coords[0]-xSize/2, coords[1]-ySize/2, coords[2] );;
+ // panel.anchorPoints[0]=new THREE.Vector3( coords[0]-xSize/2, coords[1]-ySize/2, coords[2] );
+
+  makeAnchorPoints();
   panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
 
   scene.add(panel);
+
+  function makeAnchorPoints () {
+  	var numberOfAnchorPoints=numberOfCharts;
+
+  	if(numberOfAnchorPoints===4){
+		panel.anchorPoints[0]={filled:false,
+							   coords:new THREE.Vector3( coords[0]-xSize/2, coords[1]-ySize/2, coords[2] )};
+		panel.anchorPoints[1]={filled:false,
+							   coords:new THREE.Vector3( coords[0], coords[1]-ySize/2, coords[2] )};
+		panel.anchorPoints[2]={filled:false,
+							   coords:new THREE.Vector3( coords[0]-xSize/2, coords[1], coords[2] )};
+		panel.anchorPoints[3]={filled:false,
+			                   coords:new THREE.Vector3( coords[0], coords[1], coords[2] )};
+  	}
+  }
 
   return panel;
 }
@@ -645,8 +662,16 @@ THREEDC.barsChart = function (coords,panel){
 	var _chart = THREEDC.baseMixin({});
 	var unsort_data;
 
+	console.log(panel.anchorPoints[0].coords);
+
 	if(panel){
-		_chart.coords=panel.anchorPoints[0];
+		for (var i = 0; i < panel.anchorPoints.length; i++) {
+			if(!panel.anchorPoints[i].filled){
+				_chart.coords=panel.anchorPoints[i].coords;
+				panel.anchorPoints[i].filled=true;
+				break;
+			}
+		};
 	}else{
 		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	}
