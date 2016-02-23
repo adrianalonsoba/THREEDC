@@ -173,6 +173,14 @@ THREEDC.baseMixin = function (_chart) {
 					controls.enabled=true;
 					THREEDC.intervalFilter[1]=mesh.data.key;
 					addIntervalFilter();
+				}else{
+			      if(THREEDC.chartToDrag){
+			        controls.enabled=true;
+			        container.style.cursor = 'auto';
+			        SELECTED=null;
+			        THREEDC.chartToDrag=null;
+			        plane.material.visible=false;
+			      }
 				}
 			});
 
