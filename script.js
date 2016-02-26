@@ -295,23 +295,14 @@ function onMouseMove( event ) {
     plane.material.visible=true;
     var intersects = raycaster.intersectObject( plane );
     if ( intersects.length > 0 ) {
-      //SELECTED.position.copy( intersects[ 0 ].point.sub( offset ) );
-      // AL HACERLO PUNTO A PUNTO SE CREA UN DESPLAZAMIENTO QUE NO PASA CON EL position.copy
-      //SELECTED.position.x=intersects[ 0 ].point.sub( offset ).x;
-      //SELECTED.position.y=intersects[ 0 ].point.sub( offset ).y;
-      //SELECTED.position.z=intersects[ 0 ].point.sub( offset ).z;
-
-     // THREEDC.chartToDrag.coords[0]=intersects[ 0 ].point.sub( offset ).x;
-      //THREEDC.chartToDrag.coords[1]=intersects[ 0 ].point.sub( offset ).y;
-      //THREEDC.chartToDrag.coords[2]=intersects[ 0 ].point.sub( offset ).z;
-      //for (var i = 0; i < THREEDC.chartToDrag.parts.length; i++) {
-        //THREEDC.chartToDrag.parts[i].position.copy(intersects[ 0 ].point.sub( offset ) );
-      //};
-      THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
-      if(paint){
-        THREEDC.chartToDrag.reBuild();
-      } 
-      !paint;
+      if(SELECTED.isPanel){
+        SELECTED.position.copy(intersects[ 0 ].point.sub( offset ));
+        SELECTED.coords.copy( SELECTED.position);
+      }else{
+        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
+        if(paint) THREEDC.chartToDrag.reBuild(); 
+        !paint;
+      }
     }
     return;
   }

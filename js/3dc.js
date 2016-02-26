@@ -26,28 +26,63 @@ THREEDC.addPanel=function (coords,numberOfCharts) {
 
   var panel = new THREE.Mesh(geometry, material);
   panel.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
-  panel.anchorPoints=[];
- // panel.anchorPoints[0]=new THREE.Vector3( coords[0]-xSize/2, coords[1]-ySize/2, coords[2] );
+  panel.charts=[];
 
-  makeAnchorPoints();
-  panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
-
-  scene.add(panel);
-
-  function makeAnchorPoints () {
+   panel.makeAnchorPoints =function() {
+   	panel.anchorPoints=[];
   	var numberOfAnchorPoints=numberOfCharts;
 
   	if(numberOfAnchorPoints===4){
 		panel.anchorPoints[0]={filled:false,
-							   coords:new THREE.Vector3( coords[0]-xSize/2, coords[1]-ySize/2, coords[2] )};
+							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
 		panel.anchorPoints[1]={filled:false,
-							   coords:new THREE.Vector3( coords[0], coords[1]-ySize/2, coords[2] )};
+							   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
 		panel.anchorPoints[2]={filled:false,
-							   coords:new THREE.Vector3( coords[0]-xSize/2, coords[1], coords[2] )};
+							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
 		panel.anchorPoints[3]={filled:false,
-			                   coords:new THREE.Vector3( coords[0], coords[1], coords[2] )};
+			                   coords:new THREE.Vector3( panel.coords.x,panel.coords.y, panel.coords.z )};
   	}
   }
+
+  panel.makeAnchorPoints();
+  panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
+  panel.isPanel=true;
+
+  panel.reBuild=function() {
+  	console.log('PANEL REBUILD');
+  	panel.makeAnchorPoints();
+  	for (var i = 0; i < panel.charts.length; i++) {
+  		panel.charts[i].reBuild();
+  	};
+  }
+
+  scene.add(panel);
+
+	domEvents.bind(panel, 'mousedown', function(object3d){ 
+		if(parameters.activate){
+			container.style.cursor = 'move';
+			controls.enabled=false;
+			SELECTED=panel;
+			THREEDC.chartToDrag=panel;
+		    plane.position.copy( panel.position );
+		    raycaster.setFromCamera( mouse, camera );
+		    var intersects = raycaster.intersectObject( plane );
+		    if ( intersects.length > 0 ) {
+		      offset.copy( intersects[ 0 ].point ).sub( plane.position );
+		    }
+		}
+	});
+
+	domEvents.bind(panel, 'mouseup', function(object3d){ 
+      if(THREEDC.chartToDrag){
+        controls.enabled=true;
+        container.style.cursor = 'auto';
+        SELECTED=null;
+        THREEDC.chartToDrag=null;
+        plane.material.visible=false;
+        panel.reBuild();
+      }
+	});
 
   return panel;
 }
@@ -122,6 +157,16 @@ THREEDC.baseMixin = function (_chart) {
     		scene.remove(_chart.parts[i]);
     	}; 
     	_chart.parts=[];
+    	if(_chart.panel){
+			for (var i = 0; i < _chart.panel.anchorPoints.length; i++) {
+				if(!_chart.panel.anchorPoints[i].filled){
+					_chart.coords=_chart.panel.anchorPoints[i].coords;
+					_chart.panel.anchorPoints[i].filled=true;
+					_chart.panel.charts.push(_chart);
+					break;
+				}
+			};
+    	}
     	_chart.render();
     }
 
@@ -677,6 +722,8 @@ THREEDC.barsChart = function (coords,panel){
 			if(!panel.anchorPoints[i].filled){
 				_chart.coords=panel.anchorPoints[i].coords;
 				panel.anchorPoints[i].filled=true;
+				panel.charts.push(_chart);
+				_chart.panel=panel;
 				break;
 			}
 		};
