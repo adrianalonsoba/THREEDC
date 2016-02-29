@@ -180,8 +180,8 @@ function init () {
   );
   plane.rotation.x = Math.PI / 2; //xz plane
 
-
-  var panel1=THREEDC.addPanel([0,0,0],4);
+/*
+  var panel1=THREEDC.addWidget([0,0,0],4);
 
 
   var bars =  THREEDC.barsChart([0,0,0],panel1);
@@ -220,6 +220,46 @@ function init () {
       .height(200)
       .gridsOn()
       .color(0xff0032);
+      */
+
+  var panel2=THREEDC.addWidget([0,0,0],4);
+
+  var bars =  THREEDC.barsChart([0,0,0],panel2);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .numberOfXLabels(7)
+      .gridsOn()
+      .numberOfYLabels(4)
+      .color(0xff8000);
+
+    var line =  THREEDC.lineChart([-250,0,0],panel2);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0x0000ff);
+
+
+
+    var line =  THREEDC.smoothCurveChart([500,0,0],panel2);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .gridsOn()
+      .width(200)
+      .height(200)
+      .color('violet');
+
+  var bars =  THREEDC.pieChart([325,50,0],panel2);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .radius(100)
+      .color(0xff0000);
+
 
 
 
@@ -295,7 +335,7 @@ function onMouseMove( event ) {
     plane.material.visible=true;
     var intersects = raycaster.intersectObject( plane );
     if ( intersects.length > 0 ) {
-      if(SELECTED.isPanel){
+      if(SELECTED.isWidget){
         SELECTED.position.copy(intersects[ 0 ].point.sub( offset ));
         SELECTED.coords.copy( SELECTED.position);
       }else{

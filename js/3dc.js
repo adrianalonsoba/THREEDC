@@ -1,14 +1,14 @@
 var THREEDC={
-	version:'0.1-c',
+	version:'0.1-b',
 	allCharts:[],
-	allPanels:[],
+	allwidgets:[],
 	textLabel:null,
 	chartToDrag:null,
 	intervalFilter:[]
 };
 
-//it creates a panel to put the charts which are related
-THREEDC.addPanel=function (coords,numberOfCharts) {
+//it creates a widget to put the charts which are related
+THREEDC.addWidget=function (coords,numberOfCharts) {
 
   var xSize=500;
   var ySize=500;
@@ -24,47 +24,53 @@ THREEDC.addPanel=function (coords,numberOfCharts) {
                                                transparent: true
     } );
 
-  var panel = new THREE.Mesh(geometry, material);
-  panel.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
-  panel.charts=[];
+  var widget = new THREE.Mesh(geometry, material);
+  widget.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
+  widget.charts=[];
 
-   panel.makeAnchorPoints =function() {
-   	panel.anchorPoints=[];
+  widget.makeAnchorPoints =function() {
+   	widget.anchorPoints=[];
   	var numberOfAnchorPoints=numberOfCharts;
 
   	if(numberOfAnchorPoints===4){
-		panel.anchorPoints[0]={filled:false,
-							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-		panel.anchorPoints[1]={filled:false,
-							   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
-		panel.anchorPoints[2]={filled:false,
-							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-		panel.anchorPoints[3]={filled:false,
-			                   coords:new THREE.Vector3( panel.coords.x,panel.coords.y, panel.coords.z )};
+		widget.anchorPoints[0]={filled:false,
+							   coords:new THREE.Vector3( widget.coords.x-xSize/2, widget.coords.y-ySize/2, widget.coords.z )};
+		widget.anchorPoints[1]={filled:false,
+							   coords:new THREE.Vector3( widget.coords.x, widget.coords.y-ySize/2, widget.coords.z )};
+		widget.anchorPoints[2]={filled:false,
+							   coords:new THREE.Vector3( widget.coords.x-xSize/2, widget.coords.y, widget.coords.z )};
+		widget.anchorPoints[3]={filled:false,
+			                   coords:new THREE.Vector3( widget.coords.x,widget.coords.y, widget.coords.z )};
   	}
   }
 
-  panel.makeAnchorPoints();
-  panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
-  panel.isPanel=true;
+  widget.makeAnchorPoints();
+  widget.position.set(widget.coords.x,widget.coords.y,widget.coords.z);
+  widget.isWidget=true;
 
-  panel.reBuild=function() {
-  	console.log('PANEL REBUILD');
-  	panel.makeAnchorPoints();
-  	for (var i = 0; i < panel.charts.length; i++) {
-  		panel.charts[i].reBuild();
+  widget.reBuild=function() {
+  	widget.makeAnchorPoints();
+  	for (var i = 0; i < widget.charts.length; i++) {
+  		widget.charts[i].reBuild();
   	};
   }
 
-  scene.add(panel);
+  widget.remove=function() {
+  	scene.remove(widget);
+  	for (var i = 0; i < widget.charts.length; i++) {
+  		widget.charts[i].remove();
+  	};
+  }
 
-	domEvents.bind(panel, 'mousedown', function(object3d){ 
+  scene.add(widget);
+
+	domEvents.bind(widget, 'mousedown', function(object3d){ 
 		if(parameters.activate){
 			container.style.cursor = 'move';
 			controls.enabled=false;
-			SELECTED=panel;
-			THREEDC.chartToDrag=panel;
-		    plane.position.copy( panel.position );
+			SELECTED=widget;
+			THREEDC.chartToDrag=widget;
+		    plane.position.copy( widget.position );
 		    raycaster.setFromCamera( mouse, camera );
 		    var intersects = raycaster.intersectObject( plane );
 		    if ( intersects.length > 0 ) {
@@ -73,18 +79,18 @@ THREEDC.addPanel=function (coords,numberOfCharts) {
 		}
 	});
 
-	domEvents.bind(panel, 'mouseup', function(object3d){ 
+	domEvents.bind(widget, 'mouseup', function(object3d){ 
       if(THREEDC.chartToDrag){
         controls.enabled=true;
         container.style.cursor = 'auto';
         SELECTED=null;
         THREEDC.chartToDrag=null;
         plane.material.visible=false;
-        panel.reBuild();
+        widget.reBuild();
       }
 	});
 
-  return panel;
+  return widget;
 }
 
 THREEDC.renderAll=function() {
@@ -157,12 +163,12 @@ THREEDC.baseMixin = function (_chart) {
     		scene.remove(_chart.parts[i]);
     	}; 
     	_chart.parts=[];
-    	if(_chart.panel){
-			for (var i = 0; i < _chart.panel.anchorPoints.length; i++) {
-				if(!_chart.panel.anchorPoints[i].filled){
-					_chart.coords=_chart.panel.anchorPoints[i].coords;
-					_chart.panel.anchorPoints[i].filled=true;
-					_chart.panel.charts.push(_chart);
+    	if(_chart.widget){
+			for (var i = 0; i < _chart.widget.anchorPoints.length; i++) {
+				if(!_chart.widget.anchorPoints[i].filled){
+					_chart.coords=_chart.widget.anchorPoints[i].coords;
+					_chart.widget.anchorPoints[i].filled=true;
+					_chart.widget.charts.push(_chart);
 					break;
 				}
 			};
@@ -619,12 +625,18 @@ THREEDC.baseMixin = function (_chart) {
 
 }
 
-THREEDC.pieChart = function (coords) {
+THREEDC.pieChart = function (coords,widget) {
 
    if(coords==undefined){
    	coords=[0,0,0];
    }
-
+	//by default
+	var _radius=50;
+	
+	var _chart = THREEDC.baseMixin({});
+	_chart._width=_radius;
+	_chart._height=_radius;
+	var _data;
 	var  extrudeOpts = {curveSegments:30,
 						amount: 4,
 						bevelEnabled: true,
@@ -632,14 +644,22 @@ THREEDC.pieChart = function (coords) {
 						steps: 2,
 						bevelSize: 1,
 						bevelThickness: 1 };
-	//by default
-	var _radius=50;
-	var _chart = THREEDC.baseMixin({});
-	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
-	_chart._width=_radius;
-	_chart._height=_radius;
-	var _data;
-	
+
+	if(widget){
+		for (var i = 0; i < widget.anchorPoints.length; i++) {
+			if(!widget.anchorPoints[i].filled){
+				_chart.coords=widget.anchorPoints[i].coords;
+				_chart.coords.x=_chart.coords.x+_chart._width;
+				_chart.coords.y=_chart.coords.y+_chart._height;
+				widget.anchorPoints[i].filled=true;
+				widget.charts.push(_chart);
+				_chart.widget=widget;
+				break;
+			}
+		};
+	}else{
+		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	}
 
 	THREEDC.allCharts.push(_chart);
 
@@ -706,7 +726,7 @@ THREEDC.pieChart = function (coords) {
 	return _chart;
 }
 
-THREEDC.barsChart = function (coords,panel){
+THREEDC.barsChart = function (coords,widget){
 
 	if(coords==undefined){
 		coords=[0,0,0];
@@ -715,15 +735,14 @@ THREEDC.barsChart = function (coords,panel){
 	var _chart = THREEDC.baseMixin({});
 	var unsort_data;
 
-	console.log(panel.anchorPoints[0].coords);
 
-	if(panel){
-		for (var i = 0; i < panel.anchorPoints.length; i++) {
-			if(!panel.anchorPoints[i].filled){
-				_chart.coords=panel.anchorPoints[i].coords;
-				panel.anchorPoints[i].filled=true;
-				panel.charts.push(_chart);
-				_chart.panel=panel;
+	if(widget){
+		for (var i = 0; i < widget.anchorPoints.length; i++) {
+			if(!widget.anchorPoints[i].filled){
+				_chart.coords=widget.anchorPoints[i].coords;
+				widget.anchorPoints[i].filled=true;
+				widget.charts.push(_chart);
+				_chart.widget=widget;
 				break;
 			}
 		};
@@ -855,14 +874,26 @@ THREEDC.simpleLineChart= function (coords) {
 
 }
 
-THREEDC.lineChart= function (coords) {
+THREEDC.lineChart= function (coords,widget) {
 
 	if(coords==undefined){
 		coords=[0,0,0];
 	}
 
 	var _chart = THREEDC.baseMixin({});
-	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	if(widget){
+		for (var i = 0; i < widget.anchorPoints.length; i++) {
+			if(!widget.anchorPoints[i].filled){
+				_chart.coords=widget.anchorPoints[i].coords;
+				widget.anchorPoints[i].filled=true;
+				widget.charts.push(_chart);
+				_chart.widget=widget;
+				break;
+			}
+		};
+	}else{
+		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	}
 	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
@@ -955,14 +986,26 @@ THREEDC.lineChart= function (coords) {
 }
 
 //problema con emissive al cambiar de color(probablemente por ser linebasic material)
-THREEDC.smoothCurveChart= function (coords) {
+THREEDC.smoothCurveChart= function (coords,widget) {
 
 	if(coords==undefined){
 		coords=[0,0,0];
 	}
 
 	var _chart = THREEDC.baseMixin({});
-	_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	if(widget){
+		for (var i = 0; i < widget.anchorPoints.length; i++) {
+			if(!widget.anchorPoints[i].filled){
+				_chart.coords=widget.anchorPoints[i].coords;
+				widget.anchorPoints[i].filled=true;
+				widget.charts.push(_chart);
+				_chart.widget=widget;
+				break;
+			}
+		};
+	}else{
+		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+	}
 	_chart._color=0x0000ff;
 
 	THREEDC.allCharts.push(_chart);
