@@ -181,7 +181,7 @@ function init () {
   plane.rotation.x = Math.PI / 2; //xz plane
 
 /*
-  var panel1=THREEDC.addWidget([0,0,0],4);
+  var panel1=THREEDC.addPanel([0,0,0],4);
 
 
   var bars =  THREEDC.barsChart([0,0,0],panel1);
@@ -193,8 +193,6 @@ function init () {
       .numberOfYLabels(4)
       .gridsOn()
       .color(0xff8000);
-
-
 
     var line =  THREEDC.barsChart([0,0,0],panel1);
        line.group(groupByMonth)
@@ -222,7 +220,7 @@ function init () {
       .color(0xff0032);
       */
 
-  var panel2=THREEDC.addWidget([0,0,0],4);
+  var panel2=THREEDC.addPanel([0,0,0],4);
 
   var bars =  THREEDC.barsChart([0,0,0],panel2);
   bars.group(groupByOrg)
@@ -260,9 +258,6 @@ function init () {
       .radius(100)
       .color(0xff0000);
 
-
-
-
   THREEDC.renderAll();
 
      
@@ -294,11 +289,10 @@ function dragTrigger () {
   if(parameters.activate){
     scene.add( plane );
     domEvents.bind(plane, 'mouseup', function(object3d){
-      console.log('mouseup de plano');
       if(THREEDC.chartToDrag){
-      //  THREEDC.chartToDrag.reBuild();
         controls.enabled=true;
         container.style.cursor = 'auto';
+        if(SELECTED.isPanel) SELECTED.reBuild();
         SELECTED=null;
         THREEDC.chartToDrag=null;
         plane.material.visible=false;
@@ -335,7 +329,7 @@ function onMouseMove( event ) {
     plane.material.visible=true;
     var intersects = raycaster.intersectObject( plane );
     if ( intersects.length > 0 ) {
-      if(SELECTED.isWidget){
+      if(SELECTED.isPanel){
         SELECTED.position.copy(intersects[ 0 ].point.sub( offset ));
         SELECTED.coords.copy( SELECTED.position);
       }else{
