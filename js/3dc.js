@@ -264,7 +264,7 @@ THREEDC.baseMixin = function (_chart) {
 			  scene.remove(THREEDC.textLabel);
 		      var txt = mesh.name;
 		      var curveSeg = 3;
-		      var material = new THREE.MeshPhongMaterial( {color:0xf3860a,
+		      var material = new THREE.MeshPhongMaterial( {color:mesh.origin_color,
 		      											   specular: 0x999999,
                                             	           shininess: 100,
                                             	           shading : THREE.SmoothShading			      											   
@@ -1108,6 +1108,10 @@ THREEDC.bubbleChart= function (coords) {
 			_chart.parts.push(sphere);
 			x+=100;
 		});
+
+		//_chart.addEvents();
+		//_chart.addLabels();
+		//if (_chart._gridsOn) _chart.addGrids();
 	}
 
 	return _chart;

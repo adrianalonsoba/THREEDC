@@ -160,6 +160,7 @@ function init () {
   });
 
   cf=crossfilter(parsed_data);
+  console.log(parsed_data);
 
   //create a dimension by month
 
@@ -258,6 +259,37 @@ function init () {
       .radius(100)
       .color(0xff0000);
 
+
+  var panel3=THREEDC.addPanel([200,0,200],4);
+
+   var bars =  THREEDC.pieChart([325,50,0],panel3);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .radius(100)
+      .color(0xffff00);
+
+     var line =  THREEDC.lineChart([-250,0,0],panel3);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0x00ffff);
+
+
+       	var line =  THREEDC.barsChart([-250,0,0],panel3);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(500)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0xff0000);
+
+
   THREEDC.renderAll();
 
      
@@ -341,7 +373,6 @@ function onMouseMove( event ) {
     return;
   }
 }
-
 
 function animate()
 {
