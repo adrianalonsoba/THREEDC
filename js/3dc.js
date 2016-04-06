@@ -753,7 +753,6 @@ THREEDC.barsChart = function (coords,panel){
 
 	THREEDC.allCharts.push(_chart);
 
-
 	_chart.build = function() {
 
 	   if(_chart._group===undefined){
