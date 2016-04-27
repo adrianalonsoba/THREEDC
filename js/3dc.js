@@ -1116,6 +1116,39 @@ THREEDC.bubbleChart= function (coords) {
 	return _chart;
 }
 
+THREEDC.fileTree= function (coords) {
+
+	var _chart = THREEDC.baseMixin({});
+	var test_data=[{id:'root',parent:null,size:200},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500}]
+
+	THREEDC.allCharts.push(_chart);
+
+	_chart.build= function () {
+
+		var x=0;
+		var y=0;
+		var z=0;
+
+		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+
+		for (var i = 0; i < test_data.length; i++) {
+			var geometry = new THREE.SphereGeometry(test_data[i].size/10,32,32);
+			var material = new THREE.MeshLambertMaterial( {} );
+			material.color.setHex( Math.random() * 0xffffff );
+			var sphere = new THREE.Mesh( geometry, material );
+
+			sphere.position.set(x+coords[0],y+coords[1],z+coords[2]);
+			x+=200;
+			_chart.parts.push(sphere);
+		};
+		//_chart.addEvents();
+		//_chart.addLabels();
+		//if (_chart._gridsOn) _chart.addGrids();
+	}
+
+	return _chart;
+}
+
 function get_random_color() {
   function c() {
     return Math.floor(Math.random()*256).toString(16)

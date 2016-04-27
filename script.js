@@ -220,7 +220,8 @@ function init () {
       .gridsOn()
       .color(0xff0032);
       */
-
+      ////////////////////////////////////////////////////////////////7
+/*
   var panel2=THREEDC.addPanel([0,0,0],4);
 
   var bars =  THREEDC.barsChart([0,0,0],panel2);
@@ -288,8 +289,9 @@ function init () {
       .gridsOn()
       .height(200)
       .color(0xff0000);
-
-
+*/
+//////////////////////////////////////////
+var line =  THREEDC.fileTree([0,0,0]);
   THREEDC.renderAll();
 
      
