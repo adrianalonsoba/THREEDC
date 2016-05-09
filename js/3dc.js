@@ -1116,12 +1116,29 @@ THREEDC.bubbleChart= function (coords) {
 	return _chart;
 }
 
+
+
 THREEDC.fileTree= function (coords) {
 
 	var _chart = THREEDC.baseMixin({});
-	var test_data=[{id:'root',parent:null,size:200},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500}]
+	//NECESITO SABER EN QU FORMATO VAN A VENIR LOS DATOS PARA CONSTRUIR UNA ESTRUCTURA QUE FACILITE PINTARLOS
+	var test_data=[{id:'root',parent:null,size:200},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500}];
+
+	var parents=[];
+
+	function createDataStructure (data) {
+		//crear estructura que rellenes padres y que cada padre tenga un array de hijos, que a su vez podran ser o no padres
+		for (var i = 0; i < data.length; i++) {
+			//data.[i] tiene padre? 
+				//si-> añadir a ese padre a parents si no esta ya y añadirle como hijo en un vector:childs.push({id:'pepe',parent:'root',size:100}) p.e.
+				//no--> es raiz, lo guardo al principio de parents
+		};
+	}
 
 	THREEDC.allCharts.push(_chart);
+
+	//usar data para construir el arbol iterativamente
+
 
 	_chart.build= function () {
 
