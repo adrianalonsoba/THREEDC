@@ -291,10 +291,73 @@ function init () {
       .color(0xff0000);
 */
 //////////////////////////////////////////
-var line =  THREEDC.fileTree([0,0,0]);
-  THREEDC.renderAll();
 
-     
+       var panel2=THREEDC.addPanel([0,0,0],4);
+
+  var bars =  THREEDC.barsChart([0,0,0],panel2);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .numberOfXLabels(7)
+      .gridsOn()
+      .numberOfYLabels(4)
+      .color(0xff8000);
+
+    var line =  THREEDC.lineChart([-250,0,0],panel2);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0x0000ff);
+
+    var line =  THREEDC.smoothCurveChart([500,0,0],panel2);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .gridsOn()
+      .width(200)
+      .height(200)
+      .color('violet');
+
+  var bars =  THREEDC.pieChart([325,50,0],panel2);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .radius(100)
+      .color(0xff0000);
+
+  var panel3=THREEDC.addPanel([200,0,200],4);
+
+   var bars =  THREEDC.pieChart([325,50,0],panel3);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .radius(100)
+      .color(0xffff00);
+
+     var line =  THREEDC.lineChart([-250,0,0],panel3);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(200)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0x00ffff);
+
+        var line =  THREEDC.barsChart([-250,0,0],panel3);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(500)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0xff0000);
+
+
+  THREEDC.renderAll();
 
   //GUI//
   var gui = new dat.GUI();
