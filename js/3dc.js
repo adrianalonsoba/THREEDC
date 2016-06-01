@@ -628,6 +628,15 @@ THREEDC.baseMixin = function (_chart) {
     	return _chart;
     }
 
+    _chart.depth=function(number){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._depth=number;
+    	return _chart;
+    }
+
 	return _chart;
 
 }
@@ -643,14 +652,9 @@ THREEDC.pieChart = function (coords,panel) {
 	var _chart = THREEDC.baseMixin({});
 	_chart._width=_radius;
 	_chart._height=_radius;
+	//by default
+	_chart._depth=5;
 	var _data;
-	var  extrudeOpts = {curveSegments:30,
-						amount: 4,
-						bevelEnabled: true,
-						bevelSegments: 4,
-						steps: 2,
-						bevelSize: 1,
-						bevelThickness: 1 };
 
 	if(panel){
 		for (var i = 0; i < panel.anchorPoints.length; i++) {
@@ -681,6 +685,13 @@ THREEDC.pieChart = function (coords,panel) {
 		_chart._dimension.filterAll();
     	var _data=_chart._group.top(Infinity).filter(function(d) { return d.value > 0; });
    	    var valTotal=_chart._dimension.top(Infinity).length;
+		var  extrudeOpts = {curveSegments:30,
+							amount: _chart._depth,
+							bevelEnabled: true,
+							bevelSegments: 4,
+							steps: 2,
+							bevelSize: 1,
+							bevelThickness: 1 };
    	    console.log('length dimension'+_chart._dimension.top(Infinity).length);
    	    console.log('length group'+_chart._group.top(Infinity).length);
 
@@ -739,7 +750,13 @@ THREEDC.barsChart = function (coords,panel){
 		coords=[0,0,0];
 	}
 
+
+
 	var _chart = THREEDC.baseMixin({});
+
+		//by default
+	_chart._depth=5;
+	
 	var unsort_data;
 
 
@@ -801,7 +818,7 @@ THREEDC.barsChart = function (coords,panel){
 
 		for (var i = 0; i < _data.length; i++) {
 	      	var barHeight=(_chart._height*_data[i].value)/topValue;
-	 		var geometry = new THREE.CubeGeometry( barWidth, barHeight, 5);
+	 		var geometry = new THREE.CubeGeometry( barWidth, barHeight, _chart._depth);
 			y=barHeight/2;
 			var origin_color=_chart._color;
    		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
@@ -813,7 +830,7 @@ THREEDC.barsChart = function (coords,panel){
             } );
 			var bar = new THREE.Mesh(geometry, material);
 			bar.origin_color=origin_color;
-			bar.position.set(x+_chart.coords.x,y+_chart.coords.y,_chart.coords.z);
+			bar.position.set(x+_chart.coords.x,y+_chart.coords.y,_chart.coords.z+_chart._depth/2);
 			bar.name = "key:"+_data[i].key+" value: "+_data[i].value;
 			bar.data={
 				key:_data[i].key,
@@ -900,7 +917,9 @@ THREEDC.lineChart= function (coords,panel) {
 	}else{
 		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
 	}
+	//by default
 	_chart._color=0x0000ff;
+	_chart._depth=5;
 
 	THREEDC.allCharts.push(_chart);
 
@@ -952,7 +971,7 @@ THREEDC.lineChart= function (coords,panel) {
 				lineShape.lineTo( barWidth, 0 );
 				lineShape.lineTo( 0, 0 );
 				var extrusionSettings = {curveSegments:1,
-				 						 amount: 4,
+				 						 amount: _chart._depth,
 				 						 bevelEnabled: true,
 				 						 bevelSegments: 4,
 				 						 steps: 2,
