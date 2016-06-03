@@ -8,7 +8,10 @@ var THREEDC={
 };
 
 //it creates a panel to put the charts which are related
-THREEDC.addPanel=function (coords,numberOfCharts,size) {
+THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
+
+
+	opacity= opacity || 0.3;
 
   var xSize;
   var ySize;
@@ -27,7 +30,7 @@ THREEDC.addPanel=function (coords,numberOfCharts,size) {
                                                specular: 0x999999,
                                                shininess: 100,
                                                shading : THREE.SmoothShading,
-                                               opacity:0.3,
+                                               opacity:opacity,
                                                transparent: true
     } );
 
@@ -637,6 +640,15 @@ THREEDC.baseMixin = function (_chart) {
     	return _chart;
     }
 
+    _chart.opacity=function(number){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._opacity=number;
+    	return _chart;
+    }
+
 	return _chart;
 
 }
@@ -654,6 +666,7 @@ THREEDC.pieChart = function (coords,panel) {
 	_chart._height=_radius;
 	//by default
 	_chart._depth=5;
+	_chart._opacity=0.8;
 	var _data;
 
 	if(panel){
@@ -711,7 +724,7 @@ THREEDC.pieChart = function (coords,panel) {
                                             	        specular: 0x999999,
                                             	        shininess: 100,
                                             	        shading : THREE.SmoothShading,
-                                               	 		opacity:0.8,
+                                               	 		opacity:_chart._opacity,
                                            				transparent: true
             } );				
              // Creats the shape, based on the value and the _radius
@@ -756,6 +769,7 @@ THREEDC.barsChart = function (coords,panel){
 
 		//by default
 	_chart._depth=5;
+	_chart._opacity=0.8;
 	
 	var unsort_data;
 
@@ -825,7 +839,7 @@ THREEDC.barsChart = function (coords,panel){
                                                 	     specular: 0x999999,
                                                 	     shininess: 100,
                                                 	     shading : THREE.SmoothShading,
-                                                   	     opacity:0.8,
+                                                   	     opacity:_chart._opacity,
                                                		     transparent: true
             } );
 			var bar = new THREE.Mesh(geometry, material);
@@ -920,6 +934,7 @@ THREEDC.lineChart= function (coords,panel) {
 	//by default
 	_chart._color=0x0000ff;
 	_chart._depth=5;
+	_chart._opacity=0.8;
 
 	THREEDC.allCharts.push(_chart);
 
@@ -983,7 +998,7 @@ THREEDC.lineChart= function (coords,panel) {
                                                 	     	 specular: 0x999999,
                                                 	    	 shininess: 100,
                                                 	     	 shading : THREE.SmoothShading,
-                                                   	     	 opacity:0.8,
+                                                   	     	 opacity:_chart._opacity,
                                                		    	 transparent: true
           	  } );
 				var linePart = new THREE.Mesh( charGeometry, material );
@@ -1141,7 +1156,6 @@ THREEDC.bubbleChart= function (coords) {
 
 	return _chart;
 }
-
 
 
 THREEDC.fileTree= function (coords) {
