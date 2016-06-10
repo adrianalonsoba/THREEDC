@@ -175,6 +175,13 @@ function init () {
   groupByOrg= dimByOrg.group();
 
 
+  //create a dimension by author
+
+  dimByAuthor= cf.dimension(function(p) {return p.author;});
+
+  groupByAuthor= dimByAuthor.group();
+
+
   plane = new THREE.Mesh(
     new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
     new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
@@ -291,10 +298,9 @@ function init () {
       .color(0xff0000);
 */
 //////////////////////////////////////////
+  var panel2=THREEDC.addPanel([0,0,0],4);
 
-       var panel2=THREEDC.addPanel([0,0,0],4);
-
-  var bars =  THREEDC.barsChart([0,0,0],panel2);
+  var bars =  THREEDC.barsChart(panel2);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
@@ -304,7 +310,7 @@ function init () {
       .numberOfYLabels(4)
       .color(0xff8000);
 
-    var line =  THREEDC.lineChart([-250,0,0],panel2);
+    var line =  THREEDC.lineChart(panel2);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
@@ -314,7 +320,9 @@ function init () {
       .height(200)
       .color(0x0000ff);
 
-    var line =  THREEDC.smoothCurveChart([500,0,0],panel2);
+
+
+    var line =  THREEDC.smoothCurveChart(panel2);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .gridsOn()
@@ -322,21 +330,22 @@ function init () {
       .height(200)
       .color('violet');
 
-  var bars =  THREEDC.pieChart([325,50,0],panel2);
+  var bars =  THREEDC.pieChart(panel2);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .radius(100)
       .color(0xff0000);
 
+
   var panel3=THREEDC.addPanel([200,0,200],4);
 
-   var bars =  THREEDC.pieChart([325,50,0],panel3);
+   var bars =  THREEDC.pieChart(panel3);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .radius(100)
       .color(0xffff00);
 
-     var line =  THREEDC.lineChart([-250,0,0],panel3);
+     var line =  THREEDC.lineChart(panel3);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
@@ -346,7 +355,8 @@ function init () {
       .height(200)
       .color(0x00ffff);
 
-        var line =  THREEDC.barsChart([-250,0,0],panel3);
+
+        var line =  THREEDC.barsChart(panel3);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(500)

@@ -671,10 +671,10 @@ THREEDC.baseMixin = function (_chart) {
 
 }
 
-THREEDC.pieChart = function (coords,panel) {
+THREEDC.pieChart = function (location) {
 
-   if(coords==undefined){
-   	coords=[0,0,0];
+   if(location===undefined){
+   	location=[0,0,0];
    }
 	//by default
 	var _radius=50;
@@ -687,20 +687,20 @@ THREEDC.pieChart = function (coords,panel) {
 	_chart._opacity=0.8;
 	var _data;
 
-	if(panel){
-		for (var i = 0; i < panel.anchorPoints.length; i++) {
-			if(!panel.anchorPoints[i].filled){
-				_chart.coords=panel.anchorPoints[i].coords;
+	if(location.isPanel){
+		for (var i = 0; i < location.anchorPoints.length; i++) {
+			if(!location.anchorPoints[i].filled){
+				_chart.coords=location.anchorPoints[i].coords;
 				_chart.coords.x=_chart.coords.x+_chart._width;
 				_chart.coords.y=_chart.coords.y+_chart._height;
-				panel.anchorPoints[i].filled=true;
-				panel.charts.push(_chart);
-				_chart.panel=panel;
+				location.anchorPoints[i].filled=true;
+				location.charts.push(_chart);
+				_chart.panel=location;
 				break;
 			}
 		};
 	}else{
-		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 	}
 
 	THREEDC.allCharts.push(_chart);
@@ -775,13 +775,11 @@ THREEDC.pieChart = function (coords,panel) {
 	return _chart;
 }
 
-THREEDC.barsChart = function (coords,panel){
+THREEDC.barsChart = function (location){
 
-	if(coords==undefined){
-		coords=[0,0,0];
+	if(location==undefined){
+		location=[0,0,0];
 	}
-
-
 
 	var _chart = THREEDC.baseMixin({});
 
@@ -791,19 +789,18 @@ THREEDC.barsChart = function (coords,panel){
 	
 	var unsort_data;
 
-
-	if(panel){
-		for (var i = 0; i < panel.anchorPoints.length; i++) {
-			if(!panel.anchorPoints[i].filled){
-				_chart.coords=panel.anchorPoints[i].coords;
-				panel.anchorPoints[i].filled=true;
-				panel.charts.push(_chart);
-				_chart.panel=panel;
+	if(location.isPanel){
+		for (var i = 0; i < location.anchorPoints.length; i++) {
+			if(!location.anchorPoints[i].filled){
+				_chart.coords=location.anchorPoints[i].coords;
+				location.anchorPoints[i].filled=true;
+				location.charts.push(_chart);
+				_chart.panel=location;
 				break;
 			}
 		};
 	}else{
-		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 	}
 	_chart._color=0x0000ff;
 
@@ -929,25 +926,25 @@ THREEDC.simpleLineChart= function (coords) {
 
 }
 
-THREEDC.lineChart= function (coords,panel) {
+THREEDC.lineChart= function (location) {
 
-	if(coords==undefined){
-		coords=[0,0,0];
+	if(location==undefined){
+		location=[0,0,0];
 	}
 
 	var _chart = THREEDC.baseMixin({});
-	if(panel){
-		for (var i = 0; i < panel.anchorPoints.length; i++) {
-			if(!panel.anchorPoints[i].filled){
-				_chart.coords=panel.anchorPoints[i].coords;
-				panel.anchorPoints[i].filled=true;
-				panel.charts.push(_chart);
-				_chart.panel=panel;
+	if(location.isPanel){
+		for (var i = 0; i < location.anchorPoints.length; i++) {
+			if(!location.anchorPoints[i].filled){
+				_chart.coords=location.anchorPoints[i].coords;
+				location.anchorPoints[i].filled=true;
+				location.charts.push(_chart);
+				_chart.panel=location;
 				break;
 			}
 		};
 	}else{
-		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 	}
 	//by default
 	_chart._color=0x0000ff;
@@ -1044,25 +1041,25 @@ THREEDC.lineChart= function (coords,panel) {
 }
 
 //problema con emissive al cambiar de color(probablemente por ser linebasic material)
-THREEDC.smoothCurveChart= function (coords,panel) {
+THREEDC.smoothCurveChart= function (location) {
 
-	if(coords==undefined){
-		coords=[0,0,0];
+	if(location==undefined){
+		location=[0,0,0];
 	}
 
 	var _chart = THREEDC.baseMixin({});
-	if(panel){
-		for (var i = 0; i < panel.anchorPoints.length; i++) {
-			if(!panel.anchorPoints[i].filled){
-				_chart.coords=panel.anchorPoints[i].coords;
-				panel.anchorPoints[i].filled=true;
-				panel.charts.push(_chart);
-				_chart.panel=panel;
+	if(location.isPanel){
+		for (var i = 0; i < location.anchorPoints.length; i++) {
+			if(!location.anchorPoints[i].filled){
+				_chart.coords=location.anchorPoints[i].coords;
+				location.anchorPoints[i].filled=true;
+				location.charts.push(_chart);
+				_chart.panel=location;
 				break;
 			}
 		};
 	}else{
-		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 	}
 	_chart._color=0x0000ff;
 
