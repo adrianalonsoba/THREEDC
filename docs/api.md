@@ -12,3 +12,34 @@ chart.width(300)
      .depth(0.9)
 ...
 ```
+## <a name="util" href="#util">#</a>  Main utilities
+
+#### THREEDC.renderAll()
+Render all the instantiated charts, the charts contained into panels and the independent charts.
+
+#### THREEDC.removelAll()
+Remove all charts fromt the scene.
+
+#### THREEDC.removeEvents()
+Remove all events and interactions from the charts, then they can just be visualized.
+
+## <a name="base-mixin" href="#base-mixin">#</a> Base Mixin [Abstract]
+It is like a chart father class, each chart type will inherit its properties and functions and it will add its own ones if it needs them.
+
+#### .width(value)
+Set the chart width in the Three.js’s relative units, 100 by default.
+
+#### .height(value)
+It sets the chart height in the Three.js’s relative units, 100 by default.
+
+#### .depth(value)
+Set the depth of the charts, in Three.js’s relative units. Different default values for each chart type.
+
+#### .dimension(value) - **mandatory**
+Set the [crossfilter dimension](https://github.com/square/crossfilter/wiki/API-Reference#wiki-dimension), necessary to build the charts.
+
+#### .group(value) - **mandatory**
+Set the [crossfilter group](https://github.com/square/crossfilter/wiki/API-Reference#wiki-group) of the chart, necessary to build the charts. Usually the group should be
+created from the particular dimension associated with the same chart.
+
+
