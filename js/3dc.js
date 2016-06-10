@@ -52,6 +52,24 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 		panel.anchorPoints[3]={filled:false,
 			                   coords:new THREE.Vector3( panel.coords.x,panel.coords.y, panel.coords.z )};
   	}
+
+   	if(numberOfAnchorPoints===3){
+		panel.anchorPoints[0]={filled:false,
+							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
+		panel.anchorPoints[1]={filled:false,
+							   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
+		panel.anchorPoints[2]={filled:false,
+							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
+  	}
+
+   	if(numberOfAnchorPoints===2){
+		panel.anchorPoints[0]={filled:false,
+							   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
+		panel.anchorPoints[1]={filled:false,
+							   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
+  	}
+
+
   }
 
   panel.makeAnchorPoints();
