@@ -83,14 +83,74 @@ Return:
 
 ```js
 
-//create a bars chart on a concrete coordinates
+//create a bars chart on concrete coordinates
 var bars1 = THREEDC.barsChart([100,50,200]);
 // create a bars chart on the given panel
-var bars2 = dc.barChart(panel);
+var bars2 = THREEDC.barsChart(panel);
+
+```
+## <a name="line-chart" href="#line-chart">#</a> Line Chart
+
+#### THREEDC.barsChart(location)
+Create a line chart instance and attach it to the given location.
+
+Parameter:
+* location : coordinates|panel - Array of cordinates ([z,y,z]) or a panel instantiation.
+
+Return:
+* A newly created line chart instance.
+
+```js
+
+//create a line chart on concrete coordinates
+var line1 = THREEDC.lineChart([0,0,0]);
+// create a line chart on the given panel
+var line2 = THREEDC.lineChart(panel);
 
 ```
 
+## <a name="pie-chart" href="#pie-chart">#</a> Pie Chart
 
+#### THREEDC.barsChart(location)
+Create a pie chart instance and attach it to the given location.
+
+Parameter:
+* location : coordinates|panel - Array of cordinates ([z,y,z]) or a panel instantiation.
+
+Return:
+* A newly created pie chart instance.
+
+```js
+
+//create a pie chart on concrete coordinates
+var pie1 = THREEDC.pieChart([0,0,0]);
+// create a pie chart on the given panel
+var pie2 = THREEDC.pieChart(panel);
+
+```
+#### .radius(value)
+Set the radius of the pie, it replaces width and heigth, 50 by default.
+
+
+## <a name="curve-chart" href="#curve-chart">#</a> Smooth Curve Chart
+
+#### THREEDC.smoothCurveChart(location)
+Create a smooth curve chart instance and attach it to the given location.
+
+Parameter:
+* location : coordinates|panel - Array of cordinates ([z,y,z]) or a panel instance.
+
+Return:
+* A newly created smooth curve chart instance.
+
+```js
+
+//create a smooth curve chart on concrete coordinates
+var curve1 = THREEDC.smoothCurveChart([0,0,0]);
+// create a smooth curve chart on the given panel
+var curve2 = THREEDC.smoothCurveChart(panel);
+
+```
 
 
 
