@@ -11,7 +11,9 @@ var THREEDC={
 THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 
 
-	opacity= opacity || 0.3;
+  coords = coords || [0,0,0];
+  numberOfCharts = numberOfCharts || 4;
+  opacity = opacity || 0.3;
 
   var xSize;
   var ySize;

@@ -15,7 +15,7 @@ chart.width(300)
 ## <a name="util" href="#util">#</a>  Main utilities
 
 #### THREEDC.renderAll()
-Render all the instantiated charts, the charts contained into panels and the independent charts.
+Render all the chart instances (the charts contained into panels and the independent charts).
 
 #### THREEDC.removelAll()
 Remove all charts fromt the scene.
@@ -25,6 +25,14 @@ Remove all events and interactions from the charts, then they can just be visual
 
 ## <a name="base-mixin" href="#base-mixin">#</a> Base Mixin [Abstract]
 It is like a chart father class, each chart type will inherit its properties and functions and it will add its own ones if it needs them.
+
+#### .render()
+Render the chart instance.
+
+#### .remove()
+Remove the chart instance.
+
+#### Chaining methods
 
 #### .width(value)
 Set the chart width in the Three.js’s relative units, 100 by default.
@@ -152,7 +160,29 @@ var curve2 = THREEDC.smoothCurveChart(panel);
 
 ```
 
+## <a name="panels" href="#curve-chart">#</a> Panels
 
+#### THREEDC.addPanel(coords,numberOfCharts,size,opacity)
+Create a panel instance and attach it to the given coordinates.
+
+Parameter:
+* coordinates : array- The panel’s geometric center where it will be placed, it must be a vector([x,y,z]), [0,0,0] by default.
+
+* numberOfCharts : number- The number of charts that the panel will contain, it can be 4,3 or 2, 4 by default.
+
+* size : number- The size of the panel in the Three.js’s relative units, it must be a vector ([width,height]), [500,500] by default.
+
+* opacity : number- Set the panel opacity. 1 = 100% opaque, 0 = invisible, 0.8 by default.
+
+Return:
+* A newly created panel instance.
+
+```js
+
+//create a panel on the given coordinates, with 3 anchor points, 200x200 and half-invisible. 
+  var panel=THREEDC.addPanel([200,0,200],3,[200,200],0.5);
+
+```
 
 
 
