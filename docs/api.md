@@ -1,7 +1,13 @@
 <a name="THREEDC"></a >
 
 # THREEDC API reference
-
+* [Main utilities](#util)
+* [Base mixin](#base-mixin)
+* [Bars chart](#bars-chart)
+* [Line chart](#line-chart)
+* [Pie chart](#pie-chart)
+* [Smooth curve chart](#curve-chart)
+* [Panels](#panel)
 
 #### Function Chain
 As in dc.js, majority of THREEDC functions are designed to allow function chaining, meaning it will return the current chart instance
@@ -160,7 +166,7 @@ var curve2 = THREEDC.smoothCurveChart(panel);
 
 ```
 
-## <a name="panels" href="#curve-chart">#</a> Panels
+## <a name="panels" href="#panel">#</a> Panels
 
 #### THREEDC.addPanel(coords,numberOfCharts,size,opacity)
 Create a panel instance and attach it to the given coordinates.
