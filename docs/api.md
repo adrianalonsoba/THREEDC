@@ -20,6 +20,15 @@ chart.width(300)
 ```
 ## <a name="util" href="#util">#</a>  Main utilities
 
+#### THREEDC.initializer(camera,scene,renderer) **mandatory**
+This method tells to THREEDC which are the main THREE.js objects used in your custom scene.
+
+Parameters:
+* camera : The [camera](http://threejs.org/docs/#Reference/Cameras/Camera) instance of the scene, it could be any THREE.js camera type.
+
+* scene : The [scene](http://threejs.org/docs/#Reference/Scenes/Scene) instance. 
+* renderer : The [renderer](http://threejs.org/docs/#Reference/Renderers/WebGLRenderer) instance. It must be the webGL renderer in our case. 
+
 #### THREEDC.renderAll()
 Render all the chart instances (the charts contained into panels and the independent charts).
 
@@ -171,7 +180,7 @@ var curve2 = THREEDC.smoothCurveChart(panel);
 #### THREEDC.addPanel(coords,numberOfCharts,size,opacity)
 Create a panel instance and attach it to the given coordinates.
 
-Parameter:
+Parameters:
 * coordinates : array- The panel’s geometric center where it will be placed, it must be a vector([x,y,z]), [0,0,0] by default.
 
 * numberOfCharts : number- The number of charts that the panel will contain, it can be 4,3 or 2, 4 by default.
