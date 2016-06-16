@@ -5,24 +5,6 @@
 
 // standard global variables
 var container, scene, camera, renderer, controls, stats;
-var pie;
-// custom global variables
-var projector, mouse = { x: 0, y: 0 };
-var sprite1;
-//graphical user interface
-var gui;
-var parameters;
-
-var  extrudeOpts = {curveSegments:30, amount: 4, bevelEnabled: true, bevelSegments: 4, steps: 2, bevelSize: 1, bevelThickness: 1 };
-
-var domEvents;
-
-// drag variables
-var objects = [], plane;
-var raycaster = new THREE.Raycaster();
-var mouse = new THREE.Vector2(),
-offset = new THREE.Vector3(),
-INTERSECTED, SELECTED;
 
 //JSON data saved here
 var json_data;
@@ -95,8 +77,7 @@ function init () {
   // EVENTS //
   ////////////
 
-  //with this, we can use standard dom events without raycasting
-  domEvents  = new THREEx.DomEvents(camera, renderer.domElement)
+
 
   // automatically resize renderer
   THREEx.WindowResize(renderer, camera);
@@ -181,57 +162,14 @@ function init () {
 
   groupByAuthor= dimByAuthor.group();
 
+ //CUSTOM DASHBOARD//
 
-  plane = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
-    new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
-  );
-  plane.rotation.x = Math.PI / 2; //xz plane
+  THREEDC.initializer(camera,scene,renderer);
 
-/*
-  var panel1=THREEDC.addPanel([0,0,0],4);
-
-
-  var bars =  THREEDC.barsChart([0,0,0],panel1);
-  bars.group(groupByOrg)
-      .dimension(dimByOrg)
-      .width(200)
-      .height(200)
-      .numberOfXLabels(7)
-      .numberOfYLabels(4)
-      .gridsOn()
-      .color(0xff8000);
-
-    var line =  THREEDC.barsChart([0,0,0],panel1);
-       line.group(groupByMonth)
-      .dimension(dimByMonth)
-      .width(200)
-      .height(200)
-      .gridsOn()
-      .color(0xff0000);
-
-
-    var line2 =  THREEDC.barsChart([0,0,0],panel1);
-       line2.group(groupByMonth)
-      .dimension(dimByMonth)
-      .width(200)
-      .height(200)
-      .gridsOn()
-      .color(0xff00ff);
-
-    var line3 =  THREEDC.barsChart([0,0,0],panel1);
-       line3.group(groupByMonth)
-      .dimension(dimByMonth)
-      .width(200)
-      .height(200)
-      .gridsOn()
-      .color(0xff0032);
-      */
-      ////////////////////////////////////////////////////////////////7
 /*
   var panel2=THREEDC.addPanel([0,0,0],4);
 
-  var bars =  THREEDC.barsChart([0,0,0],panel2);
+  var bars =  THREEDC.barsChart(panel2);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
@@ -241,7 +179,7 @@ function init () {
       .numberOfYLabels(4)
       .color(0xff8000);
 
-    var line =  THREEDC.lineChart([-250,0,0],panel2);
+    var line =  THREEDC.lineChart(panel2);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
@@ -251,9 +189,7 @@ function init () {
       .height(200)
       .color(0x0000ff);
 
-
-
-    var line =  THREEDC.smoothCurveChart([500,0,0],panel2);
+    var line =  THREEDC.smoothCurveChart(panel2);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .gridsOn()
@@ -261,7 +197,7 @@ function init () {
       .height(200)
       .color('violet');
 
-  var bars =  THREEDC.pieChart([325,50,0],panel2);
+  var bars =  THREEDC.pieChart(panel2);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .radius(100)
@@ -270,13 +206,13 @@ function init () {
 
   var panel3=THREEDC.addPanel([200,0,200],4);
 
-   var bars =  THREEDC.pieChart([325,50,0],panel3);
+   var bars =  THREEDC.pieChart(panel3);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .radius(100)
       .color(0xffff00);
 
-     var line =  THREEDC.lineChart([-250,0,0],panel3);
+     var line =  THREEDC.lineChart(panel3);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
@@ -287,7 +223,7 @@ function init () {
       .color(0x00ffff);
 
 
-       	var line =  THREEDC.barsChart([-250,0,0],panel3);
+        var line =  THREEDC.barsChart(panel3);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(500)
@@ -296,8 +232,10 @@ function init () {
       .gridsOn()
       .height(200)
       .color(0xff0000);
+
 */
-//////////////////////////////////////////
+
+
   var panel2=THREEDC.addPanel([0,0,0],4);
 
   var bars =  THREEDC.barsChart(panel2);
@@ -356,7 +294,7 @@ function init () {
       .color(0x00ffff);
 
 
-        var line =  THREEDC.barsChart(panel3);
+       	var line =  THREEDC.barsChart(panel3);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(500)
@@ -369,84 +307,6 @@ function init () {
 
   THREEDC.renderAll();
 
-  //GUI//
-  var gui = new dat.GUI();
-
-  parameters =
-  {
-    plane:"XZ",
-    activate:false,
-    activateFilter:false
-  };
-
-  var folder1 = gui.addFolder('Drag');
-  var activateDrag = folder1.add( parameters, 'activate' ).name('On/Off').listen();
-  activateDrag.onChange(function(value) 
-    { dragTrigger(); });
-  var dragChange = folder1.add( parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
-  dragChange.onChange(function(value) 
-  {   changePLane();   });
-  folder1.close();
-
-  gui.close();
-
-}
-
-function dragTrigger () {
-  if(parameters.activate){
-    scene.add( plane );
-    domEvents.bind(plane, 'mouseup', function(object3d){
-      if(THREEDC.chartToDrag){
-        controls.enabled=true;
-        container.style.cursor = 'auto';
-        if(SELECTED.isPanel) SELECTED.reBuild();
-        SELECTED=null;
-        THREEDC.chartToDrag=null;
-        plane.material.visible=false;
-      }
-    });    
-    window.addEventListener( 'mousemove', onMouseMove, false );
-  }else{
-    window.removeEventListener( 'mousemove', onMouseMove, false );
-    scene.remove( plane );
-    domEvents.unbind(plane, 'mouseup');
-  }
-}
-
-function changePLane () {
-  if (parameters.plane==='XY'){
-    plane.rotation.set(0,0,0); //xy plane
-  }else if(parameters.plane==='XZ'){
-    plane.rotation.x = Math.PI / 2; //xz plane
-  }
-}
-var paint=true;
-function onMouseMove( event ) {
-
-  // calculate mouse position in normalized device coordinates
-  // (-1 to +1) for both components
-
-
-  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
-
-  raycaster.setFromCamera( mouse, camera );
-
-  if(SELECTED){
-    plane.material.visible=true;
-    var intersects = raycaster.intersectObject( plane );
-    if ( intersects.length > 0 ) {
-      if(SELECTED.isPanel){
-        SELECTED.position.copy(intersects[ 0 ].point.sub( offset ));
-        SELECTED.coords.copy( SELECTED.position);
-      }else{
-        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
-        if(paint) THREEDC.chartToDrag.reBuild(); 
-        !paint;
-      }
-    }
-    return;
-  }
 }
 
 function animate()

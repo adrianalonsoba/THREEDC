@@ -6,6 +6,56 @@ var THREEDC={
 	chartToDrag:null,
 	intervalFilter:[]
 };
+var camera;
+var scene;
+var renderer;
+
+var domEvents;
+// global variables
+var mouse = { x: 0, y: 0 };
+//graphical user interface
+var gui;
+var parameters;
+
+// drag variables
+var plane;
+var raycaster = new THREE.Raycaster();
+var mouse = new THREE.Vector2(),
+offset = new THREE.Vector3(),
+INTERSECTED, SELECTED;
+
+THREEDC.initializer=function(camera,scene,renderer) {
+	camera=camera;
+	scene=scene;
+	renderer=renderer;
+	//with this, we can use standard dom events without raycasting
+	domEvents  = new THREEx.DomEvents(camera, renderer.domElement);
+	//GUI//
+	var gui = new dat.GUI();
+
+	parameters =
+	{
+	plane:"XZ",
+	activate:false,
+	activateFilter:false
+	};
+
+	var folder1 = gui.addFolder('Drag');
+	var activateDrag = folder1.add( parameters, 'activate' ).name('On/Off').listen();
+	activateDrag.onChange(function(value) 
+	{ dragTrigger(); });
+	var dragChange = folder1.add( parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
+	dragChange.onChange(function(value) 
+	{   changePLane();   });
+	folder1.close();
+	gui.close();
+
+	plane = new THREE.Mesh(
+		new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
+		new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
+	);
+	plane.rotation.x = Math.PI / 2; //xz plane
+}
 
 //it creates a panel to put the charts which are related
 THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
@@ -1240,4 +1290,65 @@ function decimalToHexString(number)
 
     return number.toString(16).toUpperCase();
 }
+
+ function dragTrigger () {
+  if(parameters.activate){
+    scene.add( plane );
+    domEvents.bind(plane, 'mouseup', function(object3d){
+      if(THREEDC.chartToDrag){
+        controls.enabled=true;
+        container.style.cursor = 'auto';
+        if(SELECTED.isPanel) SELECTED.reBuild();
+        SELECTED=null;
+        THREEDC.chartToDrag=null;
+        plane.material.visible=false;
+      }
+    });    
+    window.addEventListener( 'mousemove', onMouseMove, false );
+  }else{
+    window.removeEventListener( 'mousemove', onMouseMove, false );
+    scene.remove( plane );
+    domEvents.unbind(plane, 'mouseup');
+  }
+}
+
+function changePLane () {
+  if (parameters.plane==='XY'){
+    plane.rotation.set(0,0,0); //xy plane
+  }else if(parameters.plane==='XZ'){
+    plane.rotation.x = Math.PI / 2; //xz plane
+  }
+}
+
+var paint=true;
+function onMouseMove( event ) {
+
+  // calculate mouse position in normalized device coordinates
+  // (-1 to +1) for both components
+
+
+  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
+
+  raycaster.setFromCamera( mouse, camera );
+
+  if(SELECTED){
+    plane.material.visible=true;
+    var intersects = raycaster.intersectObject( plane );
+    if ( intersects.length > 0 ) {
+      if(SELECTED.isPanel){
+        SELECTED.position.copy(intersects[ 0 ].point.sub( offset ));
+        SELECTED.coords.copy( SELECTED.position);
+      }else{
+        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
+        if(paint) THREEDC.chartToDrag.reBuild(); 
+        !paint;
+      }
+    }
+    return;
+  }
+}
+
+
+
 
