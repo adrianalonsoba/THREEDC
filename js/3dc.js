@@ -5,15 +5,10 @@ var THREEDC={
 	textLabel:null,
 	chartToDrag:null,
 	intervalFilter:[],
-	raycaster: new THREE.Raycaster()
+	raycaster : new THREE.Raycaster(),
+	mouse : new THREE.Vector2(),
+	offset : new THREE.Vector3()
 };
-
-// drag variables
-
-var plane;
-var mouse = new THREE.Vector2(),
-offset = new THREE.Vector3(),
-INTERSECTED, SELECTED;
 
 THREEDC.initializer=function(camera,scene,renderer) {
 	THREEDC.camera=camera;
@@ -41,11 +36,11 @@ THREEDC.initializer=function(camera,scene,renderer) {
 	folder1.close();
 	THREEDC.gui.close();
 
-	plane = new THREE.Mesh(
+	THREEDC.plane = new THREE.Mesh(
 		new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
 		new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
 	);
-	plane.rotation.x = Math.PI / 2; //xz plane
+	THREEDC.plane.rotation.x = Math.PI / 2; //xz THREEDC.plane
 }
 
 //it creates a panel to put the charts which are related
@@ -139,13 +134,13 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 		if(THREEDC.parameters.activate){
 			container.style.cursor = 'move';
 			controls.enabled=false;
-			SELECTED=panel;
+			THREEDC.SELECTED=panel;
 			THREEDC.chartToDrag=panel;
-		    plane.position.copy( panel.position );
-		    THREEDC.raycaster.setFromCamera( mouse, THREEDC.camera );
-		    var intersects = THREEDC.raycaster.intersectObject( plane );
+		    THREEDC.plane.position.copy( panel.position );
+		    THREEDC.raycaster.setFromCamera( THREEDC.mouse, THREEDC.camera );
+		    var intersects = THREEDC.raycaster.intersectObject( THREEDC.plane );
 		    if ( intersects.length > 0 ) {
-		      offset.copy( intersects[ 0 ].point ).sub( plane.position );
+		      THREEDC.offset.copy( intersects[ 0 ].point ).sub( THREEDC.plane.position );
 		    }
 		}
 	});
@@ -154,9 +149,9 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
       if(THREEDC.chartToDrag){
         controls.enabled=true;
         container.style.cursor = 'auto';
-        SELECTED=null;
+        THREEDC.SELECTED=null;
         THREEDC.chartToDrag=null;
-        plane.material.visible=false;
+        THREEDC.plane.material.visible=false;
         panel.reBuild();
       }
 	});
@@ -274,13 +269,13 @@ THREEDC.baseMixin = function (_chart) {
 				if(THREEDC.parameters.activate){
 					container.style.cursor = 'move';
 					controls.enabled=false;
-					SELECTED=mesh;
+					THREEDC.SELECTED=mesh;
 					THREEDC.chartToDrag=_chart;
-				    plane.position.copy( mesh.position );
-				    THREEDC.raycaster.setFromCamera( mouse, THREEDC.camera );
-				    var intersects = THREEDC.raycaster.intersectObject( plane );
+				    THREEDC.plane.position.copy( mesh.position );
+				    THREEDC.raycaster.setFromCamera( THREEDC.mouse, THREEDC.camera );
+				    var intersects = THREEDC.raycaster.intersectObject( THREEDC.plane );
 				    if ( intersects.length > 0 ) {
-				      offset.copy( intersects[ 0 ].point ).sub( plane.position );
+				      THREEDC.offset.copy( intersects[ 0 ].point ).sub( THREEDC.plane.position );
 				    }
 				}else{
 					container.style.cursor = 'move';
@@ -299,9 +294,9 @@ THREEDC.baseMixin = function (_chart) {
 			      if(THREEDC.chartToDrag){
 			        controls.enabled=true;
 			        container.style.cursor = 'auto';
-			        SELECTED=null;
+			        THREEDC.SELECTED=null;
 			        THREEDC.chartToDrag=null;
-			        plane.material.visible=false;
+			        THREEDC.plane.material.visible=false;
 			      }
 				}
 			});
@@ -1284,54 +1279,54 @@ function decimalToHexString(number)
 
  function dragTrigger () {
   if(THREEDC.parameters.activate){
-    THREEDC.scene.add( plane );
-    THREEDC.domEvents.bind(plane, 'mouseup', function(object3d){
+    THREEDC.scene.add( THREEDC.plane );
+    THREEDC.domEvents.bind(THREEDC.plane, 'mouseup', function(object3d){
       if(THREEDC.chartToDrag){
         controls.enabled=true;
         container.style.cursor = 'auto';
-        if(SELECTED.isPanel) SELECTED.reBuild();
-        SELECTED=null;
+        if(THREEDC.SELECTED.isPanel) THREEDC.SELECTED.reBuild();
+        THREEDC.SELECTED=null;
         THREEDC.chartToDrag=null;
-        plane.material.visible=false;
+        THREEDC.plane.material.visible=false;
       }
     });    
     window.addEventListener( 'mousemove', onMouseMove, false );
   }else{
     window.removeEventListener( 'mousemove', onMouseMove, false );
-    THREEDC.scene.remove( plane );
-    THREEDC.domEvents.unbind(plane, 'mouseup');
+    THREEDC.scene.remove( THREEDC.plane );
+    THREEDC.domEvents.unbind(THREEDC.plane, 'mouseup');
   }
 }
 
 function changePLane () {
   if (THREEDC.parameters.plane==='XY'){
-    plane.rotation.set(0,0,0); //xy plane
+    THREEDC.plane.rotation.set(0,0,0); //xy THREEDC.plane
   }else if(THREEDC.parameters.plane==='XZ'){
-    plane.rotation.x = Math.PI / 2; //xz plane
+    THREEDC.plane.rotation.x = Math.PI / 2; //xz THREEDC.plane
   }
 }
 
 var paint=true;
 function onMouseMove( event ) {
 
-  // calculate mouse position in normalized device coordinates
+  // calculate THREEDC.mouse position in normalized device coordinates
   // (-1 to +1) for both components
 
 
-  mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-  mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
+  THREEDC.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+  THREEDC.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
 
-  THREEDC.raycaster.setFromCamera( mouse, THREEDC.camera );
+  THREEDC.raycaster.setFromCamera( THREEDC.mouse, THREEDC.camera );
 
-  if(SELECTED){
-    plane.material.visible=true;
-    var intersects = THREEDC.raycaster.intersectObject( plane );
+  if(THREEDC.SELECTED){
+    THREEDC.plane.material.visible=true;
+    var intersects = THREEDC.raycaster.intersectObject( THREEDC.plane );
     if ( intersects.length > 0 ) {
-      if(SELECTED.isPanel){
-        SELECTED.position.copy(intersects[ 0 ].point.sub( offset ));
-        SELECTED.coords.copy( SELECTED.position);
+      if(THREEDC.SELECTED.isPanel){
+        THREEDC.SELECTED.position.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
+        THREEDC.SELECTED.coords.copy( THREEDC.SELECTED.position);
       }else{
-        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( offset ));
+        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
         if(paint) THREEDC.chartToDrag.reBuild(); 
         !paint;
       }
