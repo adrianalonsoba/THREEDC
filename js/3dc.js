@@ -6,8 +6,13 @@ var THREEDC={
 	chartToDrag:null,
 	intervalFilter:[]
 };
+var camera;
+var scene;
+var renderer;
 
+var domEvents;
 // global variables
+var mouse = { x: 0, y: 0 };
 //graphical user interface
 var gui;
 var parameters;
@@ -20,11 +25,11 @@ offset = new THREE.Vector3(),
 INTERSECTED, SELECTED;
 
 THREEDC.initializer=function(camera,scene,renderer) {
-	THREEDC.camera=camera;
-	THREEDC.scene=scene;
-	THREEDC.renderer=renderer;
+	camera=camera;
+	scene=scene;
+	renderer=renderer;
 	//with this, we can use standard dom events without raycasting
-	THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
+	domEvents  = new THREEx.DomEvents(camera, renderer.domElement);
 	//GUI//
 	var gui = new dat.GUI();
 
@@ -131,22 +136,22 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
   }
 
   panel.remove=function() {
-  	THREEDC.scene.remove(panel);
+  	scene.remove(panel);
   	for (var i = 0; i < panel.charts.length; i++) {
   		panel.charts[i].remove();
   	};
   }
 
-  THREEDC.scene.add(panel);
+  scene.add(panel);
 
-	THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){ 
+	domEvents.bind(panel, 'mousedown', function(object3d){ 
 		if(parameters.activate){
 			container.style.cursor = 'move';
 			controls.enabled=false;
 			SELECTED=panel;
 			THREEDC.chartToDrag=panel;
 		    plane.position.copy( panel.position );
-		    raycaster.setFromTHREEDC.camera( mouse, THREEDC.camera );
+		    raycaster.setFromCamera( mouse, camera );
 		    var intersects = raycaster.intersectObject( plane );
 		    if ( intersects.length > 0 ) {
 		      offset.copy( intersects[ 0 ].point ).sub( plane.position );
@@ -154,7 +159,7 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 		}
 	});
 
-	THREEDC.domEvents.bind(panel, 'mouseup', function(object3d){ 
+	domEvents.bind(panel, 'mouseup', function(object3d){ 
       if(THREEDC.chartToDrag){
         controls.enabled=true;
         container.style.cursor = 'auto';
@@ -178,7 +183,7 @@ THREEDC.removeAll=function() {
 	for (var i = 0; i < THREEDC.allCharts.length; i++) {
 		THREEDC.allCharts[i].removeEvents();
     	for (var j = 0; j < THREEDC.allCharts[i].parts.length; j++) {
-    		THREEDC.scene.remove(THREEDC.allCharts[i].parts[j]);
+    		scene.remove(THREEDC.allCharts[i].parts[j]);
     	};
 	};
 	THREEDC.allCharts=[];
@@ -210,7 +215,7 @@ THREEDC.baseMixin = function (_chart) {
     	//defined by each implementation
     	_chart.build();
     	for (var i = 0; i < _chart.parts.length; i++) {
-    		THREEDC.scene.add(_chart.parts[i]);
+    		scene.add(_chart.parts[i]);
     	};
     }
 
@@ -220,7 +225,7 @@ THREEDC.baseMixin = function (_chart) {
     	_chart.removeGrids();
 
     	for (var i = 0; i < _chart.parts.length; i++) {
-    		THREEDC.scene.remove(_chart.parts[i]);
+    		scene.remove(_chart.parts[i]);
     	};
     	var index = THREEDC.allCharts.indexOf(_chart);
 
@@ -235,7 +240,7 @@ THREEDC.baseMixin = function (_chart) {
      	_chart.removeLabels();
      	_chart.removeGrids();
     	for (var i = 0; i < _chart.parts.length; i++) {
-    		THREEDC.scene.remove(_chart.parts[i]);
+    		scene.remove(_chart.parts[i]);
     	}; 
     	_chart.parts=[];
     	if(_chart.panel){
@@ -260,28 +265,28 @@ THREEDC.baseMixin = function (_chart) {
 		function addEvents (mesh) {
 
 			//adds mouseover events
-			THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){ 
+			domEvents.bind(mesh, 'mouseover', function(object3d){ 
 				changeMeshColor(mesh);
 				showInfo(mesh);
 			});
 
-			THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){ 
+			domEvents.bind(mesh, 'mouseout', function(object3d){ 
 				//restores the original color
 				mesh.material.emissive.setHex(mesh.currentHex);
 			});
 
-			//THREEDC.domEvents.bind(mesh, 'click', function(object3d){ 
+			//domEvents.bind(mesh, 'click', function(object3d){ 
 			//	addFilter(mesh);
 			//});
 
-			THREEDC.domEvents.bind(mesh, 'mousedown', function(object3d){ 
+			domEvents.bind(mesh, 'mousedown', function(object3d){ 
 				if(parameters.activate){
 					container.style.cursor = 'move';
 					controls.enabled=false;
 					SELECTED=mesh;
 					THREEDC.chartToDrag=_chart;
 				    plane.position.copy( mesh.position );
-				    raycaster.setFromTHREEDC.camera( mouse, THREEDC.camera );
+				    raycaster.setFromCamera( mouse, camera );
 				    var intersects = raycaster.intersectObject( plane );
 				    if ( intersects.length > 0 ) {
 				      offset.copy( intersects[ 0 ].point ).sub( plane.position );
@@ -293,7 +298,7 @@ THREEDC.baseMixin = function (_chart) {
 				}
 			});
 
-			THREEDC.domEvents.bind(mesh, 'mouseup', function(object3d){ 
+			domEvents.bind(mesh, 'mouseup', function(object3d){ 
 				if(!parameters.activate){
 					container.style.cursor = 'auto';
 					controls.enabled=true;
@@ -336,7 +341,7 @@ THREEDC.baseMixin = function (_chart) {
 
 		//creates a 3D text label
 		function showInfo (mesh) {
-			  THREEDC.scene.remove(THREEDC.textLabel);
+			  scene.remove(THREEDC.textLabel);
 		      var txt = mesh.name;
 		      var curveSeg = 3;
 		      var material = new THREE.MeshPhongMaterial( {color:mesh.origin_color,
@@ -353,13 +358,13 @@ THREEDC.baseMixin = function (_chart) {
 		        style: "normal",
 		        bevelEnabled: false
 		      });
-		      // Positions the text and adds it to the THREEDC.scene
+		      // Positions the text and adds it to the scene
 		      THREEDC.textLabel = new THREE.Mesh( geometry, material );
 		      THREEDC.textLabel.position.z = mesh.position.z;
 		      THREEDC.textLabel.position.x = _chart.coords.x;
 		      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
 		      //textLabel.rotation.set(3*Math.PI/2,0,0);
-		      THREEDC.scene.add(THREEDC.textLabel);
+		      scene.add(THREEDC.textLabel);
 		}
 
 		function changeMeshColor (mesh) {
@@ -377,11 +382,11 @@ THREEDC.baseMixin = function (_chart) {
 
 		function removeEvents(mesh){
 			//removes mouseover events
-			THREEDC.domEvents.unbind(mesh, 'mouseover');
-			THREEDC.domEvents.unbind(mesh, 'mouseout');
-			//THREEDC.domEvents.unbind(mesh, 'click');
-			THREEDC.domEvents.unbind(mesh, 'mousedown');
-			THREEDC.domEvents.unbind(mesh, 'mouseup');
+			domEvents.unbind(mesh, 'mouseover');
+			domEvents.unbind(mesh, 'mouseout');
+			//domEvents.unbind(mesh, 'click');
+			domEvents.unbind(mesh, 'mousedown');
+			domEvents.unbind(mesh, 'mouseup');
 		}
     }
 
@@ -455,22 +460,22 @@ THREEDC.baseMixin = function (_chart) {
     }
     _chart.renderGrids=function(){
     	for (var i = 0; i < _chart.xGrids.length; i++) {
-    		THREEDC.scene.add(_chart.xGrids[i]);
+    		scene.add(_chart.xGrids[i]);
     	};
 
     	for (var i = 0; i < _chart.yGrids.length; i++) {
-    		THREEDC.scene.add(_chart.yGrids[i]);
+    		scene.add(_chart.yGrids[i]);
     	};
     }
 
     _chart.removeGrids=function() {
     	for (var i = 0; i < _chart.xGrids.length; i++) {
-    		THREEDC.scene.remove(_chart.xGrids[i]);
+    		scene.remove(_chart.xGrids[i]);
     	};
     	_chart.xGrids=[];
 
     	for (var i = 0; i < _chart.yGrids.length; i++) {
-    		THREEDC.scene.remove(_chart.yGrids[i]);
+    		scene.remove(_chart.yGrids[i]);
     	};
     	_chart.yGrids=[];
     }
@@ -572,7 +577,7 @@ THREEDC.baseMixin = function (_chart) {
 		        style: "normal",
 		        bevelEnabled: false
 		      });
-		      // Positions the text and adds it to the THREEDC.scene
+		      // Positions the text and adds it to the scene
 		      var label = new THREE.Mesh( geometry, material );
 		      label.position.z = _chart.coords.z;
 		      label.position.x = _chart.coords.x-maxYLabelWidth-15;
@@ -599,7 +604,7 @@ THREEDC.baseMixin = function (_chart) {
 		        style: "normal",
 		        bevelEnabled: false
 		      });
-		      // Positions the text and adds it to the THREEDC.scene
+		      // Positions the text and adds it to the scene
 		      var label = new THREE.Mesh( geometry, material );
 		      label.position.z = _chart.coords.z;
 		      label.position.x = _chart.coords.x+step;
@@ -611,22 +616,22 @@ THREEDC.baseMixin = function (_chart) {
 
     _chart.renderLabels=function(){
     	for (var i = 0; i < _chart.xLabels.length; i++) {
-    		THREEDC.scene.add(_chart.xLabels[i]);
+    		scene.add(_chart.xLabels[i]);
     	};
 
     	for (var i = 0; i < _chart.yLabels.length; i++) {
-    		THREEDC.scene.add(_chart.yLabels[i]);
+    		scene.add(_chart.yLabels[i]);
     	};
     }
 
     _chart.removeLabels=function() {
     	for (var i = 0; i < _chart.xLabels.length; i++) {
-    		THREEDC.scene.remove(_chart.xLabels[i]);
+    		scene.remove(_chart.xLabels[i]);
     	};
     	_chart.xLabels=[];
 
     	for (var i = 0; i < _chart.yLabels.length; i++) {
-    		THREEDC.scene.remove(_chart.yLabels[i]);
+    		scene.remove(_chart.yLabels[i]);
     	};
     	_chart.yLabels=[];
     }
@@ -965,7 +970,7 @@ THREEDC.simpleLineChart= function (coords) {
   		var extrudeChart = new THREE.Mesh( chartGeometry, materialSide );
 
 		extrudeChart.position.set(coords[0],coords[1],coords[2]);
-		THREEDC.scene.add(extrudeChart);
+		scene.add(extrudeChart);
 
     }
 
@@ -1288,8 +1293,8 @@ function decimalToHexString(number)
 
  function dragTrigger () {
   if(parameters.activate){
-    THREEDC.scene.add( plane );
-    THREEDC.domEvents.bind(plane, 'mouseup', function(object3d){
+    scene.add( plane );
+    domEvents.bind(plane, 'mouseup', function(object3d){
       if(THREEDC.chartToDrag){
         controls.enabled=true;
         container.style.cursor = 'auto';
@@ -1302,8 +1307,8 @@ function decimalToHexString(number)
     window.addEventListener( 'mousemove', onMouseMove, false );
   }else{
     window.removeEventListener( 'mousemove', onMouseMove, false );
-    THREEDC.scene.remove( plane );
-    THREEDC.domEvents.unbind(plane, 'mouseup');
+    scene.remove( plane );
+    domEvents.unbind(plane, 'mouseup');
   }
 }
 
@@ -1325,7 +1330,7 @@ function onMouseMove( event ) {
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
   mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;   
 
-  raycaster.setFromTHREEDC.camera( mouse, THREEDC.camera );
+  raycaster.setFromCamera( mouse, camera );
 
   if(SELECTED){
     plane.material.visible=true;
