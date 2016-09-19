@@ -622,6 +622,41 @@ THREEDC.baseMixin = function (_chart) {
     	_chart.yLabels=[];
     }
 
+    _chart.getTopValue=function() {
+		var topValue = _chart._data[0].value
+		for (var i = 1; i < _chart._data.length; i++) {
+			if (_chart._data[i].value > topValue) topValue=_chart._data[i].value
+		};
+
+		return topValue;
+	}
+
+	_chart.sortCFData=function() {
+	    var unsort_data=_chart._group.top(Infinity);
+
+		var dates=[];
+		//en dates guardo las fechas(keys)
+		for (var i = 0; i <  unsort_data.length; i++) {
+				dates[i]= unsort_data[i].key;
+		};
+		//ordeno fechas(keys) de menor a mayor
+		dates.sort(function(a, b){return a-b});
+
+	    //ordeno el grupo de menor a mayor usando 
+	    //las posiciones de dates
+		var _data=[];
+		for (var i = 0; i < dates.length; i++) {
+			for (var j = 0; j <  unsort_data.length; j++) {
+				if(dates[i] === unsort_data[j].key){
+					_data[i]={key:unsort_data[j].key,
+						      value:unsort_data[j].value};
+				}
+			};
+		};
+
+		return _data;
+	}
+
 
     _chart.group= function (group) {
     	if(!arguments.length){
@@ -705,6 +740,16 @@ THREEDC.baseMixin = function (_chart) {
     	return _chart;
     }
 
+    // data when crossfilter is not
+    _chart.data=function(data){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	console.log(data);
+    	_chart._data=data;
+    	return _chart;
+    }
 	return _chart;
 
 }
@@ -825,8 +870,6 @@ THREEDC.barsChart = function (location){
 	_chart._depth=5;
 	_chart._opacity=0.8;
 	
-	var unsort_data;
-
 	if(location.isPanel){
 		for (var i = 0; i < location.anchorPoints.length; i++) {
 			if(!location.anchorPoints[i].filled){
@@ -845,39 +888,33 @@ THREEDC.barsChart = function (location){
 	THREEDC.allCharts.push(_chart);
 
 	_chart.build = function() {
-
-	   if(_chart._group===undefined){
-	   	console.log('You must define a group for this chart');
+	   if(_chart._group===undefined && _chart._data===undefined){
+	   	console.log('You must define a group or an array of data for this chart');
 	   	return;
 	   }
 
-	   unsort_data=_chart._group.top(Infinity);
+	   if(_chart._group && _chart._data){
+	   	console.log('You must define a crossfilter group or an array of data, never both');
+	   	return;
+	   }
 
-		var dates=[];
-		//en dates guardo las fechas(keys)
-		for (var i = 0; i <  unsort_data.length; i++) {
-				dates[i]= unsort_data[i].key;
-		};
-		//ordeno fechas(keys) de menor a mayor
-		dates.sort(function(a, b){return a-b});
+	   var numberOfValues;
+	   var topValue;
+	   var _data;
 
-	    //ordeno el grupo de menor a mayor usando 
-	    //las posiciones de dates
-		var _data=[];
-		for (var i = 0; i < dates.length; i++) {
-			for (var j = 0; j <  unsort_data.length; j++) {
-				if(dates[i] === unsort_data[j].key){
-					_data[i]={key:unsort_data[j].key,
-						      value:unsort_data[j].value};
-				}
-			};
-		};
-		
-	   var numberOfValues=_chart._group.top(Infinity).length;
+   	   if(_chart._group){
+   	   		topValue=_chart._group.top(1)[0].value;
+   	   		numberOfValues=_chart._group.top(Infinity).length;
+   	   		_data=_chart.sortCFData();
+   	   }
 
-	   var topValue=_chart._group.top(1)[0].value;
+   	   if(_chart._data){
+	   		 topValue=_chart.getTopValue();
+	   		 numberOfValues=_chart._data.length;
+   	   		 _data=_chart._data;
+   	   }
 
-
+	 
 	   var barWidth=_chart._width/numberOfValues;
 
 	   var y;
