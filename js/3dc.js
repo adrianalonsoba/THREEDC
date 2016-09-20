@@ -468,10 +468,21 @@ THREEDC.baseMixin = function (_chart) {
 
     
     _chart.addLabels=function(){ 
-    	var numberOfValues= _chart._group.top(Infinity).length;
+    	var numberOfValues;
+    	var topYValue;
+
+
+   	   if(_chart._group){
+   	   		topYValue=_chart._group.top(1)[0].value;
+   	   		numberOfValues=_chart._group.top(Infinity).length;
+   	   }
+
+   	   if(_chart._data){
+	   		 topYValue=_chart.getTopValue();
+	   		 numberOfValues=_chart._data.length;
+   	   }
 
     	//Y AXIS
-    	var topYValue=_chart._group.top(1)[0].value;
     	//var numerOfYLabels=Math.round(_chart._height/20);
     	var stepYValue= Math.round(topYValue/_chart._numberOfYLabels);
     	var stepY=_chart._height/_chart._numberOfYLabels;
@@ -623,9 +634,9 @@ THREEDC.baseMixin = function (_chart) {
     }
 
     _chart.getTopValue=function() {
-		var topValue = _chart._data[0].value
+		var topValue = _chart._data[0].value;
 		for (var i = 1; i < _chart._data.length; i++) {
-			if (_chart._data[i].value > topValue) topValue=_chart._data[i].value
+			if (_chart._data[i].value > topValue) topValue=_chart._data[i].value;
 		};
 
 		return topValue;
@@ -746,7 +757,6 @@ THREEDC.baseMixin = function (_chart) {
     		console.log('argument needed');
     		return;
     	}
-    	console.log(data);
     	_chart._data=data;
     	return _chart;
     }
@@ -1028,40 +1038,40 @@ THREEDC.lineChart= function (location) {
 
 	THREEDC.allCharts.push(_chart);
 
-	var unsort_data;
 
 	_chart.build = function() {
 
 
-		var topValue=_chart._group.top(1)[0].value;
+	   if(_chart._group===undefined && _chart._data===undefined){
+	   	console.log('You must define a group or an array of data for this chart');
+	   	return;
+	   }
 
-		var numberOfValues=_chart._group.top(Infinity).length;
+	   if(_chart._group && _chart._data){
+	   	console.log('You must define a crossfilter group or an array of data, never both');
+	   	return;
+	   }
+
+	   var numberOfValues;
+	   var topValue;
+	   var _data;
+
+   	   if(_chart._group){
+   	   		topValue=_chart._group.top(1)[0].value;
+   	   		numberOfValues=_chart._group.top(Infinity).length;
+   	   		_data=_chart.sortCFData();
+   	   }
+
+   	   if(_chart._data){
+	   		 topValue=_chart.getTopValue();
+	   		 numberOfValues=_chart._data.length;
+   	   		 _data=_chart._data;
+   	   }
 
 		var barWidth=_chart._width/numberOfValues;
 
 		var x=0;
 
-	   	unsort_data=_chart._group.top(Infinity);
-
-		var dates=[];
-		//en dates guardo las fechas(keys)
-		for (var i = 0; i <  unsort_data.length; i++) {
-				dates[i]= unsort_data[i].key;
-		};
-		//ordeno fechas(keys) de menor a mayor
-		dates.sort(function(a, b){return a-b});
-
-	    //ordeno el grupo de menor a mayor usando 
-	    //las posiciones de dates
-		var _data=[];
-		for (var i = 0; i < dates.length; i++) {
-			for (var j = 0; j <  unsort_data.length; j++) {
-				if(dates[i] === unsort_data[j].key){
-					_data[i]={key:unsort_data[j].key,
-						      value:unsort_data[j].value};
-				}
-			};
-		};
 
 	   	for (var i = 0; i < _data.length; i++) {
 	   		if(_data[i+1]){
