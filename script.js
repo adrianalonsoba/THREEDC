@@ -167,13 +167,13 @@ function init () {
 
   var data1= [{key:'monday',value:20},{key:'tuesday',value:80},{key:'friday',value:30}];
 
-  var data2= [{key:'may',value:200},{key:'june',value:100},{key:'july',value:250},{key:'july',value:250},{key:'july',value:250},{key:'july',value:250}];
+  var data2= [{key:'may',value:200},{key:'june',value:100},{key:'july',value:250}];
 
  //CUSTOM DASHBOARD//
 
   THREEDC.initializer(camera,scene,renderer);
 
-  var panel2=THREEDC.addPanel([0,0,0],2);
+  var panel2=THREEDC.addPanel([0,0,0],4);
 
   var bars =  THREEDC.barsChart(panel2);
   bars
@@ -187,18 +187,43 @@ function init () {
       .numberOfYLabels(4)
       .color(0xff8000);
 
-    var line =  THREEDC.smoothCurveChart(panel2);
+    var line =  THREEDC.pieChart(panel2);
        line
   	//  .dimension(dimByOrg)
   	//  .group(groupByOrg)
-   //   .width(200)
+      .width(200)
       .data(data2)
-      .numberOfXLabels(5)
+      .numberOfXLabels(50)
       .numberOfYLabels(5)
       .gridsOn()
-   //   .height(200)
+      .height(200)
       .color(0x0000ff);
 
+    var line =  THREEDC.lineChart(panel2);
+       line
+    //  .dimension(dimByOrg)
+    //  .group(groupByOrg)
+      .width(200)
+      .data(data2)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0x0000ff);
+
+
+
+    var line =  THREEDC.smoothCurveChart(panel2);
+       line
+    //  .dimension(dimByOrg)
+    //  .group(groupByOrg)
+      .width(200)
+      .data(data1)
+      .numberOfXLabels(50)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .height(200)
+      .color(0x0000ff);
 
   THREEDC.renderAll();
 

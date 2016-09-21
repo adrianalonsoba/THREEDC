@@ -832,9 +832,12 @@ THREEDC.pieChart = function (location) {
 	   var _data;
 
    	   if(_chart._group){
-   	   		_chart._dimension.filterAll();
-	   		valTotal=_chart._dimension.top(Infinity).length;
+   	   		//_chart._dimension.filterAll();
    	   		_data=_chart._group.top(Infinity).filter(function(d) { return d.value > 0; });
+			 valTotal=0;
+			for (var i = 0; i < _data.length; i++) {
+				valTotal +=_data[i].value;
+			};
    	   }
 
    	   if(_chart._data){
@@ -1183,7 +1186,7 @@ THREEDC.smoothCurveChart= function (location) {
 	var unsort_data;
 
 	_chart.build = function() {
-		
+
 	   if(_chart._group===undefined && _chart._data===undefined){
 	   	console.log('You must define a group or an array of data for this chart');
 	   	return;
