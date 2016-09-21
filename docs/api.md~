@@ -58,12 +58,26 @@ Set the chart height in the Three.js’s relative units, 100 by default.
 #### .depth(value)
 Set the depth of the charts, in Three.js’s relative units. Different default values for each chart type.
 
-#### .dimension(value) - **mandatory**
-Set the [crossfilter dimension](https://github.com/square/crossfilter/wiki/API-Reference#wiki-dimension), necessary to build the charts.
+#### .dimension(value) 
+Set the [crossfilter dimension](https://github.com/square/crossfilter/wiki/API-Reference#wiki-dimension), necessary to build the charts if we want to use the [crossfilter's](http://square.github.io/crossfilter/) functionality.
 
-#### .group(value) - **mandatory**
-Set the [crossfilter group](https://github.com/square/crossfilter/wiki/API-Reference#wiki-group) of the chart, necessary to build the charts. Usually the group should be
+#### .group(value) 
+Set the [crossfilter group](https://github.com/square/crossfilter/wiki/API-Reference#wiki-group) of the chart, necessary to build the charts to build the charts if we want to use the [crossfilter's](http://square.github.io/crossfilter/) functionality. Usually the group should be
 created from the particular dimension associated with the same chart.
+
+#### .data(value) 
+In addition, we can create charts without the crossfilter functionality, just need to pass an array of objetcs where each object contains a key-value pair. The key value represents the dimension and the value the number for this dimension.
+
+for exaple:
+
+```js
+
+//create a bars chart on concrete coordinates
+var bars1 = THREEDC.barsChart([100,50,200]);
+// create a bars chart on the given panel
+var bars2 = THREEDC.barsChart(panel);
+
+```
 
 #### .gridsOn()
 Enable the grids of the chart, they are disabled by default.

@@ -751,7 +751,7 @@ THREEDC.baseMixin = function (_chart) {
     	return _chart;
     }
 
-    // data when crossfilter is not
+    // data when crossfilter is not used
     _chart.data=function(data){
     	if(!arguments.length){
     		console.log('argument needed');
