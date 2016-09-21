@@ -25,7 +25,6 @@ var json_data;
   //getJSON call, draw meshes with data
    $.getJSON("jsons/scm-commits.json", function(data) {
       json_data=data;
-      console.log(json_data);
       init();
       // animation loop / game loop
       animate();
@@ -168,7 +167,7 @@ function init () {
 
   var data1= [{key:'monday',value:20},{key:'tuesday',value:80},{key:'friday',value:30}];
 
-  var data2= [{key:'may',value:200},{key:'june',value:100},{key:'july',value:250}];
+  var data2= [{key:'may',value:200},{key:'june',value:100},{key:'july',value:250},{key:'july',value:250},{key:'july',value:250},{key:'july',value:250}];
 
  //CUSTOM DASHBOARD//
 
@@ -178,6 +177,8 @@ function init () {
 
   var bars =  THREEDC.barsChart(panel2);
   bars
+  	  //.dimension(dimByMonth)
+  	  //.group(groupByMonth)
       .width(200)
       .height(200)
       .data(data1)
@@ -186,14 +187,16 @@ function init () {
       .numberOfYLabels(4)
       .color(0xff8000);
 
-    var line =  THREEDC.lineChart(panel2);
+    var line =  THREEDC.smoothCurveChart(panel2);
        line
-      .width(200)
+  	//  .dimension(dimByOrg)
+  	//  .group(groupByOrg)
+   //   .width(200)
       .data(data2)
-      .numberOfXLabels(50)
+      .numberOfXLabels(5)
       .numberOfYLabels(5)
       .gridsOn()
-      .height(200)
+   //   .height(200)
       .color(0x0000ff);
 
 
