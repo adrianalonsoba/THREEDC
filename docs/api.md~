@@ -66,16 +66,17 @@ Set the [crossfilter group](https://github.com/square/crossfilter/wiki/API-Refer
 created from the particular dimension associated with the same chart.
 
 #### .data(value) 
-In addition, we can create charts without the crossfilter functionality, just need to pass an array of objetcs where each object contains a key-value pair. The key value represents the dimension and the value the number for this dimension.
+In addition, we can create charts without the crossfilter functionality, just need to pass an array of objects where each object contains a key-value pair. The key value represents the dimension and the value the number for this dimension.
 
 for exaple:
 
 ```js
 
-//create a bars chart on concrete coordinates
-var bars1 = THREEDC.barsChart([100,50,200]);
-// create a bars chart on the given panel
-var bars2 = THREEDC.barsChart(panel);
+var data1= [{key:'monday',value:20},{key:'tuesday',value:80},{key:'friday',value:30}];
+
+chart.width(300)
+     .height(300)
+     .data(data1);
 
 ```
 

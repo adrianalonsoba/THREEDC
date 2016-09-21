@@ -66,9 +66,9 @@ Set the [crossfilter group](https://github.com/square/crossfilter/wiki/API-Refer
 created from the particular dimension associated with the same chart.
 
 #### .data(value) 
-In addition, we can create charts without the crossfilter functionality, just need to pass an array of objetcs where each object contains a key-value pair. The key value represents the dimension and the value the number for this dimension.
+In addition, we can create charts without the crossfilter functionality, just need to pass an array of objects where each object contains a key-value pair. The key value represents the dimension and the value the number for this dimension.
 
-for exaple:
+for example:
 
 ```js
 
