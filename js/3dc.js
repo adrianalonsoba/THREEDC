@@ -258,7 +258,9 @@ THREEDC.baseMixin = function (_chart) {
 
 			THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){ 
 				//restores the original color
-				mesh.material.emissive.setHex(mesh.currentHex);
+				if(mesh.type!='Line'){
+					mesh.material.emissive.setHex(mesh.currentHex);
+				}
 			});
 
 			//THREEDC.domEvents.bind(mesh, 'click', function(object3d){ 
@@ -354,9 +356,11 @@ THREEDC.baseMixin = function (_chart) {
 		}
 
 		function changeMeshColor (mesh) {
-		 // mesh.material.color.setHex(0xffff00);
-		  mesh.currentHex=mesh.material.emissive.getHex();
-		  mesh.material.emissive.setHex(mesh.origin_color);
+			if(mesh.type!='Line'){
+			 	 mesh.currentHex=mesh.material.emissive.getHex();
+		 		 mesh.material.emissive.setHex(mesh.origin_color);
+			}
+
 		}
     }
 
