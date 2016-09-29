@@ -1000,6 +1000,37 @@ THREEDC.barsChart = function (location){
     return _chart;
 }
 
+THREEDC.pointsCloudChart = function (location){
+
+	if(location==undefined){
+		location=[0,0,0];
+	}
+
+	var _chart = THREEDC.baseMixin({});
+
+	THREEDC.allCharts.push(_chart);
+
+	_chart.getPoints=function(points){
+		if(!points){
+			console.log('argument needed')
+			return;
+		}
+		_chart._points=points;
+		return _chart;
+	}
+
+
+	_chart.build = function() {
+	   if(_chart._points===undefined){
+	   	console.log('You must define an array of data for this chart');
+	   	return;
+	   }
+	   console.log(_chart._points);
+    }    
+   
+    return _chart;
+}
+
 THREEDC.simpleLineChart= function (coords) {
 
 	this.coords=coords;
