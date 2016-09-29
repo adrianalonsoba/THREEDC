@@ -1025,7 +1025,48 @@ THREEDC.pointsCloudChart = function (location){
 	   	console.log('You must define an array of data for this chart');
 	   	return;
 	   }
-	   console.log(_chart._points);
+	var tLoader = new THREE.TextureLoader();
+    var particleTexture= tLoader.load("/images/spark.png");
+
+	particleGroup = new THREE.Object3D();
+	particleAttributes = { startSize: [], startPosition: [], randomness: [] };
+	
+	var totalParticles = 200;
+	var radiusRange = 10;
+	for( var i = 0; i < _chart._points.length; i++ ) 
+	{
+	    var spriteMaterial = new THREE.SpriteMaterial( { map: particleTexture, color: 0xffffff } );
+		
+		var sprite = new THREE.Sprite( spriteMaterial );
+		sprite.scale.set( 3, 3, 1.0 ); // imageWidth, imageHeight
+		sprite.position.set( _chart._points[i].x, _chart._points[i].y, _chart._points[i].z );
+		sprite.coordis=[_chart._points[i].x,_chart._points[i].y,_chart._points[i].z];
+		// for a cube:
+		// sprite.position.multiplyScalar( radiusRange );
+		// for a solid sphere:
+		// sprite.position.setLength( radiusRange * Math.random() );
+		// for a spherical shell:
+		//sprite.position.setLength( radiusRange * (Math.random() * 0.1 + 0.9) );
+		
+		// sprite.color.setRGB( Math.random(),  Math.random(),  Math.random() ); 
+		sprite.material.color.setHSL( Math.random(), 0.9, 0.7 ); 
+		
+		// sprite.opacity = 0.80; // translucent particles
+		sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
+		THREEDC.domEvents.bind(sprite, 'mouseover', function(object3d){ 
+			console.log(sprite.coordis);
+		});
+		//particleGroup.add( sprite );
+		// add variable qualities to arrays, if they need to be accessed later
+		particleAttributes.startPosition.push( sprite.position.clone() );
+		particleAttributes.randomness.push( Math.random() );
+		scene.add( sprite );
+	}
+	//particleGroup.position.y = 50;
+	
+
+
+
     }    
    
     return _chart;

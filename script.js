@@ -199,10 +199,12 @@ function init () {
   THREEDC.initializer(camera,scene,renderer);
 
   var cloud= THREEDC.pointsCloudChart([0,0,0]);
-  cloud.getPoints(getRandomPoints(100));
+  cloud.getPoints(getRandomPoints(1000));
 
  // var bars= THREEDC.barsChart([0,0,0]);
   //bars.group(groupByRepo);
+
+
 
   THREEDC.renderAll();
 
