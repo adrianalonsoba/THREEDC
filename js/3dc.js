@@ -10,10 +10,12 @@ var THREEDC={
 	offset : new THREE.Vector3()
 };
 
-THREEDC.initializer=function(camera,scene,renderer) {
+THREEDC.initializer=function(camera,scene,renderer,controls,container) {
 	THREEDC.camera=camera;
 	THREEDC.scene=scene;
 	THREEDC.renderer=renderer;
+	THREEDC.controls=controls;
+	THREEDC.container=container;
 	//with this, we can use standard dom events without raycasting
 	THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
 	//a little graphical interface//
@@ -132,8 +134,8 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 
 	THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){ 
 		if(THREEDC.parameters.activate){
-			container.style.cursor = 'move';
-			controls.enabled=false;
+			THREEDC.container.style.cursor = 'move';
+			THREEDC.controls.enabled=false;
 			THREEDC.SELECTED=panel;
 			THREEDC.chartToDrag=panel;
 		    THREEDC.plane.position.copy( panel.position );
@@ -147,8 +149,8 @@ THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 
 	THREEDC.domEvents.bind(panel, 'mouseup', function(object3d){ 
       if(THREEDC.chartToDrag){
-        controls.enabled=true;
-        container.style.cursor = 'auto';
+        THREEDC.controls.enabled=true;
+        THREEDC.container.style.cursor = 'auto';
         THREEDC.SELECTED=null;
         THREEDC.chartToDrag=null;
         THREEDC.plane.material.visible=false;
@@ -269,8 +271,8 @@ THREEDC.baseMixin = function (_chart) {
 
 			THREEDC.domEvents.bind(mesh, 'mousedown', function(object3d){ 
 				if(THREEDC.parameters.activate){
-					container.style.cursor = 'move';
-					controls.enabled=false;
+					THREEDC.container.style.cursor = 'move';
+					THREEDC.controls.enabled=false;
 					THREEDC.SELECTED=mesh;
 					THREEDC.chartToDrag=_chart;
 				    THREEDC.plane.position.copy( mesh.position );
@@ -280,22 +282,22 @@ THREEDC.baseMixin = function (_chart) {
 				      THREEDC.offset.copy( intersects[ 0 ].point ).sub( THREEDC.plane.position );
 				    }
 				}else{
-					container.style.cursor = 'move';
-					controls.enabled=false;
+					THREEDC.container.style.cursor = 'move';
+					THREEDC.controls.enabled=false;
 					THREEDC.intervalFilter[0]=mesh.data.key;
 				}
 			});
 
 			THREEDC.domEvents.bind(mesh, 'mouseup', function(object3d){ 
 				if(!THREEDC.parameters.activate){
-					container.style.cursor = 'auto';
-					controls.enabled=true;
+					THREEDC.container.style.cursor = 'auto';
+					THREEDC.controls.enabled=true;
 					THREEDC.intervalFilter[1]=mesh.data.key;
 					addIntervalFilter();
 				}else{
 			      if(THREEDC.chartToDrag){
-			        controls.enabled=true;
-			        container.style.cursor = 'auto';
+			        THREEDC.controls.enabled=true;
+			        THREEDC.container.style.cursor = 'auto';
 			        THREEDC.SELECTED=null;
 			        THREEDC.chartToDrag=null;
 			        THREEDC.plane.material.visible=false;
@@ -1433,8 +1435,8 @@ function decimalToHexString(number)
     THREEDC.scene.add( THREEDC.plane );
     THREEDC.domEvents.bind(THREEDC.plane, 'mouseup', function(object3d){
       if(THREEDC.chartToDrag){
-        controls.enabled=true;
-        container.style.cursor = 'auto';
+        THREEDC.controls.enabled=true;
+        THREEDC.container.style.cursor = 'auto';
         if(THREEDC.SELECTED.isPanel) THREEDC.SELECTED.reBuild();
         THREEDC.SELECTED=null;
         THREEDC.chartToDrag=null;

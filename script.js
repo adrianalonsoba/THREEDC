@@ -196,7 +196,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC.initializer(camera,scene,renderer);
+  THREEDC.initializer(camera,scene,renderer,controls,container);
 
   var cloud= THREEDC.pointsCloudChart([0,0,0]);
   cloud.getPoints(getRandomPoints(1000));
