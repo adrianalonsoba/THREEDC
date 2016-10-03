@@ -4,7 +4,7 @@
 //////////
 
 // standard global variables
-var container, scene, camera, renderer, controls, stats;
+var container, scene, camera, renderer, stats;
 
 //JSON data saved here
 var json_data;
@@ -88,10 +88,6 @@ function init () {
    // CONTROLS //
    //////////////
 
-   // move mouse and: left   click to rotate,
-   //                 middle click to zoom,
-   //                 right  click to pan
-   controls = new THREE.OrbitControls( camera, renderer.domElement );
 
    ///////////
    // LIGHT //
@@ -164,7 +160,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC.initializer(camera,scene,renderer);
+  THREEDC.initializer(camera,scene,renderer,container);
 
 
   var line =  THREEDC.lineChart([50,0,0]);
@@ -204,6 +200,6 @@ function render()
 
 function update()
 {
-  controls.update();
+  THREEDC.controls.update();
   stats.update();
 }

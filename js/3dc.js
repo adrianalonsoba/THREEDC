@@ -10,12 +10,19 @@ var THREEDC={
 	offset : new THREE.Vector3()
 };
 
-THREEDC.initializer=function(camera,scene,renderer,controls,container) {
+THREEDC.initializer=function(camera,scene,renderer,container) {
 	THREEDC.camera=camera;
 	THREEDC.scene=scene;
 	THREEDC.renderer=renderer;
-	THREEDC.controls=controls;
 	THREEDC.container=container;
+	   //////////////
+   // CONTROLS //
+   //////////////
+
+   // move mouse and: left   click to rotate,
+   //                 middle click to zoom,
+   //                 right  click to pan
+    THREEDC.controls = new THREE.OrbitControls( THREEDC.camera, THREEDC.renderer.domElement );
 	//with this, we can use standard dom events without raycasting
 	THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
 	//a little graphical interface//

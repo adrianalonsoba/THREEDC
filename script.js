@@ -4,7 +4,7 @@
 //////////
 
 // standard global variables
-var container, scene, camera, renderer, controls, stats;
+var container, scene, camera, renderer, stats;
 
 //JSON data saved here
 var json_data;
@@ -88,15 +88,6 @@ function init () {
   THREEx.WindowResize(renderer, camera);
     // toggle full-screen on given key press
   THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
-
-   //////////////
-   // CONTROLS //
-   //////////////
-
-   // move mouse and: left   click to rotate,
-   //                 middle click to zoom,
-   //                 right  click to pan
-   controls = new THREE.OrbitControls( camera, renderer.domElement );
 
    ///////////
    // LIGHT //
@@ -196,7 +187,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC.initializer(camera,scene,renderer,controls,container);
+  THREEDC.initializer(camera,scene,renderer,container);
 
   var cloud= THREEDC.pointsCloudChart([0,0,0]);
   cloud.getPoints(getRandomPoints(1000));
@@ -224,6 +215,6 @@ function render()
 
 function update()
 {
-  controls.update();
+  THREEDC.controls.update();
   stats.update();
 }

@@ -20,14 +20,16 @@ chart.width(300)
 ```
 ## <a name="util" href="#util">#</a>  Main utilities
 
-#### THREEDC.initializer(camera,scene,renderer) **mandatory**
+#### THREEDC.initializer(camera,scene,renderer,container) **mandatory**
 This method tells to THREEDC which are the main THREE.js objects used in your custom scene.
 
 Parameters:
 * camera : The [camera](http://threejs.org/docs/#Reference/Cameras/Camera) instance of the scene, it could be any THREE.js camera type.
 
 * scene : The [scene](http://threejs.org/docs/#Reference/Scenes/Scene) instance. 
-* renderer : The [renderer](http://threejs.org/docs/#Reference/Renderers/WebGLRenderer) instance. It must be the webGL renderer in our case. 
+* renderer : The [renderer](http://threejs.org/docs/#Reference/Renderers/WebGLRenderer) instance. It must be the webGL renderer in our case.
+* scene : The [controls](http://threejs.org/docs/#Reference/Scenes/Scene) instance.
+* container : The [div] element to contain the renderer.    
 
 #### THREEDC.renderAll()
 Render all the chart instances (the charts contained into panels and the independent charts).
