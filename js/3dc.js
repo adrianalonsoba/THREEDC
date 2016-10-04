@@ -24,7 +24,7 @@ THREEDC.initializer=function(camera,scene,renderer,container) {
    //                 right  click to pan
     THREEDC.controls = new THREE.OrbitControls( THREEDC.camera, THREEDC.renderer.domElement );
     THREEDC.controls.enableDamping = true;
-	THREEDC.controls.dampingFactor = 0.95;
+	THREEDC.controls.dampingFactor = 0.25;
 	//with this, we can use standard dom events without raycasting
 	THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
 	//a little graphical interface//
