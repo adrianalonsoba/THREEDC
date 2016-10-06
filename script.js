@@ -185,17 +185,28 @@ function init () {
     return points;
   }
 
+    //3Ddata without CF
+
+  var data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
+
+            {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:89},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
+
+            {key1:'january',key2:'microsoft',value:0},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:43},{key1:'april',key2:'microsoft',value:12}
+  ];
+
+
  //CUSTOM DASHBOARD//
 
   THREEDC.initializer(camera,scene,renderer,container);
 
-  var cloud= THREEDC.pointsCloudChart([0,0,0]);
-  cloud.getPoints(getRandomPoints(1000));
+  var bars= THREEDC.TDbarsChart([0,0,0]);
+  bars.data(data);
+
+  //var cloud= THREEDC.pointsCloudChart([0,0,0]);
+  //cloud.getPoints(getRandomPoints(1000));
 
  // var bars= THREEDC.barsChart([0,0,0]);
   //bars.group(groupByRepo);
-
-
 
   THREEDC.renderAll();
 

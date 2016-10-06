@@ -1011,6 +1011,56 @@ THREEDC.barsChart = function (location){
     return _chart;
 }
 
+
+THREEDC.TDbarsChart = function (location){
+
+	if(location==undefined){
+		location=[0,0,0];
+	}
+
+	var _chart = THREEDC.baseMixin({});
+
+		//by default
+	_chart._depth=5;
+	_chart._opacity=0.8;
+
+	_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+	_chart._color=0x0000ff;
+
+	THREEDC.allCharts.push(_chart);
+
+
+    _chart.groupOne=function(group){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._groupOne=group;
+    	return _chart;
+    }
+
+    _chart.groupTwo=function(group){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._groupTwo=group;
+    	return _chart;
+    }
+
+
+	_chart.build = function() {
+		/*
+	   if(_chart._groupOne===undefined || _chart._groupTwo===undefined){
+	   	console.log('You must define two groups and dimensions');
+	   	return;
+	   }
+	   */
+	}
+
+	return _chart;
+}
+
 THREEDC.pointsCloudChart = function (location){
 
 	if(location==undefined){
@@ -1074,8 +1124,6 @@ THREEDC.pointsCloudChart = function (location){
 		scene.add( sprite );
 	}
 	//particleGroup.position.y = 50;
-	
-
 
 
     }    
