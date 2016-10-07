@@ -199,8 +199,18 @@ function init () {
 
   THREEDC.initializer(camera,scene,renderer,container);
 
-  var bars= THREEDC.TDbarsChart([0,0,0]);
-  bars.data(data);
+  var bars= THREEDC.TDbarsChart([0,0,-500]);
+  bars
+      .data(data)
+      .width(300)
+      .height(500)
+      .depth(300);
+
+    var bars= THREEDC.barsChart([-300,0,0]);
+    bars
+      .group(groupByMonth)
+      .width(300)
+      .height(500);
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
