@@ -95,6 +95,17 @@ function init () {
    var light = new THREE.PointLight(0xffffff,0.8);
    light.position.set(0,200,250);
    scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 10, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(0,200,250);
+  scene.add( lightbulb );
+  
+
+
    var ambientLight = new THREE.AmbientLight(0x111111);
    // scene.add(ambientLight);
 
@@ -199,18 +210,15 @@ function init () {
 
   THREEDC.initializer(camera,scene,renderer,container);
 
-  var bars= THREEDC.TDbarsChart([0,0,-500]);
+  var bars= THREEDC.bubbleChart([0,0,0]);
   bars
       .data(data)
       .width(300)
       .height(500)
+      .gridsOn()
       .depth(300);
 
-    var bars= THREEDC.barsChart([-300,0,0]);
-    bars
-      .group(groupByMonth)
-      .width(300)
-      .height(500);
+
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
