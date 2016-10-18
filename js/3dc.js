@@ -1099,7 +1099,9 @@ THREEDC.TDbarsChart = function (location){
 	                                               		     transparent: true
 	            } );
 	            var bar = new THREE.Mesh(geometry, material);
+	            bar.origin_color=origin_color;
 	            bar.position.set(x+_chart.coords.x,y+_chart.coords.y,z+_chart.coords.z);
+	            bar.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value;
 	            _chart.parts.push(bar);
 	            scene.add(bar);
 	            x+=barWidth;

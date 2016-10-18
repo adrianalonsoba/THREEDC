@@ -205,20 +205,28 @@ function init () {
             {key1:'january',key2:'microsoft',value:0},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:43},{key1:'april',key2:'microsoft',value:12}
   ];
 
+      //4Ddata without CF
+
+  var data2= [{key1:'january',key2:'apple',key3:1,value:23},{key1:'february',key2:'apple',key3:2,value:31},{key1:'march',key2:'apple',key3:3,value:10},{key1:'april',key2:'apple',key3:4,value:59},
+
+            {key1:'january',key2:'google',key3:4,value:34},{key1:'february',key2:'google',key3:7,value:89},{key1:'march',key2:'google',key3:9,value:53},{key1:'april',key2:'google',key3:10,value:76},
+
+      
+  ];
+
 
  //CUSTOM DASHBOARD//
 
   THREEDC.initializer(camera,scene,renderer,container);
 
-  var bars= THREEDC.bubbleChart([0,0,0]);
+  var bars= THREEDC.TDbarsChart([0,0,-500]);
   bars
       .data(data)
       .width(300)
       .height(500)
-      .gridsOn()
-      .depth(300);
-
-
+      .depth(300)
+      .color(0xffaa00)
+      .gridsOn();
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
