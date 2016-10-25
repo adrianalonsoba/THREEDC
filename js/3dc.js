@@ -1065,6 +1065,178 @@ THREEDC.TDbarsChart = function (location){
 		return keysTwo;
     }
 
+    _chart.addGrids=function(){
+
+    	var numberOfKeys1=_chart.getKeysOne().length;
+    	var numberOfKeys2=_chart.getKeysTwo().length;
+
+		var material = new THREE.LineBasicMaterial({
+			color: 0x000000,
+			linewidth:1
+		});
+
+    	function addXYGrid () {
+
+	    	var stepY=_chart._height/_chart._numberOfYLabels;
+
+	 	 	for (var i = 0; i <_chart._numberOfYLabels+1; i++) {
+	    		putYGrid(i*stepY);
+	    	};
+	    	
+	    	var stepX = _chart._width/numberOfKeys1;
+
+    	 	for (var i = 0; i <numberOfKeys1+1; i++) {
+    			putXGrid(i*stepX);
+    		};
+
+	    	function putYGrid (step) {
+
+				var horizontalGeometry = new THREE.Geometry();
+
+				horizontalGeometry.vertices.push(
+					new THREE.Vector3( -10, 0, 0 ),
+					new THREE.Vector3( _chart._width, 0, 0 )
+				);
+				var horizontalLine = new THREE.Line( horizontalGeometry, material );
+
+				horizontalLine.position.set(_chart.coords.x,_chart.coords.y+step,_chart.coords.z);
+				_chart.yGrids.push(horizontalLine);
+
+	    	}
+
+	    	function putXGrid (step) {
+
+				var verticalGeometry = new THREE.Geometry();
+
+				verticalGeometry.vertices.push(
+					new THREE.Vector3( 0, 0, 0 ),
+					new THREE.Vector3( 0, _chart._height, 0 )
+				);
+				var verticalLine = new THREE.Line( verticalGeometry, material );
+
+				verticalLine.position.set(_chart.coords.x+step,_chart.coords.y,_chart.coords.z);
+				_chart.xGrids.push(verticalLine);
+
+	    	}
+    	}
+
+    	function addXZgrid () {
+    		var stepX= _chart._width/numberOfKeys1;
+
+	 	 	for (var i = 0; i <numberOfKeys1+1; i++) {
+	    		putXGrid(i*stepX);
+	    	};
+
+   			var stepZ= _chart._depth/numberOfKeys2;
+
+	 	 	for (var i = 1; i <numberOfKeys2+1; i++) {
+	    		putZGrid(i*stepZ);
+	    	};
+
+	    	function putXGrid (step) {
+
+				var verticalGeometry = new THREE.Geometry();
+
+				verticalGeometry.vertices.push(
+					new THREE.Vector3( 0, 0, 0 ),
+					new THREE.Vector3( 0, 0, _chart._depth+10 )
+				);
+				var verticalLine = new THREE.Line( verticalGeometry, material );
+
+				verticalLine.position.set(_chart.coords.x+step,_chart.coords.y,_chart.coords.z);
+				_chart.xGrids.push(verticalLine);
+	    	}
+
+	    	function putZGrid (step) {
+
+				var horizontalGeometry = new THREE.Geometry();
+
+				horizontalGeometry.vertices.push(
+					new THREE.Vector3( -10, 0, 0 ),
+					new THREE.Vector3( _chart._width, 0, 0 )
+				);
+				var horizontalLine = new THREE.Line( horizontalGeometry, material );
+
+				horizontalLine.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z+step);
+				_chart.yGrids.push(horizontalLine);
+
+	    	}
+    	}
+
+    	function addYZgrid () {
+    		var stepY=_chart._height/_chart._numberOfYLabels;
+
+	 	 	for (var i = 1; i <_chart._numberOfYLabels+1; i++) {
+	    		putYGrid(i*stepY);
+	    	};
+
+   			var stepZ= _chart._depth/numberOfKeys2;
+
+	 	 	for (var i = 1; i <numberOfKeys2+1; i++) {
+	    		putZGrid(i*stepZ);
+	    	};
+
+	    	function putYGrid (step) {
+
+				var horizontalGeometry = new THREE.Geometry();
+
+				horizontalGeometry.vertices.push(
+					new THREE.Vector3( 0, 0, 0 ),
+					new THREE.Vector3( 0, 0, _chart._depth )
+				);
+				var horizontalLine = new THREE.Line( horizontalGeometry, material );
+
+				horizontalLine.position.set(_chart.coords.x+_chart._width,_chart.coords.y+step,_chart.coords.z);
+				_chart.yGrids.push(horizontalLine);
+
+	    	}
+
+	    	function putZGrid (step) {
+
+				var horizontalGeometry = new THREE.Geometry();
+
+				horizontalGeometry.vertices.push(
+					new THREE.Vector3( 0, 0, 0 ),
+					new THREE.Vector3( 0, _chart._height, 0 )
+				);
+				var horizontalLine = new THREE.Line( horizontalGeometry, material );
+
+				horizontalLine.position.set(_chart.coords.x+_chart._width,_chart.coords.y,_chart.coords.z+step);
+				_chart.yGrids.push(horizontalLine);
+
+	    	}
+
+    	}
+
+    	addXYGrid();
+    	addXZgrid();
+    	addYZgrid();
+    	_chart.renderGrids();
+
+    }
+    _chart.renderGrids=function(){
+    	for (var i = 0; i < _chart.xGrids.length; i++) {
+    		THREEDC.scene.add(_chart.xGrids[i]);
+    	};
+
+    	for (var i = 0; i < _chart.yGrids.length; i++) {
+    		THREEDC.scene.add(_chart.yGrids[i]);
+    	};
+    }
+
+	//to fix
+    _chart.removeGrids=function() {
+    	for (var i = 0; i < _chart.xGrids.length; i++) {
+    		THREEDC.scene.remove(_chart.xGrids[i]);
+    	};
+    	_chart.xGrids=[];
+
+    	for (var i = 0; i < _chart.yGrids.length; i++) {
+    		THREEDC.scene.remove(_chart.yGrids[i]);
+    	};
+    	_chart.yGrids=[];
+    }
+
 	_chart.build = function() {
 		/*
 	   if(_chart._groupOne===undefined || _chart._groupTwo===undefined){
