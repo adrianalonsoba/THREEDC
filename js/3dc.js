@@ -1075,6 +1075,12 @@ THREEDC.TDbarsChart = function (location){
 			linewidth:1
 		});
 
+    	addXYGrid();
+    	addXZgrid();
+    	addYZgrid();
+    	addGridBox();
+    	_chart.renderGrids();
+
     	function addXYGrid () {
 
 	    	var stepY=_chart._height/_chart._numberOfYLabels;
@@ -1208,10 +1214,36 @@ THREEDC.TDbarsChart = function (location){
 
     	}
 
-    	addXYGrid();
-    	addXZgrid();
-    	addYZgrid();
-    	_chart.renderGrids();
+    	// need to be erased when drag
+    	function addGridBox () {
+			var material = new THREE.MeshPhongMaterial( {
+													   color:0x0000ff,
+			                                           specular: 0x999999,
+			                                           shininess: 100,
+			                                           shading : THREE.SmoothShading,
+			                                           opacity:0.8,
+			                                           transparent: true
+			} );
+
+			var geometryXY = new THREE.CubeGeometry( _chart._width, _chart._height, 1);
+			var geometryYZ = new THREE.CubeGeometry( _chart._depth, _chart._height, 1);
+			var geometryXZ = new THREE.CubeGeometry( _chart._width, _chart._depth, 1);
+
+			var boxXY=new THREE.Mesh(geometryXY, material);
+			boxXY.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y+_chart._height/2,_chart.coords.z);
+			scene.add(boxXY);
+
+			var boxYZ=new THREE.Mesh(geometryYZ, material);
+			boxYZ.rotation.y = Math.PI / 2; //ZY plane
+			boxYZ.position.set(_chart.coords.x+_chart._width,_chart.coords.y+_chart._height/2,_chart.coords.z+_chart._depth/2);
+			scene.add(boxYZ);
+			
+			var boxXZ=new THREE.Mesh(geometryXZ, material);
+			boxXZ.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y,_chart.coords.z+_chart._depth/2);
+			boxXZ.rotation.x = Math.PI / 2; //XZ plane
+
+			scene.add(boxXZ);
+    	}
 
     }
     _chart.renderGrids=function(){
