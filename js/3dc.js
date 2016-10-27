@@ -1231,18 +1231,20 @@ THREEDC.TDbarsChart = function (location){
 
 			var boxXY=new THREE.Mesh(geometryXY, material);
 			boxXY.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y+_chart._height/2,_chart.coords.z);
-			scene.add(boxXY);
+			//scene.add(boxXY);
+			_chart.xGrids.push(boxXY);
 
 			var boxYZ=new THREE.Mesh(geometryYZ, material);
 			boxYZ.rotation.y = Math.PI / 2; //ZY plane
 			boxYZ.position.set(_chart.coords.x+_chart._width,_chart.coords.y+_chart._height/2,_chart.coords.z+_chart._depth/2);
-			scene.add(boxYZ);
+			//scene.add(boxYZ);
+			_chart.xGrids.push(boxYZ);
 			
 			var boxXZ=new THREE.Mesh(geometryXZ, material);
 			boxXZ.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y,_chart.coords.z+_chart._depth/2);
 			boxXZ.rotation.x = Math.PI / 2; //XZ plane
-
-			scene.add(boxXZ);
+			//scene.add(boxXZ);
+			_chart.xGrids.push(boxXZ);
     	}
 
     }
