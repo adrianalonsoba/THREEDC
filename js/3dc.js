@@ -1020,6 +1020,9 @@ THREEDC.TDbarsChart = function (location){
 
 	var _chart = THREEDC.baseMixin({});
 
+	//add to 3Dmixin when added
+	_chart.labels=[];
+
 		//by default
 	_chart._depth=100;
 	_chart._opacity=0.8;
@@ -1214,7 +1217,6 @@ THREEDC.TDbarsChart = function (location){
 
     	}
 
-    	// need to be erased when drag
     	function addGridBox () {
 			var material = new THREE.MeshPhongMaterial( {
 													   color:0x0000ff,
@@ -1269,6 +1271,180 @@ THREEDC.TDbarsChart = function (location){
     		THREEDC.scene.remove(_chart.yGrids[i]);
     	};
     	_chart.yGrids=[];
+    }
+
+
+    _chart.addLabels=function(){ 
+    	var numberOfValues;
+    	var topYValue;
+
+
+   	   if(_chart._group){
+   	   		topYValue=_chart._group.top(1)[0].value;
+   	   		numberOfValues=_chart._group.top(Infinity).length;
+   	   }
+
+   	   if(_chart._data){
+	   		 topYValue=_chart.getTopValue();
+	   		 numberOfValues=_chart._data.length;
+   	   }
+
+    	addYLabels();
+    	addXLabels();
+    	addZLabels();
+    	_chart.renderLabels();
+
+   	   function addYLabels () {
+	    	var stepYValue= Math.round(topYValue/_chart._numberOfYLabels);
+	    	var stepY=_chart._height/_chart._numberOfYLabels;
+	    	var maxYLabelWidth=getMaxWidth(topYValue);
+	    	console.log(getMaxWidth(topYValue));
+
+	 	 	for (var i = 0; i <_chart._numberOfYLabels+1; i++) {
+	    		putYLabel(i*stepY,i*stepYValue);
+	    	};
+
+	    	function putYLabel (step,value) {
+
+			      var txt = value;
+			      var curveSeg = 3;
+			      var material = new THREE.MeshPhongMaterial( {color:0x000000,
+			      											   specular: 0x999999,
+	                                            	           shininess: 100,
+	                                            	           shading : THREE.SmoothShading			      											   
+			      } );			                    	      
+			      var geometry = new THREE.TextGeometry( txt, {
+			        size: _chart._height/30,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			      });
+			      // Positions the text and adds it to the THREEDC.scene
+			      var label = new THREE.Mesh( geometry, material );
+			      label.position.z = _chart.coords.z;
+			      label.position.x = _chart.coords.x-maxYLabelWidth*6;
+			      label.position.y = _chart.coords.y+step;
+			     // label.rotation.set(3*Math.PI/2,0,0);
+			      _chart.labels.push(label);
+	    	}
+   	   }
+
+   	   function addZLabels () {
+
+   	   }
+
+   	   function addXLabels () {
+   	   	
+   	   }
+
+
+
+    	/*
+    	//X AXIS
+    	var topXValue=_chart._group.top(1)[0].key;
+    	console.log(topXValue);
+    	//var numerOfXLabels=Math.round(_chart._width/15);
+    	var numerOfXLabels=9;
+    	var stepXValue= Math.round(topXValue/numerOfXLabels);
+    	var stepX=_chart._width/numerOfXLabels;
+    	var maxXLabelWidth=getMaxWidth(topXValue);
+
+ 	 	for (var i = 0; i < numerOfXLabels+1; i++) {
+    		putXLabel(i*stepX,i*stepXValue);
+    	};
+    	*/
+
+
+	    /* gets the max width of an axis label to calculate the separation 
+   		*  between the chart border and the label
+		*/
+    	function getMaxWidth (axis) {
+			var txt = axis;
+			var curveSeg = 3;
+			var material = new THREE.MeshPhongMaterial( {color:0x000000,
+														   specular: 0x999999,
+			                            	           shininess: 100,
+			                            	           shading : THREE.SmoothShading			      											   
+			} );			                    	      
+			var geometry = new THREE.TextGeometry( txt, {
+			size: 4,
+			height: 2,
+			curveSegments: 3,
+			font: "helvetiker",
+			weight: "bold",
+			style: "normal",
+			bevelEnabled: false
+			});
+			var label = new THREE.Mesh( geometry, material );
+		    var box = new THREE.Box3().setFromObject(label);
+			return box.size().x ;
+    	}
+
+    	function getMaxHeight (axis) {
+			var txt = axis;
+			var curveSeg = 3;
+			var material = new THREE.MeshPhongMaterial( {color:0x000000,
+														   specular: 0x999999,
+			                            	           shininess: 100,
+			                            	           shading : THREE.SmoothShading			      											   
+			} );			                    	      
+			var geometry = new THREE.TextGeometry( txt, {
+			size: 4,
+			height: 2,
+			curveSegments: 3,
+			font: "helvetiker",
+			weight: "bold",
+			style: "normal",
+			bevelEnabled: false
+			});
+			var label = new THREE.Mesh( geometry, material );
+		    var box = new THREE.Box3().setFromObject(label);
+			return box.size().y ;
+    	}
+
+
+    	function putXLabel (step,value) {
+
+		      var txt = value;
+		      var curveSeg = 3;
+		      var material = new THREE.MeshPhongMaterial( {color:0x000000,
+		      											   specular: 0x999999,
+                                            	           shininess: 100,
+                                            	           shading : THREE.SmoothShading			      											   
+		      } );			                    	      
+		      var geometry = new THREE.TextGeometry( txt, {
+		        size: _chart._height/30,
+		        height: 2,
+		        curveSegments: 3,
+		        font: "helvetiker",
+		        weight: "bold",
+		        style: "normal",
+		        bevelEnabled: false
+		      });
+		      // Positions the text and adds it to the THREEDC.scene
+		      var label = new THREE.Mesh( geometry, material );
+		      label.position.z = _chart.coords.z;
+		      label.position.x = _chart.coords.x+step;
+		      label.position.y = _chart.coords.y-20;
+		     // label.rotation.set(3*Math.PI/2,0,0);
+		      _chart.labels.push(label);
+    	}
+    }
+
+    _chart.renderLabels=function(){
+    	for (var i = 0; i < _chart.labels.length; i++) {
+    		THREEDC.scene.add(_chart.labels[i]);
+    	};
+    }
+
+    _chart.removeLabels=function() {
+    	for (var i = 0; i < _chart.labels.length; i++) {
+    		THREEDC.scene.remove(_chart.labels[i]);
+    	};
+    	_chart.labels=[];
     }
 
 	_chart.build = function() {
