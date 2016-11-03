@@ -1277,7 +1277,10 @@ THREEDC.TDbarsChart = function (location){
     _chart.addLabels=function(){ 
     	var numberOfValues;
     	var topYValue;
-
+    	var keysOne=_chart.getKeysOne();
+    	var keysTwo=_chart.getKeysTwo();
+    	var numberOfKeys1=keysOne.length;
+    	var numberOfKeys2=keysTwo.length;
 
    	   if(_chart._group){
    	   		topYValue=_chart._group.top(1)[0].value;
@@ -1298,7 +1301,6 @@ THREEDC.TDbarsChart = function (location){
 	    	var stepYValue= Math.round(topYValue/_chart._numberOfYLabels);
 	    	var stepY=_chart._height/_chart._numberOfYLabels;
 	    	var maxYLabelWidth=getMaxWidth(topYValue);
-	    	console.log(getMaxWidth(topYValue));
 
 	 	 	for (var i = 0; i <_chart._numberOfYLabels+1; i++) {
 	    		putYLabel(i*stepY,i*stepYValue);
@@ -1334,13 +1336,47 @@ THREEDC.TDbarsChart = function (location){
 
    	   function addZLabels () {
 
+	    	var stepZ=_chart._depth/numberOfKeys2/2;
+	    	//TO FIX
+	    	var maxZLabelWidth=20;
+	    	putZLabel(stepZ,keysTwo[0]);
+	    	stepZ=stepZ+_chart._depth/numberOfKeys2;
+	 	 	for (var i = 1; i <numberOfKeys2; i++) {
+	    		putZLabel(stepZ,keysTwo[i]);
+	    		stepZ+=_chart._depth/numberOfKeys2;
+	    	};
+
+	    	function putZLabel (step,value) {
+
+			      var txt = value;
+			      var curveSeg = 3;
+			      var material = new THREE.MeshPhongMaterial( {color:0x000000,
+			      											   specular: 0x999999,
+	                                            	           shininess: 100,
+	                                            	           shading : THREE.SmoothShading			      											   
+			      } );			                    	      
+			      var geometry = new THREE.TextGeometry( txt, {
+			        size: _chart._height/30,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			      });
+			      // Positions the text and adds it to the THREEDC.scene
+			      var label = new THREE.Mesh( geometry, material );
+			      label.position.z = _chart.coords.z+step;
+			      label.position.x = _chart.coords.x-maxZLabelWidth*6;
+			      label.position.y = _chart.coords.y;
+			      label.rotation.set(3*Math.PI/2,0,0);
+			      _chart.labels.push(label);
+	    	}
    	   }
 
    	   function addXLabels () {
    	   	
    	   }
-
-
 
     	/*
     	//X AXIS

@@ -83,7 +83,6 @@ function init () {
   ////////////
 
 
-
   // automatically resize renderer
   THREEx.WindowResize(renderer, camera);
     // toggle full-screen on given key press
@@ -93,17 +92,40 @@ function init () {
    // LIGHT //
    ///////////
    var light = new THREE.PointLight(0xffffff,0.8);
-   light.position.set(0,200,250);
+   light.position.set(0,2500,2500);
    scene.add(light);
 
   // create a small sphere to show position of light
   var lightbulb = new THREE.Mesh( 
-    new THREE.SphereGeometry( 10, 16, 8 ), 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
     new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
   );
-  lightbulb.position.set(0,200,250);
+  lightbulb.position.set(0,2500,2500);
   scene.add( lightbulb );
   
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(-2500,2500,-2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(-2500,2500,-2500);
+  scene.add( lightbulb );
+
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(2500,2500,-2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(2500,2500,-2500);
+  scene.add( lightbulb );
 
 
    var ambientLight = new THREE.AmbientLight(0x111111);
@@ -202,7 +224,9 @@ function init () {
 
             {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:89},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
 
-            {key1:'january',key2:'microsoft',value:0},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:43},{key1:'april',key2:'microsoft',value:12}
+            {key1:'january',key2:'microsoft',value:10},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:4},{key1:'april',key2:'microsoft',value:12},
+
+            {key1:'january',key2:'sony',value:56},{key1:'february',key2:'sony',value:21},{key1:'march',key2:'sony',value:23},{key1:'april',key2:'sony',value:12}
   ];
 
       //4Ddata without CF
@@ -225,6 +249,7 @@ function init () {
       .width(300)
       .height(500)
       .depth(300)
+      .opacity(0.8)
       .color(0xffaa00)
       .gridsOn();
 
