@@ -1328,6 +1328,7 @@ THREEDC.TDbarsChart = function (location){
 			      var label = new THREE.Mesh( geometry, material );
 			      label.position.z = _chart.coords.z;
 			      label.position.x = _chart.coords.x-maxYLabelWidth*6;
+			      console.log(label.position.x);
 			      label.position.y = _chart.coords.y+step;
 			     // label.rotation.set(3*Math.PI/2,0,0);
 			      _chart.labels.push(label);
@@ -1356,7 +1357,7 @@ THREEDC.TDbarsChart = function (location){
 	                                            	           shading : THREE.SmoothShading			      											   
 			      } );			                    	      
 			      var geometry = new THREE.TextGeometry( txt, {
-			        size: _chart._height/30,
+			        size: _chart._depth/30,
 			        height: 2,
 			        curveSegments: 3,
 			        font: "helvetiker",
@@ -1375,7 +1376,43 @@ THREEDC.TDbarsChart = function (location){
    	   }
 
    	   function addXLabels () {
-   	   	
+
+	    	var stepX=_chart._depth/numberOfKeys1/2;
+	    	//TO FIX
+	    	var maxXLabelWidth=20;
+	    	putXLabel(stepX,keysOne[0]);
+	    	stepX=stepX+_chart._width/numberOfKeys1;
+	 	 	for (var i = 1; i <numberOfKeys2; i++) {
+	    		putXLabel(stepX,keysOne[i]);
+	    		stepX+=_chart._width/numberOfKeys1;
+	    	};
+
+	    	function putXLabel (step,value) {
+
+			      var txt = value;
+			      var curveSeg = 3;
+			      var material = new THREE.MeshPhongMaterial( {color:0x000000,
+			      											   specular: 0x999999,
+	                                            	           shininess: 100,
+	                                            	           shading : THREE.SmoothShading			      											   
+			      } );			                    	      
+			      var geometry = new THREE.TextGeometry( txt, {
+			        size: _chart._depth/30,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			      });
+			      // Positions the text and adds it to the THREEDC.scene
+			      var label = new THREE.Mesh( geometry, material );
+			      label.position.z = _chart.coords.z+_chart._depth+20;
+			      label.position.x = _chart.coords.x+step;
+			      label.position.y = _chart.coords.y;
+			      label.rotation.set(3*Math.PI/2,0,3*Math.PI/2);
+			      _chart.labels.push(label);
+	    	}
    	   }
 
     	/*
