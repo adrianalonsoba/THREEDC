@@ -1382,7 +1382,7 @@ THREEDC.TDbarsChart = function (location){
 	    	var maxXLabelWidth=20;
 	    	putXLabel(stepX,keysOne[0]);
 	    	stepX=stepX+_chart._width/numberOfKeys1;
-	 	 	for (var i = 1; i <numberOfKeys2; i++) {
+	 	 	for (var i = 1; i <numberOfKeys1; i++) {
 	    		putXLabel(stepX,keysOne[i]);
 	    		stepX+=_chart._width/numberOfKeys1;
 	    	};
