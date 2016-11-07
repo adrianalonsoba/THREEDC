@@ -243,7 +243,7 @@ function init () {
 
   THREEDC.initializer(camera,scene,renderer,container);
 
-  var bars= THREEDC.TDbarsChart([0,0,-500]);
+  var bars= THREEDC.TDbarsChart([0,0,0]);
   bars
       .data(data)
       .width(300)
@@ -260,6 +260,9 @@ function init () {
   //bars.group(groupByRepo);
 
   THREEDC.renderAll();
+
+
+
 
 }
 

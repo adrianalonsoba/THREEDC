@@ -1531,39 +1531,41 @@ THREEDC.TDbarsChart = function (location){
 	   var numberOfKeys1=_chart.getKeysOne();
 	   var numberOfKeys2=_chart.getKeysTwo();
 	   var barHeight;
-	   var barWidth=_chart._width/numberOfKeys1.length;
-	   var barDepth=_chart._depth/numberOfKeys2.length;
+	   var barWidth=_chart._width/numberOfKeys1.length*0.8;
+	   var barDepth=_chart._depth/numberOfKeys2.length*0.8;
 	   var dataPos=0;
-	   var x=0;
+	   var stepX=0;
    	   var y=0;
-	   var z=0;
+	   var stepZ=0;
 
 	   for (var i = 0; i < numberOfKeys2.length; i++) {
-	   		x=barWidth/2;
-	   		z+=barDepth;
+	   		stepX=_chart._width/numberOfKeys1.length/2;
+	   		stepZ+=_chart._width/numberOfKeys2.length;
+	   		var origin_color =Math.random() * 0xffffff
 	   		for (var j = 0; j < numberOfKeys1.length; j++) {
 	   			barHeight=(_chart._height*_chart._data[dataPos].value)/topValue;
 	   			y=barHeight/2;
 				var geometry = new THREE.CubeGeometry( barWidth, barHeight, barDepth);
-				var origin_color=_chart._color;
+				//var origin_color=_chart._color;
+
 	   		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
 	                                                	     specular: 0x999999,
 	                                                	     shininess: 100,
 	                                                	     shading : THREE.SmoothShading,
-	                                                   	     opacity:_chart._opacity,
+	                                                   	     opacity:1,
 	                                               		     transparent: true
 	            } );
 	            var bar = new THREE.Mesh(geometry, material);
 	            bar.origin_color=origin_color;
-	            bar.position.set(x+_chart.coords.x,y+_chart.coords.y,z+_chart.coords.z);
+	            bar.position.set(stepX+_chart.coords.x,y+_chart.coords.y,stepZ+_chart.coords.z);
 	            bar.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value;
 	            _chart.parts.push(bar);
-	            scene.add(bar);
-	            x+=barWidth;
+	   			if (j>0) {
+				 stepX+=_chart._width/numberOfKeys1.length;
+	   			};
 	   			dataPos++;
 	   		};
 	   };
-
 	    _chart.addEvents();
 	    _chart.addLabels();
 		if (_chart._gridsOn) _chart.addGrids();
