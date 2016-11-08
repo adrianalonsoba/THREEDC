@@ -246,12 +246,12 @@ function init () {
   var bars= THREEDC.TDbarsChart([0,0,0]);
   bars
       .data(data)
-      .width(300)
+      .width(400)
       .height(500)
-      .depth(300)
-      .opacity(0.8)
+      .depth(400)
+      .opacity(0.95)
       .color(0xffaa00)
-      .gridsOn();
+      .gridsOn(0xffffff);
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));

@@ -391,7 +391,8 @@ THREEDC.baseMixin = function (_chart) {
 		}
     }
 
-    _chart.gridsOn=function() {
+    _chart.gridsOn=function(color) {
+    	if( color) _chart._gridColor=color;
     	_chart._gridsOn=true;
 
     	return _chart;
@@ -1219,7 +1220,7 @@ THREEDC.TDbarsChart = function (location){
 
     	function addGridBox () {
 			var material = new THREE.MeshPhongMaterial( {
-													   color:0x0000ff,
+													   color:_chart._gridColor || 0x0000ff,
 			                                           specular: 0x999999,
 			                                           shininess: 100,
 			                                           shading : THREE.SmoothShading,
@@ -1272,7 +1273,6 @@ THREEDC.TDbarsChart = function (location){
     	};
     	_chart.yGrids=[];
     }
-
 
     _chart.addLabels=function(){ 
     	var numberOfValues;
@@ -1328,7 +1328,6 @@ THREEDC.TDbarsChart = function (location){
 			      var label = new THREE.Mesh( geometry, material );
 			      label.position.z = _chart.coords.z;
 			      label.position.x = _chart.coords.x-maxYLabelWidth*6;
-			      console.log(label.position.x);
 			      label.position.y = _chart.coords.y+step;
 			     // label.rotation.set(3*Math.PI/2,0,0);
 			      _chart.labels.push(label);
@@ -1531,17 +1530,15 @@ THREEDC.TDbarsChart = function (location){
 	   var numberOfKeys1=_chart.getKeysOne();
 	   var numberOfKeys2=_chart.getKeysTwo();
 	   var barHeight;
-	   var barWidth=_chart._width/numberOfKeys1.length*0.8;
-	   var barDepth=_chart._depth/numberOfKeys2.length*0.8;
+	   var barWidth=_chart._width/numberOfKeys1.length*0.6;
+	   var barDepth=_chart._depth/numberOfKeys2.length*0.6;
 	   var dataPos=0;
 	   var stepX=0;
    	   var y=0;
-	   var stepZ=0;
-
+	   var stepZ=_chart._depth/numberOfKeys2.length/2;
 	   for (var i = 0; i < numberOfKeys2.length; i++) {
-	   		stepX=_chart._width/numberOfKeys1.length/2;
-	   		stepZ+=_chart._width/numberOfKeys2.length;
-	   		var origin_color =Math.random() * 0xffffff
+	   		stepX =_chart._width/numberOfKeys1.length/2;
+	   		var origin_color =Math.random() * 0xffffff;
 	   		for (var j = 0; j < numberOfKeys1.length; j++) {
 	   			barHeight=(_chart._height*_chart._data[dataPos].value)/topValue;
 	   			y=barHeight/2;
@@ -1552,7 +1549,7 @@ THREEDC.TDbarsChart = function (location){
 	                                                	     specular: 0x999999,
 	                                                	     shininess: 100,
 	                                                	     shading : THREE.SmoothShading,
-	                                                   	     opacity:1,
+	                                                   	     opacity:_chart._opacity,
 	                                               		     transparent: true
 	            } );
 	            var bar = new THREE.Mesh(geometry, material);
@@ -1560,11 +1557,10 @@ THREEDC.TDbarsChart = function (location){
 	            bar.position.set(stepX+_chart.coords.x,y+_chart.coords.y,stepZ+_chart.coords.z);
 	            bar.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value;
 	            _chart.parts.push(bar);
-	   			if (j>0) {
 				 stepX+=_chart._width/numberOfKeys1.length;
-	   			};
 	   			dataPos++;
 	   		};
+	   		stepZ+=_chart._depth/numberOfKeys2.length;
 	   };
 	    _chart.addEvents();
 	    _chart.addLabels();
