@@ -249,6 +249,8 @@ function init () {
       .width(400)
       .height(500)
       .depth(400)
+      .barSeparation(0.8)
+     // .clickCallBackFunction(function)
       .opacity(0.95)
       .color(0xffaa00)
       .gridsOn(0xffffff);

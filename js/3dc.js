@@ -1027,6 +1027,7 @@ THREEDC.TDbarsChart = function (location){
 		//by default
 	_chart._depth=100;
 	_chart._opacity=0.8;
+	_chart._barSeparation=0.7;
 
 	_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 	_chart._color=0x0000ff;
@@ -1519,6 +1520,17 @@ THREEDC.TDbarsChart = function (location){
     	_chart.labels=[];
     }
 
+    // (0,1)> 1 no separation
+    //
+    _chart.barSeparation=function(separation){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._barSeparation=separation;
+    	return _chart;
+    }
+
 	_chart.build = function() {
 		/*
 	   if(_chart._groupOne===undefined || _chart._groupTwo===undefined){
@@ -1530,8 +1542,8 @@ THREEDC.TDbarsChart = function (location){
 	   var numberOfKeys1=_chart.getKeysOne();
 	   var numberOfKeys2=_chart.getKeysTwo();
 	   var barHeight;
-	   var barWidth=_chart._width/numberOfKeys1.length*0.6;
-	   var barDepth=_chart._depth/numberOfKeys2.length*0.6;
+	   var barWidth=_chart._width/numberOfKeys1.length*_chart._barSeparation;
+	   var barDepth=_chart._depth/numberOfKeys2.length*_chart._barSeparation;
 	   var dataPos=0;
 	   var stepX=0;
    	   var y=0;
@@ -1544,7 +1556,6 @@ THREEDC.TDbarsChart = function (location){
 	   			y=barHeight/2;
 				var geometry = new THREE.CubeGeometry( barWidth, barHeight, barDepth);
 				//var origin_color=_chart._color;
-
 	   		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
 	                                                	     specular: 0x999999,
 	                                                	     shininess: 100,
@@ -1565,8 +1576,6 @@ THREEDC.TDbarsChart = function (location){
 	    _chart.addEvents();
 	    _chart.addLabels();
 		if (_chart._gridsOn) _chart.addGrids();
-
-
 	}
 
 	return _chart;
