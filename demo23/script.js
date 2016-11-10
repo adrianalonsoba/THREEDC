@@ -28,7 +28,7 @@ var json_data;
 
 // initialization
   //getJSON call, draw meshes with data
-   $.getJSON("jsons/scm-commits.json", function(data) {
+   $.getJSON("../jsons/scm-commits.json", function(data) {
       json_data=data;
       init();
       // animation loop / game loop
@@ -259,8 +259,11 @@ function init () {
 
  // var bars= THREEDC.barsChart([0,0,0]);
   //bars.group(groupByRepo);
+  getRandomCharts(100);
 
   THREEDC.renderAll();
+
+
 
   function  getRandomCharts(numberOfRandomCharts) {
     for (var i = 0; i < numberOfRandomCharts; i++) {
