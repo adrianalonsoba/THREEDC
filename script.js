@@ -240,6 +240,10 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
+ var testFunction = function (argument) {
+   console.log( argument);
+ }
+
   THREEDC.initializer(camera,scene,renderer,container);
 
   var bars= THREEDC.TDbarsChart([0,0,0]);
@@ -249,7 +253,7 @@ function init () {
       .height(500)
       .depth(400)
       .barSeparation(0.8)
-     // .clickCallBackFunction(function)
+      .clickCallBackFunction(testFunction)
       .opacity(0.95)
       .color(0xffaa00)
       .gridsOn(0xffffff);

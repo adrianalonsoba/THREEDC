@@ -255,9 +255,17 @@ THREEDC.baseMixin = function (_chart) {
 
     _chart.addEvents=function(){
 
-    	for (var i = 0; i < _chart.parts.length; i++) {
-    		addEvents(_chart.parts[i]);
-    	};
+    	//custom events
+    	if(_chart._clickCallBackFcuntion){
+	    	for (var i = 0; i < _chart.parts.length; i++) {
+	    		_chart._clickCallBackFcuntion(_chart.parts[i]);
+	    	};
+    	}else{
+	    	//events by default
+	    	for (var i = 0; i < _chart.parts.length; i++) {
+	    		addEvents(_chart.parts[i]);
+	    	};
+    	}
 
 		function addEvents (mesh) {
 
@@ -764,6 +772,15 @@ THREEDC.baseMixin = function (_chart) {
     		return;
     	}
     	_chart._opacity=number;
+    	return _chart;
+    }
+
+    _chart.clickCallBackFunction=function(argFunction){
+    	if(!arguments.length){
+    		console.log('argument needed');
+    		return;
+    	}
+    	_chart._clickCallBackFcuntion=argFunction;
     	return _chart;
     }
 
