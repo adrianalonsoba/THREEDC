@@ -240,8 +240,11 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
- var testFunction = function (argument) {
-   console.log( argument);
+ var testFunction = function (mesh) {
+      THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){ 
+        console.log(mesh);
+        mesh.parentChart.remove();
+      });
  }
 
   THREEDC.initializer(camera,scene,renderer,container);
@@ -253,7 +256,7 @@ function init () {
       .height(500)
       .depth(400)
       .barSeparation(0.8)
-      .clickCallBackFunction(testFunction)
+      .addCustomEvents(testFunction)
       .opacity(0.95)
       .color(0xffaa00)
       .gridsOn(0xffffff);
