@@ -1,20 +1,21 @@
-var THREEDC={
-	version:'0.1-b',
-	allCharts:[],
-	allPanels:[],
-	textLabel:null,
-	chartToDrag:null,
-	intervalFilter:[],
-	raycaster : new THREE.Raycaster(),
-	mouse : new THREE.Vector2(),
-	offset : new THREE.Vector3()
-};
 
-THREEDC.initializer=function(camera,scene,renderer,container) {
+function THREEDC (camera,scene,renderer,container) {
+
 	THREEDC.camera=camera;
 	THREEDC.scene=scene;
 	THREEDC.renderer=renderer;
 	THREEDC.container=container;
+
+
+	THREEDC.version='0.1-b';
+	THREEDC.allCharts=[];
+	THREEDC.allPanels=[];
+	THREEDC.textLabel=null;
+	THREEDC.chartToDrag=null;
+	THREEDC.intervalFilter=[];
+	THREEDC.raycaster = new THREE.Raycaster();
+	THREEDC.mouse = new THREE.Vector2();
+	THREEDC.offset = new THREE.Vector3();
 	   //////////////
    // CONTROLS //
    //////////////
@@ -1587,7 +1588,7 @@ THREEDC.TDbarsChart = function (location){
 	            bar.position.set(stepX+_chart.coords.x,y+_chart.coords.y,stepZ+_chart.coords.z);
 	            bar.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value;
 	            bar.data={
-	            	ke1:_chart._data[dataPos].key1,
+	            	key1:_chart._data[dataPos].key1,
 	            	key2:_chart._data[dataPos].key2,
 	            	value:_chart._data[dataPos].value
 	            };

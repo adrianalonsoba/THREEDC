@@ -247,7 +247,7 @@ function init () {
       });
  }
 
-  THREEDC.initializer(camera,scene,renderer,container);
+  THREEDC(camera,scene,renderer,container);
 
   var bars= THREEDC.TDbarsChart([0,0,0]);
   bars
@@ -256,10 +256,11 @@ function init () {
       .height(500)
       .depth(400)
       .barSeparation(0.8)
-      .addCustomEvents(testFunction)
+      //.addCustomEvents(testFunction)
       .opacity(0.95)
       .color(0xffaa00)
       .gridsOn(0xffffff);
+
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
