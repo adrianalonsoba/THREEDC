@@ -256,7 +256,7 @@ function init () {
       .height(500)
       .depth(400)
       .barSeparation(0.8)
-      .addCustomEvents(testFunction)
+     // .addCustomEvents(testFunction)
       .opacity(0.95)
       .color(0xffaa00)
       .gridsOn(0xffffff);
