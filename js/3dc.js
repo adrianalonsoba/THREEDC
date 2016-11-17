@@ -260,12 +260,29 @@ THREEDC.baseMixin = function (_chart) {
     	if(_chart._addCustomEvents){
 	    	for (var i = 0; i < _chart.parts.length; i++) {
 	    		_chart._addCustomEvents(_chart.parts[i]);
+	    		//mouseover and mouse out events added here too for now
+	    		addInfoEvents(_chart.parts[i]);
 	    	};
     	}else{
 	    	//events by default
 	    	for (var i = 0; i < _chart.parts.length; i++) {
 	    		addEvents(_chart.parts[i]);
 	    	};
+    	}
+
+    	function addInfoEvents (mesh) {
+			//adds mouseover events
+			THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){ 
+				changeMeshColor(mesh);
+				showInfo(mesh);
+			});
+
+			THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){ 
+				//restores the original color
+				if(mesh.type!='Line'){
+					mesh.material.emissive.setHex(mesh.currentHex);
+				}
+			});
     	}
 
 		function addEvents (mesh) {
