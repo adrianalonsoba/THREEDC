@@ -231,11 +231,11 @@ function init () {
 
       //4Ddata without CF
 
-  var data2= [{key1:'january',key2:'apple',key3:1,value:23},{key1:'february',key2:'apple',key3:2,value:31},{key1:'march',key2:'apple',key3:3,value:10},{key1:'april',key2:'apple',key3:4,value:59},
+  var data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
 
-            {key1:'january',key2:'google',key3:4,value:34},{key1:'february',key2:'google',key3:7,value:89},{key1:'march',key2:'google',key3:9,value:53},{key1:'april',key2:'google',key3:10,value:76},
+            {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50}
 
-      
+ 
   ];
 
  //CUSTOM DASHBOARD//
@@ -249,13 +249,13 @@ function init () {
 
   THREEDC(camera,scene,renderer,container);
 
-  var bars= THREEDC.TDbarsChart([0,0,0]);
+  var bars= THREEDC.bubbleChart([0,0,0]);
   bars
-      .data(data)
+      .data(data2)
       .width(400)
       .height(500)
       .depth(400)
-      .barSeparation(0.8)
+     // .barSeparation(0.8)
      // .addCustomEvents(testFunction)
       .opacity(0.95)
       .color(0xffaa00)

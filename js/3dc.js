@@ -683,6 +683,15 @@ THREEDC.baseMixin = function (_chart) {
 		return topValue;
 	}
 
+    _chart.getTopValue2=function() {
+		var topValue2 = _chart._data[0].value2;
+		for (var i = 1; i < _chart._data.length; i++) {
+			if (_chart._data[i].value2 > topValue2) topValue2=_chart._data[i].value2;
+		};
+
+		return topValue2;
+	}
+
 	_chart.sortCFData=function() {
 	    var unsort_data=_chart._group.top(Infinity);
 
@@ -1957,7 +1966,7 @@ THREEDC.bubbleChart= function (location) {
 		location=[0,0,0];
 	}
 
-	var _chart = THREEDC.baseMixin({});
+	var _chart = THREEDC.threeDMixin({});
 
 		//by default
 	_chart._depth=100;
@@ -1968,41 +1977,18 @@ THREEDC.bubbleChart= function (location) {
 
 	THREEDC.allCharts.push(_chart);
 
-
-    _chart.groupOne=function(group){
-    	if(!arguments.length){
-    		console.log('argument needed');
-    		return;
-    	}
-    	_chart._groupOne=group;
-    	return _chart;
-    }
-
-    _chart.groupTwo=function(group){
-    	if(!arguments.length){
-    		console.log('argument needed');
-    		return;
-    	}
-    	_chart._groupTwo=group;
-    	return _chart;
-    }
-
-    _chart.getKeysOne=function() {
-    	var keysOne=[];
-		for (var i = 0; i < _chart._data.length; i++) {
-			if(keysOne.indexOf(_chart._data[i].key1)===-1) keysOne.push(_chart._data[i].key1);
-
+	_chart.getTopRadius=function() {
+		var topRadius;
+		var chartDimensions=[_chart._width,_chart._height,_chart._depth];
+		var minDimension=_chart._width;
+		for (var i = 1; i < chartDimensions.length; i++) {
+			if(chartDimensions[i]<minDimension){
+				minDimension=chartDimensions[i];
+			}
 		};
-		return keysOne;
-    }
-
-    _chart.getKeysTwo=function() {
-    	var keysTwo=[];
-		for (var i = 0; i < _chart._data.length; i++) {
-			if(keysTwo.indexOf(_chart._data[i].key2)===-1) keysTwo.push(_chart._data[i].key2);
-		};
-		return keysTwo;
-    }
+		topRadius=minDimension/2;
+		return topRadius;
+	}
 
 	_chart.build = function() {
 		/*
@@ -2012,24 +1998,21 @@ THREEDC.bubbleChart= function (location) {
 	   }
 	   */
 	   var topValue=_chart.getTopValue();
+	   var topValue2=_chart.getTopValue2();
+	   var topBubbleRadius=_chart.getTopRadius();
+
 	   var numberOfKeys1=_chart.getKeysOne();
 	   var numberOfKeys2=_chart.getKeysTwo();
-	   var barHeight;
-	   var barWidth=_chart._width/numberOfKeys1.length;
-	   var barDepth=_chart._depth/numberOfKeys2.length;
+	   
 	   var dataPos=0;
-	   var x=0;
+	   var stepX=0;
    	   var y=0;
-	   var z=0;
-
+   	   var stepZ=_chart._depth/numberOfKeys2.length/2;
 	   for (var i = 0; i < numberOfKeys2.length; i++) {
-	   		x=barWidth/2;
-	   		z+=barDepth;
+	   		stepX =_chart._width/numberOfKeys1.length/2;
+	   		var origin_color =Math.random() * 0xffffff;
 	   		for (var j = 0; j < numberOfKeys1.length; j++) {
-	   			barHeight=(_chart._height*_chart._data[dataPos].value)/topValue;
-	   			y=barHeight/2;
-				var geometry = new THREE.SphereGeometry(Math.random()*100,32,32);
-				var origin_color=Math.random() * 0xffffff;
+				var geometry = new THREE.SphereGeometry(_chart._data[dataPos].value2,32,32);
 	   		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
 	                                                	     specular: 0x999999,
 	                                                	     shininess: 100,
@@ -2037,14 +2020,23 @@ THREEDC.bubbleChart= function (location) {
 	                                                   	     opacity:_chart._opacity,
 	                                               		     transparent: true
 	            } );
-	            var bar = new THREE.Mesh(geometry, material);
-	            console.log(bar);
-	            bar.position.set(x+_chart.coords.x,y+_chart.coords.y,z+_chart.coords.z);
-	            _chart.parts.push(bar);
-	            scene.add(bar);
-	            x+=barWidth;
+	            var bubble = new THREE.Mesh(geometry, material);
+	            bubble.origin_color=origin_color;
+	            y=(_chart._height*_chart._data[dataPos].value)/topValue;
+	            bubble.position.set(stepX+_chart.coords.x,y+_chart.coords.y,stepZ+_chart.coords.z);
+	            bubble.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value+" value2: "+_chart._data[dataPos].value2;
+	            bubble.data={
+	            	key1:_chart._data[dataPos].key1,
+	            	key2:_chart._data[dataPos].key2,
+	            	value:_chart._data[dataPos].value,
+	            	value:_chart._data[dataPos].value2
+	            };
+	            bubble.parentChart=_chart;
+	            _chart.parts.push(bubble);
+	            stepX+=_chart._width/numberOfKeys1.length;
 	   			dataPos++;
 	   		};
+	   		stepZ+=_chart._depth/numberOfKeys2.length;
 	   };
 
 	    _chart.addEvents();
