@@ -252,7 +252,7 @@ function init () {
   var bars= THREEDC.bubbleChart([0,0,0]);
   bars
       .data(data2)
-      .width(400)
+      .width(800)
       .height(500)
       .depth(400)
      // .barSeparation(0.8)

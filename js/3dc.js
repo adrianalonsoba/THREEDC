@@ -1986,7 +1986,7 @@ THREEDC.bubbleChart= function (location) {
 				minDimension=chartDimensions[i];
 			}
 		};
-		topRadius=minDimension/2;
+		topRadius=minDimension/4;
 		return topRadius;
 	}
 
@@ -2012,7 +2012,7 @@ THREEDC.bubbleChart= function (location) {
 	   		stepX =_chart._width/numberOfKeys1.length/2;
 	   		var origin_color =Math.random() * 0xffffff;
 	   		for (var j = 0; j < numberOfKeys1.length; j++) {
-				var geometry = new THREE.SphereGeometry(_chart._data[dataPos].value2,32,32);
+				var geometry = new THREE.SphereGeometry(topBubbleRadius*_chart._data[dataPos].value2/topValue2,32,32);
 	   		    var material = new THREE.MeshPhongMaterial( {color: origin_color,
 	                                                	     specular: 0x999999,
 	                                                	     shininess: 100,
