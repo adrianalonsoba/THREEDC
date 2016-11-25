@@ -233,7 +233,9 @@ function init () {
 
   var data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
 
-            {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50}
+            {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50},
+
+            {key1:'january',key2:'sony',value:34,value2:Math.random()*50},{key1:'february',key2:'sony',value:89,value2:Math.random()*50},{key1:'march',key2:'sony',value:53,value2:Math.random()*50},{key1:'april',key2:'sony',value:76,value2:Math.random()*50}
 
  
   ];
@@ -247,20 +249,25 @@ function init () {
       });
  }
 
+
   THREEDC(camera,scene,renderer,container);
 
-  var bars= THREEDC.bubbleChart([0,0,0]);
+  var cart=THREEDC.sphericalToCartesian(86.60254037844386,0.9553166181245093,0.7853981633974483);
+  var sphe=THREEDC.cartesianToSpherical(50,50,50);
+  console.log(cart);
+
+  var bars= THREEDC.barsChart([cart.x,cart.y,cart.z]);
   bars
       .data(data2)
-      .width(800)
-      .height(500)
-      .depth(400)
+      .width(200)
+      .height(200)
+      .depth(20)
      // .barSeparation(0.8)
      // .addCustomEvents(testFunction)
       .opacity(0.95)
       .color(0xffaa00)
       .gridsOn(0xffffff);
-
+console.log(bars);
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));

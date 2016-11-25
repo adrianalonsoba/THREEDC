@@ -193,6 +193,27 @@ THREEDC.removeEvents=function(){
 	};	
 }
 
+
+//The spherical coordinates of a point in the ISO convention (radius r, inclination θ, azimuth φ) can be obtained from its Cartesian coordinates (x, y, z) 
+THREEDC.cartesianToSpherical=function (x,y,z) {
+	var r=Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+Math.pow(z,2)) ;
+	var θ=Math.acos(z/r);
+	var φ=Math.atan(y/x);
+
+	return {r:r,θ:θ,φ:φ};
+ }
+
+//Conversely, the Cartesian coordinates may be retrieved from the spherical coordinates (radius r, inclination θ, azimuth φ), where r ∈ [0, ∞), θ ∈ [0, π], φ ∈ [0, 2π), by:
+THREEDC.sphericalToCartesian= function  (r,θ,φ) {
+	var x=r*Math.sin(θ)*Math.cos(φ);
+	var y=r*Math.sin(θ)*Math.sin(φ);
+	var z=r*Math.cos(θ);
+
+	return {x:x,y:y,z:z};
+ }
+
+ //console.log(sphericalToCartesian(50,Math.PI/2,0));
+
 /*base object whose methods are inherited for each implementation
 * the properties of a chart are given by a function chain
 */
