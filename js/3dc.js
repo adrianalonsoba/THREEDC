@@ -193,7 +193,6 @@ THREEDC.removeEvents=function(){
 	};	
 }
 
-
 //The spherical coordinates of a point in the ISO convention (radius r, inclination θ, azimuth φ) can be obtained from its Cartesian coordinates (x, y, z) 
 THREEDC.cartesianToSpherical=function (x,y,z) {
 	var r=Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+Math.pow(z,2)) ;
@@ -2070,47 +2069,78 @@ THREEDC.bubbleChart= function (location) {
 }
 
 
-THREEDC.fileTree= function (coords) {
+THREEDC.fileTree= function (location) {
 
-	var _chart = THREEDC.baseMixin({});
-	//NECESITO SABER EN QU FORMATO VAN A VENIR LOS DATOS PARA CONSTRUIR UNA ESTRUCTURA QUE FACILITE PINTARLOS
-	var test_data=[{id:'root',parent:null,size:200},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500}];
 
-	var parents=[];
-
-	function createDataStructure (data) {
-		//crear estructura que rellenes padres y que cada padre tenga un array de hijos, que a su vez podran ser o no padres
-		for (var i = 0; i < data.length; i++) {
-			//data.[i] tiene padre? 
-				//si-> añadir a ese padre a parents si no esta ya y añadirle como hijo en un vector:childs.push({id:'pepe',parent:'root',size:100}) p.e.
-				//no--> es raiz, lo guardo al principio de parents
-		};
+	if(location==undefined){
+		location=[0,0,0];
 	}
+
+	var _chart = THREEDC.threeDMixin({});
+
+	_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
 	THREEDC.allCharts.push(_chart);
 
-	//usar data para construir el arbol iterativamente, si un nodo no tiene hijos, es un fichero(cubo) y si es un directorio una esfera, su tamaño podria depender del tamaño
-	// de todos los ficheros
-
+	var pi= Math.PI;
 
 	_chart.build= function () {
 
-		var x=0;
-		var y=0;
-		var z=0;
+		 createDataStructure();
 
-		_chart.coords= new THREE.Vector3( coords[0], coords[1], coords[2] );
+		var coor1=THREEDC.sphericalToCartesian(50,2*pi,0);
 
-		for (var i = 0; i < test_data.length; i++) {
-			var geometry = new THREE.SphereGeometry(test_data[i].size/10,32,32);
-			var material = new THREE.MeshLambertMaterial( {} );
-			material.color.setHex( Math.random() * 0xffffff );
-			var sphere = new THREE.Mesh( geometry, material );
+		var geometry = new THREE.CubeGeometry( 20, 20, 20);
 
-			sphere.position.set(x+coords[0],y+coords[1],z+coords[2]);
-			x+=200;
-			_chart.parts.push(sphere);
-		};
+		var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
+		                                         specular: 0x999999,
+		                                         shininess: 100,
+		                                         shading : THREE.SmoothShading,
+		                                         transparent: true
+		} );
+		var bar = new THREE.Mesh(geometry, material);
+		bar.position.set(coor1.x,coor1.y,coor1.z);
+
+		//_chart.parts.push(bar);
+
+		function createDataStructure () {
+
+			findRootNode();
+			findSons(_chart.rootNode);
+			console.log(_chart.rootNode);
+
+			function findRootNode () {
+
+				for (var i = 0; i < _chart._data.length; i++) {
+					if(_chart._data[i].parent===null){
+						_chart.rootNode=_chart._data[i];
+						_chart._data.splice(i,1);
+						break;
+					}
+				};
+			}
+
+			function findSons (node) {
+				node.sons=[];
+				for (var i = 0; i < _chart._data.length; i++) {
+					if(_chart._data[i].parent===node.id){
+						node.sons.push(_chart._data[i]);
+					}	
+				};
+				//remove found sons
+				var index;
+				for (var i = 0; i < node.sons.length; i++) {
+					 index = _chart._data.indexOf(node.sons[i]);
+					_chart._data.splice(index,1);
+				};
+				//	RECURSIVE
+				for (var i = 0; i < node.sons.length; i++) {
+					findSons(node.sons[i]);
+				};
+				
+			}
+		}
+
 		//_chart.addEvents();
 		//_chart.addLabels();
 		//if (_chart._gridsOn) _chart.addGrids();
@@ -2193,7 +2223,3 @@ function onMouseMove( event ) {
     return;
   }
 }
-
-
-
-

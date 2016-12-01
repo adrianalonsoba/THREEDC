@@ -242,32 +242,14 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
- var testFunction = function (mesh) {
-      THREEDC.domEvents.bind(mesh, 'click', function(object3d){ 
-        console.log(mesh);
-       // mesh.parentChart.remove();
-      });
- }
 
+  var test_data=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'peter',parent:'pepe',size:100},{id:'satan',parent:'peter',size:100},{id:'manolo',parent:'juan',size:100}];
 
   THREEDC(camera,scene,renderer,container);
 
-  var cart=THREEDC.sphericalToCartesian(86.60254037844386,0.9553166181245093,0.7853981633974483);
-  var sphe=THREEDC.cartesianToSpherical(50,50,50);
-  console.log(cart);
+  var tree= THREEDC.fileTree([0,0,0]);
 
-  var bars= THREEDC.barsChart([cart.x,cart.y,cart.z]);
-  bars
-      .data(data2)
-      .width(200)
-      .height(200)
-      .depth(20)
-     // .barSeparation(0.8)
-     // .addCustomEvents(testFunction)
-      .opacity(0.95)
-      .color(0xffaa00)
-      .gridsOn(0xffffff);
-console.log(bars);
+  tree.data(test_data);
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
