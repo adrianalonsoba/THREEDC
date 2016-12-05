@@ -2086,27 +2086,42 @@ THREEDC.fileTree= function (location) {
 
 	_chart.build= function () {
 
-		 createDataStructure();
+		var group= new THREE.Group();
 
-		var coor1=THREEDC.sphericalToCartesian(50,2*pi,0);
+		createDataStructure();
 
-		var geometry = new THREE.CubeGeometry( 20, 20, 20);
+		buildRootNode();
 
-		var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
-		                                         specular: 0x999999,
-		                                         shininess: 100,
-		                                         shading : THREE.SmoothShading,
-		                                         transparent: true
-		} );
-		var bar = new THREE.Mesh(geometry, material);
-		bar.position.set(coor1.x,coor1.y,coor1.z);
+		_chart.parts.push(group);
 
-		//_chart.parts.push(bar);
+		function buildRootNode () {
+
+			var coor1=THREEDC.sphericalToCartesian(50,2*pi,0);
+
+			var geometry = new THREE.CubeGeometry( 20, _chart.rootNode.size, 20);
+
+			var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
+			                                         specular: 0x999999,
+			                                         shininess: 100,
+			                                         shading : THREE.SmoothShading,
+			                                         transparent: true
+			} );
+			
+			var rootNode = new THREE.Mesh(geometry, material);
+			rootNode.position.set(_chart.coords.x,_chart.coords.y+ _chart.rootNode.size/2,_chart.coords.z);
+			group.add(rootNode);
+
+		}
+
+		function buildSons (node) {
+			
+		}
 
 		function createDataStructure () {
 
 			findRootNode();
 			findSons(_chart.rootNode);
+			assignAngles(_chart.rootNode);
 			console.log(_chart.rootNode);
 
 			function findRootNode () {
@@ -2138,6 +2153,28 @@ THREEDC.fileTree= function (location) {
 					findSons(node.sons[i]);
 				};
 				
+			}
+
+
+			function assignAngles (node) {
+				if(node===_chart.rootNode){
+					node.availableAngle=2*pi;
+				}
+
+				var anglePerSon=node.availableAngle/node.sons.length;
+				var j=1;
+				for (var i = 0; i < node.sons.length; i++) {
+					node.sons[i].anglePosition=j*anglePerSon;
+					//lo puedo colocar en medio del available angle y dejar este para los hijos
+					node.sons[i].availableAngle=node.sons[i].anglePosition;
+					j++;
+
+				};
+
+				for (var i = 0; i < node.sons.length; i++) {
+					assignAngles(node.sons[i]);
+				};
+
 			}
 		}
 

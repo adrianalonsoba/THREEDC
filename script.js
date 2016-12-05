@@ -245,11 +245,13 @@ function init () {
 
   var test_data=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'peter',parent:'pepe',size:100},{id:'satan',parent:'peter',size:100},{id:'manolo',parent:'juan',size:100}];
 
+  var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'maria',parent:'root',size:500}];
+
   THREEDC(camera,scene,renderer,container);
 
   var tree= THREEDC.fileTree([0,0,0]);
 
-  tree.data(test_data);
+  tree.data(simpledata);
 
   //var cloud= THREEDC.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
