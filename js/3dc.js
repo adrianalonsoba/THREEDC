@@ -2086,25 +2086,29 @@ THREEDC.fileTree= function (location) {
 
 	_chart.build= function () {
 
+		var radius=200;
+
 		var group= new THREE.Group();
 
 		createDataStructure();
 
 		buildRootNode();
 
+		buildSons(_chart.rootNode);
+
 		_chart.parts.push(group);
 
 		function buildRootNode () {
 
-			var coor1=THREEDC.sphericalToCartesian(50,2*pi,0);
+			//var coor1=THREEDC.sphericalToCartesian(50,2*pi,0);
 
 			var geometry = new THREE.CubeGeometry( 20, _chart.rootNode.size, 20);
 
 			var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
-			                                         specular: 0x999999,
-			                                         shininess: 100,
-			                                         shading : THREE.SmoothShading,
-			                                         transparent: true
+			                                             specular: 0x999999,
+			                                             shininess: 100,
+			                                             shading : THREE.SmoothShading,
+			                                             transparent: true
 			} );
 			
 			var rootNode = new THREE.Mesh(geometry, material);
@@ -2114,7 +2118,45 @@ THREEDC.fileTree= function (location) {
 		}
 
 		function buildSons (node) {
-			
+			console.log(node);
+			for (var i = 0; i < node.sons.length; i++) {
+				var coords=THREEDC.sphericalToCartesian(radius,node.sons[i].anglePosition,0);
+				var geometry = new THREE.CubeGeometry( 20, node.sons[i].size, 20);
+
+				var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
+				                                             specular: 0x999999,
+				                                             shininess: 100,
+				                                             shading : THREE.SmoothShading,
+				                                             transparent: true
+				} );
+				//console.log(node.sons[i]);
+				
+				var ChildNode = new THREE.Mesh(geometry, material);
+				ChildNode.position.set(_chart.coords.x+coords.x,_chart.coords.y+coords.y+node.sons[i].size/2,_chart.coords.z+coords.z);
+				console.log(ChildNode.position);
+
+				group.add(ChildNode);
+			};
+			radius+=radius+100;
+			//recursive
+			for (var i = 0; i < node.sons.length; i++) {
+				buildSons(node.sons[i]);
+			};
+		}
+
+		function buildLink (parentNode) {
+			/*
+			var verticalGeometry = new THREE.Geometry();
+
+			verticalGeometry.vertices.push(
+				new THREE.Vector3( 0, -10, 0 ),
+				new THREE.Vector3( 0, _chart._height, 0 )
+			);
+			var verticalLine = new THREE.Line( verticalGeometry, material );
+
+			verticalLine.position.set(_chart.coords.x+step,_chart.coords.y,_chart.coords.z);
+			_chart.xGrids.push(verticalLine);
+			*/
 		}
 
 		function createDataStructure () {
@@ -2122,7 +2164,6 @@ THREEDC.fileTree= function (location) {
 			findRootNode();
 			findSons(_chart.rootNode);
 			assignAngles(_chart.rootNode);
-			console.log(_chart.rootNode);
 
 			function findRootNode () {
 
@@ -2155,7 +2196,6 @@ THREEDC.fileTree= function (location) {
 				
 			}
 
-
 			function assignAngles (node) {
 				if(node===_chart.rootNode){
 					node.availableAngle=2*pi;
@@ -2171,10 +2211,10 @@ THREEDC.fileTree= function (location) {
 
 				};
 
+				//recursive
 				for (var i = 0; i < node.sons.length; i++) {
 					assignAngles(node.sons[i]);
 				};
-
 			}
 		}
 
