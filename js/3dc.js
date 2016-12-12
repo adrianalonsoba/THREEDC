@@ -2100,8 +2100,6 @@ THREEDC.fileTree= function (location) {
 
 		function buildRootNode () {
 
-			//var coor1=THREEDC.sphericalToCartesian(50,2*pi,0);
-
 			var geometry = new THREE.CubeGeometry( 20, _chart.rootNode.size, 20);
 
 			var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
@@ -2113,6 +2111,7 @@ THREEDC.fileTree= function (location) {
 			
 			var rootNode = new THREE.Mesh(geometry, material);
 			rootNode.position.set(_chart.coords.x,_chart.coords.y+ _chart.rootNode.size/2,_chart.coords.z);
+			_chart.rootNode.position=rootNode.position;
 			group.add(rootNode);
 
 		}
@@ -2133,31 +2132,40 @@ THREEDC.fileTree= function (location) {
 				
 				var ChildNode = new THREE.Mesh(geometry, material);
 				ChildNode.position.set(_chart.coords.x+coords.x,_chart.coords.y+coords.y+node.sons[i].size/2,_chart.coords.z+coords.z);
-				console.log(ChildNode.position);
-
+				node.sons[i].position=ChildNode.position;
 				group.add(ChildNode);
+				//buildLink();
+
+				var lineGeometry = new THREE.Geometry();
+
+				var material = new THREE.LineBasicMaterial({
+					color: 0x000000,
+					linewidth:1
+				});
+
+				lineGeometry.vertices.push(
+					new THREE.Vector3( ChildNode.position.x, 0, ChildNode.position.z ),
+					new THREE.Vector3( node.position.x, 0, node.position.z )
+				);
+
+				var link = new THREE.Line( lineGeometry, material );
+
+				link.position.set(node.position.x,0,node.position.z);
+				group.add(link);
+
 			};
-			radius+=radius+100;
+			radius+=radius;
 			//recursive
 			for (var i = 0; i < node.sons.length; i++) {
 				buildSons(node.sons[i]);
 			};
 		}
 
-		function buildLink (parentNode) {
-			/*
-			var verticalGeometry = new THREE.Geometry();
 
-			verticalGeometry.vertices.push(
-				new THREE.Vector3( 0, -10, 0 ),
-				new THREE.Vector3( 0, _chart._height, 0 )
-			);
-			var verticalLine = new THREE.Line( verticalGeometry, material );
+			
 
-			verticalLine.position.set(_chart.coords.x+step,_chart.coords.y,_chart.coords.z);
-			_chart.xGrids.push(verticalLine);
-			*/
-		}
+			
+
 
 		function createDataStructure () {
 
