@@ -16,6 +16,7 @@ function THREEDC (camera,scene,renderer,container) {
 	THREEDC.raycaster = new THREE.Raycaster();
 	THREEDC.mouse = new THREE.Vector2();
 	THREEDC.offset = new THREE.Vector3();
+	THREEDC.paint=true;
 	   //////////////
    // CONTROLS //
    //////////////
@@ -41,10 +42,10 @@ function THREEDC (camera,scene,renderer,container) {
 	var folder1 = THREEDC.gui.addFolder('Drag');
 	var activateDrag = folder1.add( THREEDC.parameters, 'activate' ).name('On/Off').listen();
 	activateDrag.onChange(function(value) 
-	{ dragTrigger(); });
+	{ THREEDC.dragTrigger(); });
 	var dragChange = folder1.add( THREEDC.parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
 	dragChange.onChange(function(value) 
-	{   changePLane();   });
+	{   THREEDC.changePlane();   });
 	folder1.close();
 	THREEDC.gui.close();
 
@@ -53,6 +54,8 @@ function THREEDC (camera,scene,renderer,container) {
 		new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
 	);
 	THREEDC.plane.rotation.x = Math.PI / 2; //xz THREEDC.plane
+
+	return THREEDC;
 }
 
 //it creates a panel to put the charts which are related
@@ -2234,24 +2237,7 @@ THREEDC.fileTree= function (location) {
 	return _chart;
 }
 
-function get_random_color() {
-  function c() {
-    return Math.floor(Math.random()*256).toString(16)
-  }
-  return '#'+c()+c()+c();
-}
-
-function decimalToHexString(number)
-{
-    if (number < 0)
-    {
-    	number = 0xFFFFFFFF + number + 1;
-    }
-
-    return number.toString(16).toUpperCase();
-}
-
- function dragTrigger () {
+THREEDC.dragTrigger=function () {
   if(THREEDC.parameters.activate){
     THREEDC.scene.add( THREEDC.plane );
     THREEDC.domEvents.bind(THREEDC.plane, 'mouseup', function(object3d){
@@ -2264,15 +2250,15 @@ function decimalToHexString(number)
         THREEDC.plane.material.visible=false;
       }
     });    
-    window.addEventListener( 'mousemove', onMouseMove, false );
+    window.addEventListener( 'mousemove', THREEDC.onMouseMove, false );
   }else{
-    window.removeEventListener( 'mousemove', onMouseMove, false );
+    window.removeEventListener( 'mousemove', THREEDC.onMouseMove, false );
     THREEDC.scene.remove( THREEDC.plane );
     THREEDC.domEvents.unbind(THREEDC.plane, 'mouseup');
   }
 }
 
-function changePLane () {
+THREEDC.changePlane =function() {
   if (THREEDC.parameters.plane==='XY'){
     THREEDC.plane.rotation.set(0,0,0); //xy THREEDC.plane
   }else if(THREEDC.parameters.plane==='XZ'){
@@ -2280,8 +2266,7 @@ function changePLane () {
   }
 }
 
-var paint=true;
-function onMouseMove( event ) {
+THREEDC.onMouseMove=function( event ) {
 
   // calculate THREEDC.mouse position in normalized device coordinates
   // (-1 to +1) for both components
@@ -2301,8 +2286,8 @@ function onMouseMove( event ) {
         THREEDC.SELECTED.coords.copy( THREEDC.SELECTED.position);
       }else{
         THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
-        if(paint) THREEDC.chartToDrag.reBuild(); 
-        !paint;
+        if(THREEDC.paint) THREEDC.chartToDrag.reBuild(); 
+        !THREEDC.paint;
       }
     }
     return;

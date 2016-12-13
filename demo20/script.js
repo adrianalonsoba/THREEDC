@@ -160,7 +160,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC.initializer(camera,scene,renderer,container);
+  THREEDC(camera,scene,renderer,container);
 
 
   var line =  THREEDC.lineChart([50,0,0]);

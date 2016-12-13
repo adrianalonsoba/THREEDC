@@ -240,7 +240,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC.initializer(camera,scene,renderer,container);
+  THREEDC(camera,scene,renderer,container);
 
   var bars= THREEDC.TDbarsChart([0,0,0]);
   bars

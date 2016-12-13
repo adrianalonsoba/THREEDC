@@ -57,7 +57,6 @@ function init2 () {
    var axes = new THREE.AxisHelper(1000);
    scene2.add(axes);
 
-
    //////////////
    // CUSTOM //
    //////////////
