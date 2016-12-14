@@ -5,6 +5,7 @@
 
 // standard global variables
 var container, scene, camera, renderer, stats;
+var dash;
 
 //JSON data saved here
 var json_data;
@@ -251,20 +252,20 @@ function init () {
 
    // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
 
-  THREEDC(camera,scene,renderer,container);
+  dash = THREEDC({},camera,scene,renderer,container);
 
-  //var tree= THREEDC.fileTree([0,0,0]);
+  //var tree= dash.fileTree([0,0,0]);
 
  // tree.data(simpledata);
 
-  //var cloud= THREEDC.pointsCloudChart([0,0,0]);
+  //var cloud= dash.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
 
- // var bars= THREEDC.barsChart([0,0,0]);
+ // var bars= dash.barsChart([0,0,0]);
   //bars.group(groupByRepo);
 
 
-  var bubbles= THREEDC.bubbleChart([0,0,0]);
+  var bubbles= dash.bubbleChart([0,0,0]);
 
   bubbles.data(data2)
          .width(500)
@@ -274,11 +275,11 @@ function init () {
 
 
 
-  THREEDC.renderAll();
+  dash.renderAll();
 
   function  getRandomCharts(numberOfRandomCharts) {
     for (var i = 0; i < numberOfRandomCharts; i++) {
-    var bars= THREEDC.TDbarsChart([Math.random()*1000,Math.random()*1000,Math.random()*1000]);
+    var bars= dash.TDbarsChart([Math.random()*1000,Math.random()*1000,Math.random()*1000]);
     bars
         .data(data)
         .width(Math.random()*100+20)
@@ -308,6 +309,6 @@ function render()
 
 function update()
 {
-  THREEDC.controls.update();
+  dash.controls.update();
   stats.update();
 }

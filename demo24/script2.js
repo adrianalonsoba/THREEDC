@@ -6,6 +6,8 @@
 // standard global variables
 var container2, scene2, camera2, renderer2;
 
+var d2;
+
 init2();
 animate2();
 
@@ -71,14 +73,14 @@ function init2 () {
   var data= [{key:'january',value:23},{key:'february',value:31},{key:'march',value:10},{key:'april',value:59}];
 
 
-  THREEDC(camera2,scene2,renderer2,container2);
+   d2 =  THREEDC({},camera2,scene2,renderer2,container2);
 
-  pie= THREEDC.pieChart([-100,0,0]);
+  pie= d2.pieChart([-100,0,0]);
   pie
     .radius(100)
     .data(data)
 
-      THREEDC.renderAll();
+      d2.renderAll();
 
 }
 
@@ -96,5 +98,5 @@ function render2()
 
 function update2()
 {
- THREEDC.controls.update();
+ d2.controls.update();
 }

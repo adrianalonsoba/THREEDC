@@ -5,6 +5,7 @@
 
 // standard global variables
 var container, scene, camera, renderer, stats;
+var dash;
 
 //JSON data saved here
 var json_data;
@@ -177,16 +178,16 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC(camera,scene,renderer,container);
+ dash =  THREEDC({},camera,scene,renderer,container);
 
 
 //PANEL 1
 
-  var panel1=THREEDC.addPanel([0,0,-200],2,[300,500],0.2);
+  var panel1=dash.addPanel([0,0,-200],2,[300,500],0.2);
 
 
 
-    var bars1 =  THREEDC.barsChart(panel1);
+    var bars1 =  dash.barsChart(panel1);
      bars1.group(groupByOrg)
      .width(300)
      .height(250)
@@ -194,7 +195,7 @@ function init () {
       .dimension(dimByOrg)
       .depth(20);
 
-    var line1 =  THREEDC.smoothCurveChart(panel1);
+    var line1 =  dash.smoothCurveChart(panel1);
        line1.group(groupByMonth)
       .dimension(dimByMonth)
       .gridsOn()
@@ -208,9 +209,9 @@ function init () {
 
 
 //PANEL 2
-   var panel2=THREEDC.addPanel([0,0,0],3);
+   var panel2=dash.addPanel([0,0,0],3);
 
-  var bars2 =  THREEDC.barsChart(panel2);
+  var bars2 =  dash.barsChart(panel2);
   bars2.group(groupByOrg2)
       .dimension(dimByOrg2)
       .width(200)
@@ -221,7 +222,7 @@ function init () {
       .numberOfYLabels(4)
       .color(0x00ffff);
 
-   var line2 =  THREEDC.barsChart(panel2);
+   var line2 =  dash.barsChart(panel2);
        line2.group(groupByAuthor2)
       .dimension(dimByAuthor2)
       .gridsOn()
@@ -232,7 +233,7 @@ function init () {
       .color(0xff8000);
 
 
-    var line22 =  THREEDC.lineChart(panel2);
+    var line22 =  dash.lineChart(panel2);
        line22.group(groupByMonth2)
       .dimension(dimByMonth2)
       .width(400)
@@ -247,10 +248,10 @@ function init () {
 
 //PANEL 3
 
- var panel3=THREEDC.addPanel([-600,0,0],3,[400,200]);
+ var panel3=dash.addPanel([-600,0,0],3,[400,200]);
 
 
-    var bars3 =  THREEDC.barsChart(panel3);
+    var bars3 =  dash.barsChart(panel3);
        bars3.group(groupByAuthor)
       .dimension(dimByAuthor)
       .width(200)
@@ -260,13 +261,13 @@ function init () {
       .height(100)
       .depth(20)
       .color(0x00ffff);
-  var pie3 =  THREEDC.pieChart(panel3);
+  var pie3 =  dash.pieChart(panel3);
      pie3.group(groupByOrg)
       .dimension(dimByOrg)
       .radius(50)
       .depth(20);
 
-    var line3 =  THREEDC.barsChart(panel3);
+    var line3 =  dash.barsChart(panel3);
        line3.group(groupByMonth)
       .dimension(dimByMonth)
       .width(400)
@@ -280,9 +281,9 @@ function init () {
 
 //panel4
 
-  var panel4=THREEDC.addPanel([700,0,0],4);
+  var panel4=dash.addPanel([700,0,0],4);
 
-  var bars4 =  THREEDC.barsChart(panel4);
+  var bars4 =  dash.barsChart(panel4);
   bars4.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
@@ -293,7 +294,7 @@ function init () {
       .numberOfYLabels(4)
       .color(0xff8000);
 
-    var line4 =  THREEDC.lineChart(panel4);
+    var line4 =  dash.lineChart(panel4);
        line4.group(groupByMonth)
       .dimension(dimByMonth)
       .width(200)
@@ -306,7 +307,7 @@ function init () {
 
 
 
-    var line4 =  THREEDC.smoothCurveChart(panel4);
+    var line4 =  dash.smoothCurveChart(panel4);
        line4.group(groupByMonth)
       .dimension(dimByMonth)
       .gridsOn()
@@ -314,14 +315,14 @@ function init () {
       .height(200)
       .color(0xff0040);
 
-  var bars4 =  THREEDC.pieChart(panel4);
+  var bars4 =  dash.pieChart(panel4);
   bars4.group(groupByOrg)
       .dimension(dimByOrg)
       .radius(100);
 
 
 
-  THREEDC.renderAll();
+  dash.renderAll();
 
 }
 
@@ -339,6 +340,6 @@ function render()
 
 function update()
 {
-  THREEDC.controls.update();
+  dash.controls.update();
   stats.update();
 }

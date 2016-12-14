@@ -6,6 +6,8 @@
 // standard global variables
 var container1, scene1, camera1, renderer1;
 
+var d1;
+
 init1();
 animate1();
 
@@ -78,9 +80,11 @@ function init1 () {
             {key1:'january',key2:'sony',value:56},{key1:'february',key2:'sony',value:21},{key1:'march',key2:'sony',value:23},{key1:'april',key2:'sony',value:12}
   ]; 
 
-  THREEDC(camera1,scene1,renderer1,container1);
+   d1 = THREEDC({},camera1,scene1,renderer1,container1);
 
-  bars= THREEDC.TDbarsChart([0,0,0]);
+   var panel=d1.addPanel([0,0,0],3);
+
+  bars = d1.TDbarsChart([0,0,0]);
   bars
       .data(data)
       .width(400)
@@ -92,7 +96,7 @@ function init1 () {
       .color(0xffaa00)
       .gridsOn(0xffffff);
 
-      THREEDC.renderAll();
+      d1.renderAll();
 
 }
 
@@ -110,5 +114,5 @@ function render1()
 
 function update1()
 {
-  THREEDC.controls.update();
+  d1.controls.update();
 }

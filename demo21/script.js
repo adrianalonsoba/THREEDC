@@ -5,6 +5,7 @@
 
 // standard global variables
 var container, scene, camera, renderer,  stats;
+var dash;
 
 //JSON data saved here
 var json_data;
@@ -156,12 +157,12 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  THREEDC(camera,scene,renderer,container);
+   dash= THREEDC({},camera,scene,renderer,container);
 
 
-  var panel=THREEDC.addPanel([0,0,0],3);
+  var panel=dash.addPanel([0,0,0],3);
 
-  var bars =  THREEDC.barsChart(panel);
+  var bars =  dash.barsChart(panel);
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
@@ -172,7 +173,7 @@ function init () {
       .numberOfYLabels(4)
       .color(0x00ffff);
 
-   var line =  THREEDC.barsChart(panel);
+   var line =  dash.barsChart(panel);
        line.group(groupByAuthor)
       .dimension(dimByAuthor)
       .gridsOn()
@@ -183,7 +184,7 @@ function init () {
       .color(0xff0000);
 
 
-    var line =  THREEDC.lineChart(panel);
+    var line =  dash.lineChart(panel);
        line.group(groupByMonth)
       .dimension(dimByMonth)
       .width(400)
@@ -198,7 +199,7 @@ function init () {
 
 
 
-  THREEDC.renderAll();
+  dash.renderAll();
 
 }
 
@@ -216,6 +217,6 @@ function render()
 
 function update()
 {
-  THREEDC.controls.update();
+  dash.controls.update();
   stats.update();
 }
