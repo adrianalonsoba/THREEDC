@@ -1417,7 +1417,16 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 	   	   		 _data=_chart._data;
 	   	   }
 
-			var  extrudeOpts = {curveSegments:30,
+	   	   var curveSegments;
+	   	   if (_chart._data.length===1) {
+	   	   		curveSegments=600;
+	   	   }else{
+	   	   		curveSegments=30;
+	   	   };
+
+	   	   console.log(curveSegments);
+
+			var  extrudeOpts = {curveSegments:curveSegments,
 								amount: _chart._depth,
 								bevelEnabled: true,
 								bevelSegments: 4,
