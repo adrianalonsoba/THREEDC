@@ -1424,8 +1424,6 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 	   	   		curveSegments=30;
 	   	   };
 
-	   	   console.log(curveSegments);
-
 			var  extrudeOpts = {curveSegments:curveSegments,
 								amount: _chart._depth,
 								bevelEnabled: true,
@@ -2129,7 +2127,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 				console.log(node);
 				for (var i = 0; i < node.sons.length; i++) {
 					var coords=THREEDC.sphericalToCartesian(radius,node.sons[i].anglePosition,0);
-					var geometry = new THREE.CubeGeometry( 20, node.sons[i].size, 20);
+					var geometry = new THREE.SphereGeometry( node.sons[i].size/10, 20, 20);
 
 					var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
 					                                             specular: 0x999999,
@@ -2153,13 +2151,12 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 					});
 
 					lineGeometry.vertices.push(
-						new THREE.Vector3( ChildNode.position.x, 0, ChildNode.position.z ),
-						new THREE.Vector3( node.position.x, 0, node.position.z )
+						new THREE.Vector3( ChildNode.position.x, ChildNode.position.y, ChildNode.position.z ),
+						new THREE.Vector3( node.position.x, node.position.y, node.position.z )
 					);
 
 					var link = new THREE.Line( lineGeometry, material );
 
-					link.position.set(node.position.x,0,node.position.z);
 					group.add(link);
 
 				};

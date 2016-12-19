@@ -247,7 +247,7 @@ function init () {
 
   var test_data=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'peter',parent:'pepe',size:100},{id:'satan',parent:'peter',size:100},{id:'manolo',parent:'juan',size:100}];
 
-  var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'maria',parent:'root',size:500},{id:'satan',parent:'pepe',size:100},{id:'satanas',parent:'satan',size:100}];
+  var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'juan',parent:'root',size:500},{id:'maria',parent:'root',size:500},{id:'satan',parent:'pepe',size:100},{id:'satanas',parent:'pepe',size:100}];
 
    // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
 
