@@ -17,7 +17,6 @@
       var windowHalfY = window.innerHeight / 2;
 
       document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-
       init();
       animate();
 
@@ -27,10 +26,14 @@
         document.body.appendChild( container );
 
         camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
-        camera.position.z = 3200;
+     camera.position.set(0,150,800);
+
+
 
         scene = new THREE.Scene();
 
+
+   camera.lookAt(scene.position);
          ///////////
          // LIGHT //
          ///////////
@@ -83,7 +86,7 @@
 
         var material = new THREE.MeshLambertMaterial( { color: 0xffffff } );
 
-        for ( var i = 0; i < 500; i ++ ) {
+        for ( var i = 0; i < 50; i ++ ) {
 
           var mesh = new THREE.Mesh( geometry, material );
           mesh.position.x = Math.random() * 10000 - 5000;
@@ -99,6 +102,7 @@
       
         renderer = new THREE.WebGLRenderer();
         renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setClearColor( 0xd8d8d8 );
         container.appendChild( renderer.domElement );
 
         effect = new THREE.StereoEffect( renderer );
@@ -106,6 +110,54 @@
 
 
         window.addEventListener( 'resize', onWindowResize, false );
+
+
+    //3Ddata without CF
+
+  var data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
+
+            {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:89},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
+
+            {key1:'january',key2:'microsoft',value:10},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:4},{key1:'april',key2:'microsoft',value:12},
+
+            {key1:'january',key2:'sony',value:56},{key1:'february',key2:'sony',value:21},{key1:'march',key2:'sony',value:23},{key1:'april',key2:'sony',value:12}
+  ];
+
+  //4D data
+
+      var data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
+
+              {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50},
+
+              {key1:'january',key2:'sony',value:34,value2:Math.random()*50},{key1:'february',key2:'sony',value:89,value2:Math.random()*50},{key1:'march',key2:'sony',value:53,value2:Math.random()*50},{key1:'april',key2:'sony',value:76,value2:Math.random()*50}
+
+
+      ];
+
+      dash = THREEDC({},camera,scene,renderer,container);
+
+
+      var bubbles= dash.bubbleChart([-100,0,0]);
+
+      bubbles.data(data2)
+           .width(500)
+           .height(400)
+           .gridsOn()
+           .depth(400);
+
+         var bars= dash.TDbarsChart([700,0,0]);
+
+      bars.data(data)
+           .width(500)
+           .opacity(0.9)
+           .height(400)
+           .gridsOn(0xffaa00)
+           .depth(400);
+
+
+
+     dash.renderAll();
+
 
       }
 
@@ -135,6 +187,7 @@
         requestAnimationFrame( animate );
 
         render();
+        update();
 
       }
 
@@ -158,3 +211,9 @@
         effect.render( scene, camera );
 
       }
+
+function update()
+{
+  dash.controls.update();
+  //stats.update();
+}
