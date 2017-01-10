@@ -1418,7 +1418,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 	   	   }
 
 	   	   var curveSegments;
-	   	   if (_chart._data.length===1) {
+	   	   if (_data.length===1) {
 	   	   		curveSegments=600;
 	   	   }else{
 	   	   		curveSegments=30;
