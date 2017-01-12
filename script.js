@@ -242,14 +242,62 @@ function init () {
  
   ];
 
- //CUSTOM DASHBOARD//
-
-
   var test_data=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'peter',parent:'pepe',size:100},{id:'satan',parent:'peter',size:100},{id:'manolo',parent:'juan',size:100}];
 
   var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'juan',parent:'root',size:500},{id:'maria',parent:'root',size:500},{id:'satan',parent:'pepe',size:100},{id:'satanas',parent:'pepe',size:100}];
 
    // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
+
+  //CUSTOM DASHBOARD//
+
+  function generateRandomTree(levels,maxSonsPerLevel){
+    console.log(levels,maxSonsPerLevel);
+
+    var rootNode={};
+    
+    function createRootNode () {
+      rootNode.id='root';
+      rootNode.parent=null;
+      rootNode.size=100;
+    }
+
+    function createRandomNode (parent) {
+      var node={};
+      node.parent=parent.id;
+      node.id=makeid();
+      node.size=100;
+      return node;
+    }
+
+    function createSons (node) {
+      node.sons=[];
+      numberOfSons=Math.round(Math.random()*maxSonsPerLevel);
+      console.log(numberOfSons);
+      for (var i = 0; i < numberOfSons; i++) {
+        node.sons.push(createRandomNode(node));
+      };
+    }
+
+    function makeid()
+    {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+    }
+
+    createRootNode();
+    createSons(rootNode);   
+
+    return rootNode;
+  }
+
+
+  var root=generateRandomTree(5,10);
+  console.log(root);
 
   dash=THREEDC({},camera,scene,renderer,container);
 
