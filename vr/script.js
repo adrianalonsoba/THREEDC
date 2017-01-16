@@ -17,6 +17,8 @@
       var windowHalfY = window.innerHeight / 2;
 
       document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+
+
       init();
       animate();
 
@@ -134,7 +136,14 @@
 
       ];
 
+
+    controls = new THREE.DeviceOrientationControls(camera, true);
+    controls.connect();
+    controls.update();
+
       dash = THREEDC({},camera,scene,renderer,container);
+
+      dash.controls.enabled=false;
 
 
       var bubbles= dash.bubbleChart([-100,0,0]);
@@ -161,7 +170,7 @@
 
       }
 
-      function onWindowResize() {
+      function onWindowResize() {th
 
         windowHalfX = window.innerWidth / 2;
         windowHalfY = window.innerHeight / 2;
@@ -195,9 +204,13 @@
 
         var timer = 0.0001 * Date.now();
 
+        /*
+
         camera.position.x += ( mouseX - camera.position.x ) * .05;
         camera.position.y += ( - mouseY - camera.position.y ) * .05;
         camera.lookAt( scene.position );
+
+        */
 
         for ( var i = 0, il = spheres.length; i < il; i ++ ) {
 
@@ -214,6 +227,7 @@
 
 function update()
 {
-  dash.controls.update();
+    controls.update();
+ // dash.controls.update();
   //stats.update();
 }
