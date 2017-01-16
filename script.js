@@ -250,60 +250,66 @@ function init () {
 
   //CUSTOM DASHBOARD//
 
-  function generateRandomTree(levels,maxSonsPerLevel){
-    console.log(levels,maxSonsPerLevel);
+  function generateRandomTree(numberOfNodes){
 
-    var rootNode={};
+    var tree=[];
     
     function createRootNode () {
+      var rootNode={};
       rootNode.id='root';
       rootNode.parent=null;
       rootNode.size=100;
+      return rootNode;
     }
 
-    function createRandomNode (parent) {
+    function createRandomNode () {
       var node={};
-      node.parent=parent.id;
+      //node.parent=parent.id;
       node.id=makeid();
       node.size=100;
       return node;
     }
 
-    function createSons (node) {
-      node.sons=[];
-      numberOfSons=Math.round(Math.random()*maxSonsPerLevel);
-      console.log(numberOfSons);
-      for (var i = 0; i < numberOfSons; i++) {
-        node.sons.push(createRandomNode(node));
+    function createNodes () {
+      tree.push(createRootNode());
+      for (var i = 0; i < numberOfNodes; i++) {
+        tree.push(createRandomNode());
+      };
+
+      var index;
+      for (var i = 1; i < tree.length; i++) {
+        index= Math.floor(Math.random()*(tree.length));
+        tree[i].parent=tree[index].id;
       };
     }
 
-    function makeid()
-    {
-    var text = "";
-    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    function makeid(){
+      var text = "";
+      var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
-    for( var i=0; i < 5; i++ )
-        text += possible.charAt(Math.floor(Math.random() * possible.length));
+      for( var i=0; i < 5; i++ )
+          text += possible.charAt(Math.floor(Math.random() * possible.length));
 
-    return text;
+      return text;
     }
 
-    createRootNode();
-    createSons(rootNode);   
+    createNodes();   
+    console.log(tree);
 
-    return rootNode;
+    return tree;
+
   }
 
 
-  var root=generateRandomTree(5,10);
-  console.log(root);
+
+
+  var root=generateRandomTree(4);
 
   dash=THREEDC({},camera,scene,renderer,container);
 
   var tree= dash.fileTree([0,0,0]);
 
-  tree.data(simpledata);
+  tree.data(root);
 
   //var cloud= dash.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
