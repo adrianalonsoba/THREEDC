@@ -406,7 +406,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 			      // Positions the text and adds it to the THREEDC.scene
 			      THREEDC.textLabel = new THREE.Mesh( geometry, material );
 			      THREEDC.textLabel.position.z = mesh.position.z;
-			      THREEDC.textLabel.position.x = _chart.coords.x;
+			      THREEDC.textLabel.position.x = mesh.position.x;
 			      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
 			      //textLabel.rotation.set(3*Math.PI/2,0,0);
 			      THREEDC.scene.add(THREEDC.textLabel);
