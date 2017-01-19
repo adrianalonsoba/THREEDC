@@ -194,7 +194,6 @@
       function animate() {
 
         requestAnimationFrame( animate );
-
         render();
         update();
 
