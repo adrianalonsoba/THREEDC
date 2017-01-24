@@ -278,8 +278,14 @@ function init () {
 
       var index;
       for (var i = 1; i < tree.length; i++) {
-        index= Math.floor(Math.random()*(tree.length));
-        tree[i].parent=tree[index].id;
+        var exit=false;
+        while(!exit){
+          index= Math.floor(Math.random()*(tree.length));
+          if (index!=i) {
+            tree[i].parent=tree[index].id;
+            exit=true;
+          };
+        }
       };
     }
 
@@ -294,22 +300,20 @@ function init () {
     }
 
     createNodes();   
-    console.log(tree);
+    console.log(tree[0]);
 
     return tree;
 
   }
 
 
-
-
-  var root=generateRandomTree(4);
+  var root=generateRandomTree(30);
 
   dash=THREEDC({},camera,scene,renderer,container);
 
   var tree= dash.fileTree([0,0,0]);
 
-  tree.data(root);
+  tree.data(simpledata);
 
   //var cloud= dash.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
