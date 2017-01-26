@@ -1,9 +1,32 @@
 
 // standard global variables
-var container, scene, camera, renderer;
+var container, scene, camera, renderer, sceneCSS,rendererCSS;
 
 //objetc which will contain the library functions 
 var dash;
+
+
+
+var Element = function ( id, x, y, z, ry ) {
+
+  var div = document.createElement( 'div' );
+  div.style.width = '480px';
+  div.style.height = '360px';
+  div.style.backgroundColor = '#000';
+
+  var iframe = document.createElement( 'iframe' );
+  iframe.style.width = '480px';
+  iframe.style.height = '360px';
+  iframe.style.border = '0px';
+  iframe.src = [ 'https://es.wikipedia.org/wiki/Wikipedia:Portada' ].join( '' );
+  div.appendChild( iframe );
+
+  var object = new THREE.CSS3DObject( div );
+  object.position.set( x, y, z );
+  object.rotation.y = ry;
+
+  return object;
+};
 
 init();
 animate();
@@ -11,9 +34,10 @@ animate();
 function init () {
 
    ///////////
-   // SCENE //
+   // SCENES //
    ///////////
    scene = new THREE.Scene();
+   sceneCSS = new THREE.Scene();
 
    ////////////
    // CAMERA //
@@ -29,17 +53,27 @@ function init () {
       // set up camera
    camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
    // add the camera to the scene
-   scene.add(camera);
+   //scene.add(camera);
    // the camera defaults to position (0,0,0)
    //    so pull it back (z = 400) and up (y = 100) and set the angle towards the scene origin
    camera.position.set(-553,584,868);
 
    //////////////
-   // RENDERER //
+   // RENDERER WEBGL //
    //////////////
    renderer = new THREE.WebGLRenderer( {antialias:true} );
    renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
    renderer.setClearColor( 0xd8d8d8 );
+
+    //////////////
+   // RENDERER CSS3D //
+   //////////////
+
+  rendererCSS = new THREE.CSS3DRenderer();
+  rendererCSS.setSize( window.innerWidth, window.innerHeight );
+  rendererCSS.domElement.style.position = 'absolute';
+  rendererCSS.domElement.style.top = 0;
+  document.body.appendChild( rendererCSS.domElement );
 
    // attach div element to variable to contain the renderer
    container = document.getElementById( 'ThreeJS' );
@@ -73,6 +107,20 @@ function init () {
    //    specify length in pixels in each direction
    var axes = new THREE.AxisHelper(1000);
    scene.add(axes);
+
+
+   //////////////
+   //CSS3D ELEMENTS//
+   //////////////
+
+
+  var group = new THREE.Group();
+  group.add( new Element( 'njCDZWTI-xg', 0, 0, 240, 0 ) );
+  group.add( new Element( 'HDh4uK9PvJU', 240, 0, 0, Math.PI / 2 ) );
+  group.add( new Element( 'OX9I1KyNa8M', 0, 0, - 240, Math.PI ) );
+  group.add( new Element( 'nhORZ6Ep_jE', - 240, 0, 0, - Math.PI / 2 ) );
+  group.position.set(-200,0,0)
+  sceneCSS.add( group );
 
    //////////////
    //CUSTOM CHARTS//
@@ -116,6 +164,7 @@ function animate(){
 
 function render(){
    renderer.render( scene, camera );
+   rendererCSS.render( sceneCSS, camera );
 }
 
 function update(){
