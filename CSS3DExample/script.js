@@ -1,6 +1,6 @@
 
 // standard global variables
-var container, scene, camera, renderer, sceneCSS,rendererCSS;
+var container, scene, camera, renderer, sceneCSS,rendererCSS,containerCSS3D;
 
 //objetc which will contain the library functions 
 var dash;
@@ -18,7 +18,7 @@ var Element = function ( id, x, y, z, ry ) {
   iframe.style.width = '480px';
   iframe.style.height = '360px';
   iframe.style.border = '0px';
-  iframe.src = [ 'https://es.wikipedia.org/wiki/Wikipedia:Portada' ].join( '' );
+  iframe.src = [ 'elasticsearch-JSAngular-API/index.html' ].join( '' );
   div.appendChild( iframe );
 
   var object = new THREE.CSS3DObject( div );
@@ -73,7 +73,8 @@ function init () {
   rendererCSS.setSize( window.innerWidth, window.innerHeight );
   rendererCSS.domElement.style.position = 'absolute';
   rendererCSS.domElement.style.top = 0;
-  document.body.appendChild( rendererCSS.domElement );
+  containerCSS3D = document.getElementById( 'CSS3D' );
+  containerCSS3D.appendChild( rendererCSS.domElement );
 
    // attach div element to variable to contain the renderer
    container = document.getElementById( 'ThreeJS' );
@@ -153,6 +154,16 @@ function init () {
       .gridsOn(0xffffff);
 
    dash.renderAll();
+
+
+   
+        // Block iframe events when dragging camera
+
+        var blocker = document.getElementById( 'blocker' );
+        blocker.style.display = 'none';
+        
+        document.addEventListener( 'mousedown', function () { blocker.style.display = ''; } );
+        document.addEventListener( 'mouseup', function () { blocker.style.display = 'none'; } );
 
 }
 
