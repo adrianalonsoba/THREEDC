@@ -72,6 +72,8 @@ function init () {
   rendererCSS = new THREE.CSS3DRenderer();
   rendererCSS.setSize( window.innerWidth, window.innerHeight );
   rendererCSS.domElement.style.position = 'absolute';
+ // rendererCSS.domElement.style.visibility = 'hidden';
+
   rendererCSS.domElement.style.top = 0;
   containerCSS3D = document.getElementById( 'CSS3D' );
   containerCSS3D.appendChild( rendererCSS.domElement );
@@ -81,6 +83,7 @@ function init () {
    // attach renderer to the container div
    container.appendChild( renderer.domElement );
 
+
   ////////////
   // EVENTS //
   ////////////
@@ -88,6 +91,7 @@ function init () {
 
   // automatically resize renderer
   THREEx.WindowResize(renderer, camera);
+  THREEx.WindowResize(rendererCSS, camera);
 
    ///////////
    // LIGHTS //
@@ -115,11 +119,11 @@ function init () {
    //////////////
 
 
-  var group = new THREE.Group();
-  group.add( new Element( 'njCDZWTI-xg', 0, 0, 240, 0 ) );
-  group.add( new Element( 'HDh4uK9PvJU', 240, 0, 0, Math.PI / 2 ) );
-  group.add( new Element( 'OX9I1KyNa8M', 0, 0, - 240, Math.PI ) );
-  group.add( new Element( 'nhORZ6Ep_jE', - 240, 0, 0, - Math.PI / 2 ) );
+  group = new THREE.Group();
+  group.add( new Element( 'njCDZWTI-xg', 0, 0, 0, 0 ) );
+ // group.add( new Element( 'HDh4uK9PvJU', 240, 0, 0, Math.PI / 2 ) );
+  //group.add( new Element( 'OX9I1KyNa8M', 0, 0, - 240, Math.PI ) );
+  //group.add( new Element( 'nhORZ6Ep_jE', - 240, 0, 0, - Math.PI / 2 ) );
   group.position.set(-200,0,0)
   sceneCSS.add( group );
 
@@ -155,8 +159,6 @@ function init () {
 
    dash.renderAll();
 
-
-   
         // Block iframe events when dragging camera
 
         var blocker = document.getElementById( 'blocker' );
@@ -179,5 +181,7 @@ function render(){
 }
 
 function update(){
+  
   dash.controls.update();
+  //group.position.set(camera.position.x,camera.position.y,camera.position.z);
 }
