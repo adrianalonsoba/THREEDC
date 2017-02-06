@@ -315,6 +315,9 @@ function init () {
 
   tree.data(simpledata);
 
+  var panel =dash.addPanel([0,0,0],4,[200,200]);
+  panel.addIframe(1234);
+
   //var cloud= dash.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
 

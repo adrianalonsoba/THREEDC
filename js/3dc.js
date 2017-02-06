@@ -139,7 +139,14 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 	  		panel.charts[i].remove();
 	  	};
 	  }
-	  console.log(THREEDC.scene);
+
+	  panel.addIframe=function(iframe) {
+	  	console.log(iframe);
+	  	
+	  	return panel;
+
+	  }
+
 	  THREEDC.scene.add(panel);
 
 		THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){
