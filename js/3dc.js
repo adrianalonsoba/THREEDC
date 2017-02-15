@@ -1790,6 +1790,86 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 	    return _chart;
 
 	}
+	THREEDC.textChart= function (location) {
+
+		if(location==undefined){
+			location=[0,0,0];
+		}
+
+		var _chart = THREEDC.baseMixin({});
+		if(location.isPanel){
+			for (var i = 0; i < location.anchorPoints.length; i++) {
+				if(!location.anchorPoints[i].filled){
+					_chart.coords=location.anchorPoints[i].coords;
+					location.anchorPoints[i].filled=true;
+					location.charts.push(_chart);
+					_chart.panel=location;
+					break;
+				}
+			};
+		}else{
+			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		}
+		//by default
+		_chart._color=0x0000ff;
+		_chart._depth=1;
+		_chart._opacity=1;
+		_chart._size=10;
+		_chart._curveSegments=3;
+
+		THREEDC.allCharts.push(_chart);
+
+	    _chart.size=function(number){
+	    	if(!arguments.length){
+	    		console.log('argument needed');
+	    		return;
+	    	}
+	    	_chart._size=number;
+	    	return _chart;
+	    }
+
+
+	    _chart.curveSegments=function(number){
+	    	if(!arguments.length){
+	    		console.log('argument needed');
+	    		return;
+	    	}
+	    	_chart._curveSegments=number;
+	    	return _chart;
+	    }
+
+		_chart.build = function() {
+
+		    var txt = _chart._data;
+		    var origin_color=_chart._color;
+	    	var material = new THREE.MeshPhongMaterial( {color: origin_color,
+                                                	     specular: 0x999999,
+                                                	     shininess: 100,
+                                                	     shading : THREE.SmoothShading,
+                                                   	     opacity:_chart._opacity,
+                                               		     transparent: true
+            } );
+		    var geometry = new THREE.TextGeometry( txt, {
+		      size: _chart._size,
+		      height: _chart._depth,
+		      curveSegments: _chart._curveSegments,
+		      font: "helvetiker",
+		      weight: "bold",
+		      style: "normal",
+		      bevelEnabled: false
+		    });
+
+		    text3D = new THREE.Mesh( geometry, material );
+		    text3D.origin_color=origin_color;
+    		text3D.position.copy(_chart.coords);
+	      	_chart.parts.push(text3D);
+			
+			_chart.addEvents();
+	    }
+
+	    return _chart;
+
+	}
 
 	THREEDC.lineChart= function (location) {
 
@@ -2103,7 +2183,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 
 		_chart.build= function () {
 
-			var radius=200;
+			var radius=50;
 
 			var group= new THREE.Group();
 
@@ -2170,7 +2250,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 					group.add(link);
 
 				};
-				radius+=radius;
+				radius+=25;
 				//recursive
 				for (var i = 0; i < node.sons.length; i++) {
 					buildSons(node.sons[i]);

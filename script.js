@@ -307,16 +307,23 @@ function init () {
   }
 
 
-  var root=generateRandomTree(30);
+  var root=generateRandomTree(30000);
 
   dash=THREEDC({},camera,scene,renderer,container);
 
   var tree= dash.fileTree([0,0,0]);
 
-  tree.data(simpledata);
+  tree.data(root);
 
-  var panel =dash.addPanel([0,0,0],4,[200,200]);
+  var panel =dash.addPanel([1000,0,0],4,[200,200]);
   panel.addIframe(1234);
+
+  var number= dash.textChart([0,0,0]);
+  number.data('lalalalalalala')
+        .color(0xff00ff)
+        .size(20)
+        .depth(3);
+  number.render();
 
   //var cloud= dash.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));
@@ -324,7 +331,7 @@ function init () {
  // var bars= dash.barsChart([0,0,0]);
   //bars.group(groupByRepo);
 
-  dash.renderAll();
+  ///dash.renderAll();
 
   function  getRandomCharts(numberOfRandomCharts) {
     for (var i = 0; i < numberOfRandomCharts; i++) {
