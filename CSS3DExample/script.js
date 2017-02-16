@@ -18,7 +18,7 @@ var Element = function ( id, x, y, z, ry ) {
   iframe.style.width = '480px';
   iframe.style.height = '360px';
   iframe.style.border = '0px';
-  iframe.src = [ 'elasticsearch-JSAngular-API/index.html' ].join( '' );
+  iframe.src = [ 'web-THREEDC/index.html' ].join( '' );
   div.appendChild( iframe );
 
   var object = new THREE.CSS3DObject( div );

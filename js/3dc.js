@@ -140,8 +140,31 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
 	  	};
 	  }
 
-	  panel.addIframe=function(iframe) {
-	  	console.log(iframe);
+	  panel.addIframe=function(source) {
+	  	console.log(source);
+
+		// create the iframe to contain webpage
+		var element	= document.createElement('iframe')
+		// webpage to be loaded into iframe
+		element.src	= "<h1>HOLA</h1>";
+		// width of iframe in pixels
+		var elementWidth = 1024;
+		// force iframe to have same relative dimensions as planeGeometry
+		var aspectRatio = planeHeight / planeWidth;
+		var elementHeight = elementWidth * aspectRatio;
+		element.style.width  = elementWidth + "px";
+		element.style.height = elementHeight + "px";
+
+		// create a CSS3DObject to display element
+		var cssObject = new THREE.CSS3DObject( element );
+		// synchronize cssObject position/rotation with planeMesh position/rotation 
+		cssObject.position = planeMesh.position;
+		cssObject.rotation = planeMesh.rotation;
+		// resize cssObject to same size as planeMesh (plus a border)
+		var percentBorder = 0.05;
+		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / planeWidth);
+		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / planeWidth);
+		cssScene.add(cssObject);
 	  	
 	  	return panel;
 
