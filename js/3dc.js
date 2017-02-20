@@ -1,5 +1,5 @@
 
-function THREEDC (THREEDC,camera,scene,renderer,container) {
+function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	THREEDC.camera=camera;
 	THREEDC.scene=scene;
@@ -24,11 +24,16 @@ function THREEDC (THREEDC,camera,scene,renderer,container) {
    // move mouse and: left   click to rotate,
    //                 middle click to zoom,
    //                 right  click to pan
-    THREEDC.controls = new THREE.OrbitControls( THREEDC.camera, THREEDC.renderer.domElement );
+   if(!sceneCSS){
+ 		THREEDC.controls = new THREE.OrbitControls( THREEDC.camera, THREEDC.renderer.domElement );
+		THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
+   }else{
+		THREEDC.controls = new THREE.OrbitControls( THREEDC.camera );
+		THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera);
+   }
     THREEDC.controls.enableDamping = true;
 	THREEDC.controls.dampingFactor = 0.25;
-	//with this, we can use standard dom events without raycasting
-	THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
+
 	//a little graphical interface//
 	THREEDC.gui = new dat.GUI();
 
