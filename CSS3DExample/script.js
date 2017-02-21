@@ -89,6 +89,15 @@ function init () {
   ////////////
 
 
+  // Block iframe events when dragging camera
+
+  var blocker = document.getElementById( 'blocker' );
+  blocker.style.display = 'none';
+
+  document.addEventListener( 'mousedown', function () { blocker.style.display = ''; } );
+  document.addEventListener( 'mouseup', function () { blocker.style.display = 'none'; } );
+
+
   // automatically resize renderer
   THREEx.WindowResize(renderer, camera);
   THREEx.WindowResize(rendererCSS, camera);
@@ -124,8 +133,8 @@ function init () {
  // group.add( new Element( 'HDh4uK9PvJU', 240, 0, 0, Math.PI / 2 ) );
   //group.add( new Element( 'OX9I1KyNa8M', 0, 0, - 240, Math.PI ) );
   //group.add( new Element( 'nhORZ6Ep_jE', - 240, 0, 0, - Math.PI / 2 ) );
-  group.position.set(-200,0,0)
-  sceneCSS.add( group );
+  group.position.set(-600,0,0)
+  //sceneCSS.add( group );
 
    //////////////
    //CUSTOM CHARTS//
@@ -146,26 +155,13 @@ function init () {
   dash = THREEDC({},camera,scene,renderer,container,sceneCSS);
 
   //create a 3D bars chart with the data above at the position (0,0,0)
-  var bars= dash.TDbarsChart([-350,0,0]);
-  bars
-      .data(data)
-      .width(400)
-      .height(500)
-      .depth(400)
-      .barSeparation(0.8)
-      .opacity(0.95)
-      .color(0xffaa00)
-      .gridsOn(0xffffff);
+
+
+
+  var panel =dash.addPanel([0,0,0],4,[800,400]);
+  panel.addIframe('web-THREEDC/index.html');
 
    dash.renderAll();
-
-        // Block iframe events when dragging camera
-
-        var blocker = document.getElementById( 'blocker' );
-        blocker.style.display = 'none';
-        
-        document.addEventListener( 'mousedown', function () { blocker.style.display = ''; } );
-        document.addEventListener( 'mouseup', function () { blocker.style.display = 'none'; } );
 
 }
 

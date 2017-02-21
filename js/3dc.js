@@ -133,6 +133,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	  panel.reBuild=function() {
 	  	panel.makeAnchorPoints();
+	  	panel.iframe.position.copy(panel.position);
 	  	for (var i = 0; i < panel.charts.length; i++) {
 	  		panel.charts[i].reBuild();
 	  	};
@@ -151,11 +152,11 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		// create the iframe to contain webpage
 		var element	= document.createElement('iframe')
 		// webpage to be loaded into iframe
-		element.src	= "<h1>HOLA</h1>";
+		element.src	= source;
 		// width of iframe in pixels
 		var elementWidth = 1024;
 		// force iframe to have same relative dimensions as planeGeometry
-		var aspectRatio = planeHeight / planeWidth;
+		var aspectRatio = ySize / xSize;
 		var elementHeight = elementWidth * aspectRatio;
 		element.style.width  = elementWidth + "px";
 		element.style.height = elementHeight + "px";
@@ -163,13 +164,14 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		// create a CSS3DObject to display element
 		var cssObject = new THREE.CSS3DObject( element );
 		// synchronize cssObject position/rotation with planeMesh position/rotation 
-		cssObject.position = planeMesh.position;
-		cssObject.rotation = planeMesh.rotation;
+		cssObject.position.copy(panel.position);
+		cssObject.rotation.copy(panel.rotation);
 		// resize cssObject to same size as planeMesh (plus a border)
-		var percentBorder = 0.05;
-		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / planeWidth);
-		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / planeWidth);
-		cssScene.add(cssObject);
+		var percentBorder = 0.1;
+		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / xSize);
+		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / xSize);
+		sceneCSS.add(cssObject);
+		panel.iframe=cssObject;
 	  	
 	  	return panel;
 
@@ -2399,6 +2401,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    if ( intersects.length > 0 ) {
 	      if(THREEDC.SELECTED.isPanel){
 	        THREEDC.SELECTED.position.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
+	        THREEDC.SELECTED.iframe.position.copy(THREEDC.SELECTED.position);
 	        THREEDC.SELECTED.coords.copy( THREEDC.SELECTED.position);
 	      }else{
 	        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
