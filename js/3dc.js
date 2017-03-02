@@ -618,15 +618,15 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				                            	           shininess: 100,
 				                            	           shading : THREE.SmoothShading
 				} );
-				var geometry = new THREE.TextGeometry( txt, {
-				size: 4,
-				height: 2,
-				curveSegments: 3,
-				font: "helvetiker",
-				weight: "bold",
-				style: "normal",
-				bevelEnabled: false
-				});
+			    var geometry = new THREE.TextGeometry( txt, {
+			        size: _chart._height/30,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			    });
 				var label = new THREE.Mesh( geometry, material );
 			    var box = new THREE.Box3().setFromObject(label);
 				return box.size().x ;
@@ -640,15 +640,15 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				                            	           shininess: 100,
 				                            	           shading : THREE.SmoothShading
 				} );
-				var geometry = new THREE.TextGeometry( txt, {
-				size: 4,
-				height: 2,
-				curveSegments: 3,
-				font: "helvetiker",
-				weight: "bold",
-				style: "normal",
-				bevelEnabled: false
-				});
+			    var geometry = new THREE.TextGeometry( txt, {
+			        size: _chart._height/30,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			    });
 				var label = new THREE.Mesh( geometry, material );
 			    var box = new THREE.Box3().setFromObject(label);
 				return box.size().y ;
@@ -1178,7 +1178,10 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				      // Positions the text and adds it to the THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z;
-				      label.position.x = _chart.coords.x-maxYLabelWidth*6;
+  				      console.log('maxYLabelWidth: ',maxYLabelWidth);
+				      console.log('_chart.coords.x:  ',_chart.coords.x);
+				      label.position.x = _chart.coords.x-maxYLabelWidth;
+				      console.log('dif:  ',label.position.x);
 				      label.position.y = _chart.coords.y+step;
 				     // label.rotation.set(3*Math.PI/2,0,0);
 				      _chart.labels.push(label);
@@ -1265,22 +1268,6 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		    	}
 	   	   }
 
-	    	/*
-	    	//X AXIS
-	    	var topXValue=_chart._group.top(1)[0].key;
-	    	console.log(topXValue);
-	    	//var numerOfXLabels=Math.round(_chart._width/15);
-	    	var numerOfXLabels=9;
-	    	var stepXValue= Math.round(topXValue/numerOfXLabels);
-	    	var stepX=_chart._width/numerOfXLabels;
-	    	var maxXLabelWidth=getMaxWidth(topXValue);
-
-	 	 	for (var i = 0; i < numerOfXLabels+1; i++) {
-	    		putXLabel(i*stepX,i*stepXValue);
-	    	};
-	    	*/
-
-
 		    /* gets the max width of an axis label to calculate the separation
 	   		*  between the chart border and the label
 			*/
@@ -1292,15 +1279,15 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				                            	           shininess: 100,
 				                            	           shading : THREE.SmoothShading
 				} );
-				var geometry = new THREE.TextGeometry( txt, {
-				size: 4,
-				height: 2,
-				curveSegments: 3,
-				font: "helvetiker",
-				weight: "bold",
-				style: "normal",
-				bevelEnabled: false
-				});
+			    var geometry = new THREE.TextGeometry( txt, {
+			        size: _chart._height/30,
+			        height: 2,
+			        curveSegments: 3,
+			        font: "helvetiker",
+			        weight: "bold",
+			        style: "normal",
+			        bevelEnabled: false
+			    });
 				var label = new THREE.Mesh( geometry, material );
 			    var box = new THREE.Box3().setFromObject(label);
 				return box.size().x ;
@@ -1314,31 +1301,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				                            	           shininess: 100,
 				                            	           shading : THREE.SmoothShading
 				} );
-				var geometry = new THREE.TextGeometry( txt, {
-				size: 4,
-				height: 2,
-				curveSegments: 3,
-				font: "helvetiker",
-				weight: "bold",
-				style: "normal",
-				bevelEnabled: false
-				});
-				var label = new THREE.Mesh( geometry, material );
-			    var box = new THREE.Box3().setFromObject(label);
-				return box.size().y ;
-	    	}
-
-
-	    	function putXLabel (step,value) {
-
-			      var txt = value;
-			      var curveSeg = 3;
-			      var material = new THREE.MeshPhongMaterial( {color:0x000000,
-			      											   specular: 0x999999,
-	                                            	           shininess: 100,
-	                                            	           shading : THREE.SmoothShading
-			      } );
-			      var geometry = new THREE.TextGeometry( txt, {
+			    var geometry = new THREE.TextGeometry( txt, {
 			        size: _chart._height/30,
 			        height: 2,
 			        curveSegments: 3,
@@ -1346,15 +1309,12 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			        weight: "bold",
 			        style: "normal",
 			        bevelEnabled: false
-			      });
-			      // Positions the text and adds it to the THREEDC.scene
-			      var label = new THREE.Mesh( geometry, material );
-			      label.position.z = _chart.coords.z;
-			      label.position.x = _chart.coords.x+step;
-			      label.position.y = _chart.coords.y-20;
-			     // label.rotation.set(3*Math.PI/2,0,0);
-			      _chart.labels.push(label);
+			    });
+				var label = new THREE.Mesh( geometry, material );
+			    var box = new THREE.Box3().setFromObject(label);
+				return box.size().y ;
 	    	}
+
 	    }
 
 	    _chart.renderLabels=function(){
