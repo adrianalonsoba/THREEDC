@@ -584,7 +584,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    	//var numerOfYLabels=Math.round(_chart._height/20);
 	    	var stepYValue= Math.round(topYValue/_chart._numberOfYLabels);
 	    	var stepY=_chart._height/_chart._numberOfYLabels;
-	    	var maxYLabelWidth=getMaxWidth(topYValue);
+	    	var maxYLabelWidth=getTextMeshWidth(topYValue);
 
 	 	 	for (var i = 0; i <_chart._numberOfYLabels+1; i++) {
 	    		putYLabel(i*stepY,i*stepYValue);
@@ -598,7 +598,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    	var numerOfXLabels=9;
 	    	var stepXValue= Math.round(topXValue/numerOfXLabels);
 	    	var stepX=_chart._width/numerOfXLabels;
-	    	var maxXLabelWidth=getMaxWidth(topXValue);
+	    	var maxXLabelWidth=getTextMeshWidth(topXValue);
 
 	 	 	for (var i = 0; i < numerOfXLabels+1; i++) {
 	    		putXLabel(i*stepX,i*stepXValue);
@@ -610,7 +610,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		    /* gets the max width of an axis label to calculate the separation
 	   		*  between the chart border and the label
 			*/
-	    	function getMaxWidth (axis) {
+	    	function getTextMeshWidth (axis) {
 				var txt = axis;
 				var curveSeg = 3;
 				var material = new THREE.MeshPhongMaterial( {color:0x000000,
@@ -632,7 +632,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				return box.size().x ;
 	    	}
 
-	    	function getMaxHeight (axis) {
+	    	function getTextMeshHeight (axis) {
 				var txt = axis;
 				var curveSeg = 3;
 				var material = new THREE.MeshPhongMaterial( {color:0x000000,
@@ -739,6 +739,17 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 			return topValue;
 		}
+
+
+	    _chart.getTopZvalue=function() {
+			var topZvalue = _chart._data[0].key2;
+			for (var i = 1; i < _chart._data.length; i++) {
+				if (_chart._data[i].key2.length > topZvalue.length) topZvalue=_chart._data[i].key2;
+			};
+			console.log(topZvalue);
+			return topZvalue;
+		}
+
 
 	    _chart.getTopValue2=function() {
 			var topValue2 = _chart._data[0].value2;
@@ -1128,6 +1139,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    _chart.addLabels=function(){
 	    	var numberOfValues;
 	    	var topYValue;
+	    	var topZvalue=_chart.getTopZvalue();
 	    	var keysOne=_chart.getKeysOne();
 	    	var keysTwo=_chart.getKeysTwo();
 	    	var numberOfKeys1=keysOne.length;
@@ -1151,7 +1163,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	   	   function addYLabels () {
 		    	var stepYValue= Math.round(topYValue/_chart._numberOfYLabels);
 		    	var stepY=_chart._height/_chart._numberOfYLabels;
-		    	var maxYLabelWidth=getMaxWidth(topYValue);
+		    	var maxYLabelWidth=getTextMeshWidth(topYValue);
 
 		 	 	for (var i = 0; i <_chart._numberOfYLabels+1; i++) {
 		    		putYLabel(i*stepY,i*stepYValue);
@@ -1178,10 +1190,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				      // Positions the text and adds it to the THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z;
-  				      console.log('maxYLabelWidth: ',maxYLabelWidth);
-				      console.log('_chart.coords.x:  ',_chart.coords.x);
-				      label.position.x = _chart.coords.x-maxYLabelWidth;
-				      console.log('dif:  ',label.position.x);
+				      label.position.x = _chart.coords.x-maxYLabelWidth-_chart._width*0.05;
 				      label.position.y = _chart.coords.y+step;
 				     // label.rotation.set(3*Math.PI/2,0,0);
 				      _chart.labels.push(label);
@@ -1192,7 +1201,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 		    	var stepZ=_chart._depth/numberOfKeys2/2;
 		    	//TO FIX
-		    	var maxZLabelWidth=20;
+		    	var maxZLabelWidth=getTextMeshWidth(topZvalue);
 		    	putZLabel(stepZ,keysTwo[0]);
 		    	stepZ=stepZ+_chart._depth/numberOfKeys2;
 		 	 	for (var i = 1; i <numberOfKeys2; i++) {
@@ -1210,7 +1219,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		                                            	           shading : THREE.SmoothShading
 				      } );
 				      var geometry = new THREE.TextGeometry( txt, {
-				        size: _chart._depth/30,
+				        size: _chart._height/30,
 				        height: 2,
 				        curveSegments: 3,
 				        font: "helvetiker",
@@ -1221,7 +1230,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				      // Positions the text and adds it to the THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z+step;
-				      label.position.x = _chart.coords.x-maxZLabelWidth*6;
+				      label.position.x = _chart.coords.x-maxZLabelWidth-_chart._width*0.05;
 				      label.position.y = _chart.coords.y;
 				      label.rotation.set(3*Math.PI/2,0,0);
 				      _chart.labels.push(label);
@@ -1260,7 +1269,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				      });
 				      // Positions the text and adds it to the THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
-				      label.position.z = _chart.coords.z+_chart._depth+20;
+				      label.position.z = _chart.coords.z+_chart._depth+_chart._depth*0.05;
 				      label.position.x = _chart.coords.x+step;
 				      label.position.y = _chart.coords.y;
 				      label.rotation.set(3*Math.PI/2,0,3*Math.PI/2);
@@ -1271,7 +1280,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		    /* gets the max width of an axis label to calculate the separation
 	   		*  between the chart border and the label
 			*/
-	    	function getMaxWidth (axis) {
+	    	function getTextMeshWidth (axis) {
 				var txt = axis;
 				var curveSeg = 3;
 				var material = new THREE.MeshPhongMaterial( {color:0x000000,
@@ -1293,7 +1302,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				return box.size().x ;
 	    	}
 
-	    	function getMaxHeight (axis) {
+	    	function getTextMeshHeight (axis) {
 				var txt = axis;
 				var curveSeg = 3;
 				var material = new THREE.MeshPhongMaterial( {color:0x000000,
