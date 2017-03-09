@@ -164,23 +164,25 @@ function init () {
 
   dash=THREEDC({},camera,scene,renderer,container);
 
+  var panel1=dash.addPanel([0,0,-200],2,[400,300]);
 
-  var line =  dash.lineChart([50,0,0]);
+
+  var line =  dash.lineChart(panel1);
    line.group(groupByMonth)
   .dimension(dimByMonth)
   .width(400)
   .numberOfXLabels(5)
   .numberOfYLabels(5)
   .gridsOn()
-  .height(200)
+  .height(150)
   .depth(20)
   .color(0xff0000);
 
-   var bars =  dash.pieChart([-100,50,0]);
-   bars.group(groupByOrg)
+   var pie =  dash.pieChart(panel1);
+   pie.group(groupByOrg)
       .dimension(dimByOrg)
       .depth(20)
-      .radius(100);
+      .radius(50);
 
 
 

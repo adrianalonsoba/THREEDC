@@ -133,7 +133,6 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	  panel.reBuild=function() {
 	  	panel.makeAnchorPoints();
-	  	panel.iframe.position.copy(panel.position);
 	  	for (var i = 0; i < panel.charts.length; i++) {
 	  		panel.charts[i].reBuild();
 	  	};
@@ -147,8 +146,6 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	  }
 
 	  panel.addIframe=function(source) {
-	  	console.log(source);
-
 		// create the iframe to contain webpage
 		var element	= document.createElement('iframe')
 		// webpage to be loaded into iframe
@@ -175,6 +172,10 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	  	
 	  	return panel;
 
+	  }
+
+	  panel.removeIframe=function() {
+	  	sceneCSS.remove(panel.iframe);
 	  }
 
 	  THREEDC.scene.add(panel);
@@ -2370,7 +2371,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    if ( intersects.length > 0 ) {
 	      if(THREEDC.SELECTED.isPanel){
 	        THREEDC.SELECTED.position.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
-	        THREEDC.SELECTED.iframe.position.copy(THREEDC.SELECTED.position);
+	        if(THREEDC.SELECTED.iframe) THREEDC.SELECTED.iframe.position.copy(THREEDC.SELECTED.position);
 	        THREEDC.SELECTED.coords.copy( THREEDC.SELECTED.position);
 	      }else{
 	        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
