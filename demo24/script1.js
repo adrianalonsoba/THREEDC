@@ -80,7 +80,7 @@ function init1 () {
             {key1:'january',key2:'sony',value:56},{key1:'february',key2:'sony',value:21},{key1:'march',key2:'sony',value:23},{key1:'april',key2:'sony',value:12}
   ]; 
 
-   d1 = THREEDC({},camera1,scene1,renderer1,container1);
+   d1 = THREEDC(camera1,scene1,renderer1,container1);
 
    var panel=d1.addPanel([0,0,0],3);
 

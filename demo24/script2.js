@@ -73,7 +73,7 @@ function init2 () {
   var data= [{key:'january',value:23},{key:'february',value:31},{key:'march',value:10},{key:'april',value:59}];
 
 
-   d2 =  THREEDC({},camera2,scene2,renderer2,container2);
+   d2 =  THREEDC(camera2,scene2,renderer2,container2);
 
   pie= d2.pieChart([-100,0,0]);
   pie

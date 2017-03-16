@@ -1,22 +1,23 @@
 
-function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
+function THREEDC (camera,scene,renderer,container,sceneCSS) {
 
-	THREEDC.camera=camera;
-	THREEDC.scene=scene;
-	THREEDC.renderer=renderer;
-	THREEDC.container=container;
+	var _THREEDC={};
 
+	_THREEDC.camera=camera;
+	_THREEDC.scene=scene;
+	_THREEDC.renderer=renderer;
+	_THREEDC.container=container;
 
-	THREEDC.version='0.1-b';
-	THREEDC.allCharts=[];
-	THREEDC.allPanels=[];
-	THREEDC.textLabel=null;
-	THREEDC.chartToDrag=null;
-	THREEDC.intervalFilter=[];
-	THREEDC.raycaster = new THREE.Raycaster();
-	THREEDC.mouse = new THREE.Vector2();
-	THREEDC.offset = new THREE.Vector3();
-	THREEDC.paint=true;
+	_THREEDC.version='0.1-b';
+	_THREEDC.allCharts=[];
+	_THREEDC.allPanels=[];
+	_THREEDC.textLabel=null;
+	_THREEDC.chartToDrag=null;
+	_THREEDC.intervalFilter=[];
+	_THREEDC.raycaster = new THREE.Raycaster();
+	_THREEDC.mouse = new THREE.Vector2();
+	_THREEDC.offset = new THREE.Vector3();
+	_THREEDC.paint=true;
 	   //////////////
    // CONTROLS //
    //////////////
@@ -25,43 +26,43 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
    //                 middle click to zoom,
    //                 right  click to pan
    if(!sceneCSS){
- 		THREEDC.controls = new THREE.OrbitControls( THREEDC.camera, THREEDC.renderer.domElement );
-		THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera, THREEDC.renderer.domElement);
+ 		_THREEDC.controls = new THREE.OrbitControls( _THREEDC.camera, _THREEDC.renderer.domElement );
+		_THREEDC.domEvents  = new THREEx.DomEvents(_THREEDC.camera, _THREEDC.renderer.domElement);
    }else{
-		THREEDC.controls = new THREE.OrbitControls( THREEDC.camera );
-		THREEDC.domEvents  = new THREEx.DomEvents(THREEDC.camera);
+		_THREEDC.controls = new THREE.OrbitControls( _THREEDC.camera );
+		_THREEDC.domEvents  = new THREEx.DomEvents(_THREEDC.camera);
    }
-    THREEDC.controls.enableDamping = true;
-	THREEDC.controls.dampingFactor = 0.25;
+    _THREEDC.controls.enableDamping = true;
+	_THREEDC.controls.dampingFactor = 0.25;
 
 	//a little graphical interface//
-	THREEDC.gui = new dat.GUI();
+	_THREEDC.gui = new dat.GUI();
 
-	THREEDC.parameters =
+	_THREEDC.parameters =
 	{
 		plane:"XZ",
 		activate:false,
 		activateFilter:false
 	};
 
-	var folder1 = THREEDC.gui.addFolder('Drag');
-	var activateDrag = folder1.add( THREEDC.parameters, 'activate' ).name('On/Off').listen();
+	var folder1 = _THREEDC.gui.addFolder('Drag');
+	var activateDrag = folder1.add( _THREEDC.parameters, 'activate' ).name('On/Off').listen();
 	activateDrag.onChange(function(value)
-	{ THREEDC.dragTrigger(); });
-	var dragChange = folder1.add( THREEDC.parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
+	{ _THREEDC.dragTrigger(); });
+	var dragChange = folder1.add( _THREEDC.parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
 	dragChange.onChange(function(value)
-	{   THREEDC.changePlane();   });
+	{   _THREEDC.changePlane();   });
 	folder1.close();
-	THREEDC.gui.close();
+	_THREEDC.gui.close();
 
-	THREEDC.plane = new THREE.Mesh(
+	_THREEDC.plane = new THREE.Mesh(
 		new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
 		new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
 	);
-	THREEDC.plane.rotation.x = Math.PI / 2; //xz THREEDC.plane
+	_THREEDC.plane.rotation.x = Math.PI / 2; //xz _THREEDC.plane
 
 	//it creates a panel to put the charts which are related
-	THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
+	_THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
 
 
 	  coords = coords || [0,0,0];
@@ -139,7 +140,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	  }
 
 	  panel.remove=function() {
-	  	THREEDC.scene.remove(panel);
+	  	_THREEDC.scene.remove(panel);
 	  	for (var i = 0; i < panel.charts.length; i++) {
 	  		panel.charts[i].remove();
 	  	};
@@ -178,30 +179,30 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	  	sceneCSS.remove(panel.iframe);
 	  }
 
-	  THREEDC.scene.add(panel);
+	  _THREEDC.scene.add(panel);
 
-		THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){
-			if(THREEDC.parameters.activate){
-				THREEDC.container.style.cursor = 'move';
-				THREEDC.controls.enabled=false;
-				THREEDC.SELECTED=panel;
-				THREEDC.chartToDrag=panel;
-			    THREEDC.plane.position.copy( panel.position );
-			    THREEDC.raycaster.setFromCamera( THREEDC.mouse, THREEDC.camera );
-			    var intersects = THREEDC.raycaster.intersectObject( THREEDC.plane );
+		_THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){
+			if(_THREEDC.parameters.activate){
+				_THREEDC.container.style.cursor = 'move';
+				_THREEDC.controls.enabled=false;
+				_THREEDC.SELECTED=panel;
+				_THREEDC.chartToDrag=panel;
+			    _THREEDC.plane.position.copy( panel.position );
+			    _THREEDC.raycaster.setFromCamera( _THREEDC.mouse, _THREEDC.camera );
+			    var intersects = _THREEDC.raycaster.intersectObject( _THREEDC.plane );
 			    if ( intersects.length > 0 ) {
-			      THREEDC.offset.copy( intersects[ 0 ].point ).sub( THREEDC.plane.position );
+			      _THREEDC.offset.copy( intersects[ 0 ].point ).sub( _THREEDC.plane.position );
 			    }
 			}
 		});
 
-		THREEDC.domEvents.bind(panel, 'mouseup', function(object3d){
-	      if(THREEDC.chartToDrag){
-	        THREEDC.controls.enabled=true;
-	        THREEDC.container.style.cursor = 'auto';
-	        THREEDC.SELECTED=null;
-	        THREEDC.chartToDrag=null;
-	        THREEDC.plane.material.visible=false;
+		_THREEDC.domEvents.bind(panel, 'mouseup', function(object3d){
+	      if(_THREEDC.chartToDrag){
+	        _THREEDC.controls.enabled=true;
+	        _THREEDC.container.style.cursor = 'auto';
+	        _THREEDC.SELECTED=null;
+	        _THREEDC.chartToDrag=null;
+	        _THREEDC.plane.material.visible=false;
 	        panel.reBuild();
 	      }
 		});
@@ -209,30 +210,30 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	  return panel;
 	}
 
-	THREEDC.renderAll=function() {
-		for (var i = 0; i < THREEDC.allCharts.length; i++) {
-			THREEDC.allCharts[i].render();
+	_THREEDC.renderAll=function() {
+		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
+			_THREEDC.allCharts[i].render();
 		};
 	}
 
-	THREEDC.removeAll=function() {
-		for (var i = 0; i < THREEDC.allCharts.length; i++) {
-			THREEDC.allCharts[i].removeEvents();
-	    	for (var j = 0; j < THREEDC.allCharts[i].parts.length; j++) {
-	    		THREEDC.scene.remove(THREEDC.allCharts[i].parts[j]);
+	_THREEDC.removeAll=function() {
+		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
+			_THREEDC.allCharts[i].removeEvents();
+	    	for (var j = 0; j < _THREEDC.allCharts[i].parts.length; j++) {
+	    		_THREEDC.scene.remove(_THREEDC.allCharts[i].parts[j]);
 	    	};
 		};
-		THREEDC.allCharts=[];
+		_THREEDC.allCharts=[];
 	}
 
-	THREEDC.removeEvents=function(){
-		for (var i = 0; i < THREEDC.allCharts.length; i++) {
-			THREEDC.allCharts[i].removeEvents();
+	_THREEDC.removeEvents=function(){
+		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
+			_THREEDC.allCharts[i].removeEvents();
 		};
 	}
 
 	//The spherical coordinates of a point in the ISO convention (radius r, inclination θ, azimuth φ) can be obtained from its Cartesian coordinates (x, y, z)
-	THREEDC.cartesianToSpherical=function (x,y,z) {
+	_THREEDC.cartesianToSpherical=function (x,y,z) {
 		var r=Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+Math.pow(z,2)) ;
 		var θ=Math.acos(z/r);
 		var φ=Math.atan(y/x);
@@ -241,7 +242,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	 }
 
 	//Conversely, the Cartesian coordinates may be retrieved from the spherical coordinates (radius r, inclination θ, azimuth φ), where r ∈ [0, ∞), θ ∈ [0, π], φ ∈ [0, 2π), by:
-	THREEDC.sphericalToCartesian= function  (r,θ,φ) {
+	_THREEDC.sphericalToCartesian= function  (r,θ,φ) {
 		var x=r*Math.sin(θ)*Math.cos(φ);
 		var y=r*Math.sin(θ)*Math.sin(φ);
 		var z=r*Math.cos(θ);
@@ -254,7 +255,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	/*base object whose methods are inherited for each implementation
 	* the properties of a chart are given by a function chain
 	*/
-	THREEDC.baseMixin = function (_chart) {
+	_THREEDC.baseMixin = function (_chart) {
 		_chart={parts:[],
 				xLabels:[],
 				yLabels:[],
@@ -271,7 +272,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    	//defined by each implementation
 	    	_chart.build();
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		THREEDC.scene.add(_chart.parts[i]);
+	    		_THREEDC.scene.add(_chart.parts[i]);
 	    	};
 	    }
 
@@ -281,11 +282,11 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    	_chart.removeGrids();
 
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		THREEDC.scene.remove(_chart.parts[i]);
+	    		_THREEDC.scene.remove(_chart.parts[i]);
 	    	};
-	    	var index = THREEDC.allCharts.indexOf(_chart);
+	    	var index = _THREEDC.allCharts.indexOf(_chart);
 
-	    	THREEDC.allCharts.splice(index, 1);
+	    	_THREEDC.allCharts.splice(index, 1);
 	    }
 
 	    /*rebuild the chart when a filter is added
@@ -296,7 +297,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	     	_chart.removeLabels();
 	     	_chart.removeGrids();
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		THREEDC.scene.remove(_chart.parts[i]);
+	    		_THREEDC.scene.remove(_chart.parts[i]);
 	    	};
 	    	_chart.parts=[];
 	    	if(_chart.panel){
@@ -330,12 +331,12 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	    	function addInfoEvents (mesh) {
 				//adds mouseover events
-				THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){
+				_THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){
 					changeMeshColor(mesh);
 					showInfo(mesh);
 				});
 
-				THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){
+				_THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){
 					//restores the original color
 					if(mesh.type!='Line'){
 						mesh.material.emissive.setHex(mesh.currentHex);
@@ -346,54 +347,54 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			function addEvents (mesh) {
 
 				//adds mouseover events
-				THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){
+				_THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){
 					changeMeshColor(mesh);
 					showInfo(mesh);
 				});
 
-				THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){
+				_THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){
 					//restores the original color
 					if(mesh.type!='Line'){
 						mesh.material.emissive.setHex(mesh.currentHex);
 					}
 				});
 
-				//THREEDC.domEvents.bind(mesh, 'click', function(object3d){
+				//_THREEDC.domEvents.bind(mesh, 'click', function(object3d){
 				//	addFilter(mesh);
 				//});
 
-				THREEDC.domEvents.bind(mesh, 'mousedown', function(object3d){
-					if(THREEDC.parameters.activate){
-						THREEDC.container.style.cursor = 'move';
-						THREEDC.controls.enabled=false;
-						THREEDC.SELECTED=mesh;
-						THREEDC.chartToDrag=_chart;
-					    THREEDC.plane.position.copy( mesh.position );
-					    THREEDC.raycaster.setFromCamera( THREEDC.mouse, THREEDC.camera );
-					    var intersects = THREEDC.raycaster.intersectObject( THREEDC.plane );
+				_THREEDC.domEvents.bind(mesh, 'mousedown', function(object3d){
+					if(_THREEDC.parameters.activate){
+						_THREEDC.container.style.cursor = 'move';
+						_THREEDC.controls.enabled=false;
+						_THREEDC.SELECTED=mesh;
+						_THREEDC.chartToDrag=_chart;
+					    _THREEDC.plane.position.copy( mesh.position );
+					    _THREEDC.raycaster.setFromCamera( _THREEDC.mouse, _THREEDC.camera );
+					    var intersects = _THREEDC.raycaster.intersectObject( _THREEDC.plane );
 					    if ( intersects.length > 0 ) {
-					      THREEDC.offset.copy( intersects[ 0 ].point ).sub( THREEDC.plane.position );
+					      _THREEDC.offset.copy( intersects[ 0 ].point ).sub( _THREEDC.plane.position );
 					    }
 					}else{
-						THREEDC.container.style.cursor = 'move';
-						THREEDC.controls.enabled=false;
-						THREEDC.intervalFilter[0]=mesh.data.key;
+						_THREEDC.container.style.cursor = 'move';
+						_THREEDC.controls.enabled=false;
+						_THREEDC.intervalFilter[0]=mesh.data.key;
 					}
 				});
 
-				THREEDC.domEvents.bind(mesh, 'mouseup', function(object3d){
-					if(!THREEDC.parameters.activate){
-						THREEDC.container.style.cursor = 'auto';
-						THREEDC.controls.enabled=true;
-						THREEDC.intervalFilter[1]=mesh.data.key;
+				_THREEDC.domEvents.bind(mesh, 'mouseup', function(object3d){
+					if(!_THREEDC.parameters.activate){
+						_THREEDC.container.style.cursor = 'auto';
+						_THREEDC.controls.enabled=true;
+						_THREEDC.intervalFilter[1]=mesh.data.key;
 						addIntervalFilter();
 					}else{
-				      if(THREEDC.chartToDrag){
-				        THREEDC.controls.enabled=true;
-				        THREEDC.container.style.cursor = 'auto';
-				        THREEDC.SELECTED=null;
-				        THREEDC.chartToDrag=null;
-				        THREEDC.plane.material.visible=false;
+				      if(_THREEDC.chartToDrag){
+				        _THREEDC.controls.enabled=true;
+				        _THREEDC.container.style.cursor = 'auto';
+				        _THREEDC.SELECTED=null;
+				        _THREEDC.chartToDrag=null;
+				        _THREEDC.plane.material.visible=false;
 				      }
 					}
 				});
@@ -404,27 +405,27 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				console.log('click');
 				//_chart._dimension.filterAll();
 				_chart._dimension.filter(mesh.data.key);
-				for (var i = 0; i < THREEDC.allCharts.length; i++) {
-					THREEDC.allCharts[i].reBuild();
+				for (var i = 0; i < _THREEDC.allCharts.length; i++) {
+					_THREEDC.allCharts[i].reBuild();
 				};
 			}
 
 			function addIntervalFilter () {
 				console.log('mouseup');
 				//_chart._dimension.filterAll();
-				if(THREEDC.intervalFilter[0]===THREEDC.intervalFilter[1]){
-					_chart._dimension.filter(THREEDC.intervalFilter[0]);
+				if(_THREEDC.intervalFilter[0]===_THREEDC.intervalFilter[1]){
+					_chart._dimension.filter(_THREEDC.intervalFilter[0]);
 				}else{
-					_chart._dimension.filter(THREEDC.intervalFilter);
+					_chart._dimension.filter(_THREEDC.intervalFilter);
 				}
-				for (var i = 0; i < THREEDC.allCharts.length; i++) {
-					THREEDC.allCharts[i].reBuild();
+				for (var i = 0; i < _THREEDC.allCharts.length; i++) {
+					_THREEDC.allCharts[i].reBuild();
 				};
 			}
 
 			//creates a 3D text label
 			function showInfo (mesh) {
-				  THREEDC.scene.remove(THREEDC.textLabel);
+				  _THREEDC.scene.remove(_THREEDC.textLabel);
 			      var txt = mesh.name;
 			      var curveSeg = 3;
 			      var material = new THREE.MeshPhongMaterial( {color:mesh.origin_color,
@@ -441,13 +442,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			        style: "normal",
 			        bevelEnabled: false
 			      });
-			      // Positions the text and adds it to the THREEDC.scene
-			      THREEDC.textLabel = new THREE.Mesh( geometry, material );
-			      THREEDC.textLabel.position.z = mesh.position.z;
-			      THREEDC.textLabel.position.x = mesh.position.x;
-			      THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
+			      // Positions the text and adds it to the _THREEDC.scene
+			      _THREEDC.textLabel = new THREE.Mesh( geometry, material );
+			      _THREEDC.textLabel.position.z = mesh.position.z;
+			      _THREEDC.textLabel.position.x = mesh.position.x;
+			      _THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
 			      //textLabel.rotation.set(3*Math.PI/2,0,0);
-			      THREEDC.scene.add(THREEDC.textLabel);
+			      _THREEDC.scene.add(_THREEDC.textLabel);
 			}
 
 			function changeMeshColor (mesh) {
@@ -466,11 +467,11 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 			function removeEvents(mesh){
 				//removes mouseover events
-				THREEDC.domEvents.unbind(mesh, 'mouseover');
-				THREEDC.domEvents.unbind(mesh, 'mouseout');
-				//THREEDC.domEvents.unbind(mesh, 'click');
-				THREEDC.domEvents.unbind(mesh, 'mousedown');
-				THREEDC.domEvents.unbind(mesh, 'mouseup');
+				_THREEDC.domEvents.unbind(mesh, 'mouseover');
+				_THREEDC.domEvents.unbind(mesh, 'mouseout');
+				//_THREEDC.domEvents.unbind(mesh, 'click');
+				_THREEDC.domEvents.unbind(mesh, 'mousedown');
+				_THREEDC.domEvents.unbind(mesh, 'mouseup');
 			}
 	    }
 
@@ -545,22 +546,22 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    }
 	    _chart.renderGrids=function(){
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		THREEDC.scene.add(_chart.xGrids[i]);
+	    		_THREEDC.scene.add(_chart.xGrids[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		THREEDC.scene.add(_chart.yGrids[i]);
+	    		_THREEDC.scene.add(_chart.yGrids[i]);
 	    	};
 	    }
 
 	    _chart.removeGrids=function() {
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		THREEDC.scene.remove(_chart.xGrids[i]);
+	    		_THREEDC.scene.remove(_chart.xGrids[i]);
 	    	};
 	    	_chart.xGrids=[];
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		THREEDC.scene.remove(_chart.yGrids[i]);
+	    		_THREEDC.scene.remove(_chart.yGrids[i]);
 	    	};
 	    	_chart.yGrids=[];
 	    }
@@ -673,7 +674,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			        style: "normal",
 			        bevelEnabled: false
 			      });
-			      // Positions the text and adds it to the THREEDC.scene
+			      // Positions the text and adds it to the _THREEDC.scene
 			      var label = new THREE.Mesh( geometry, material );
 			      label.position.z = _chart.coords.z;
 			      label.position.x = _chart.coords.x-maxYLabelWidth-15;
@@ -700,7 +701,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			        style: "normal",
 			        bevelEnabled: false
 			      });
-			      // Positions the text and adds it to the THREEDC.scene
+			      // Positions the text and adds it to the _THREEDC.scene
 			      var label = new THREE.Mesh( geometry, material );
 			      label.position.z = _chart.coords.z;
 			      label.position.x = _chart.coords.x+step;
@@ -712,22 +713,22 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	    _chart.renderLabels=function(){
 	    	for (var i = 0; i < _chart.xLabels.length; i++) {
-	    		THREEDC.scene.add(_chart.xLabels[i]);
+	    		_THREEDC.scene.add(_chart.xLabels[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yLabels.length; i++) {
-	    		THREEDC.scene.add(_chart.yLabels[i]);
+	    		_THREEDC.scene.add(_chart.yLabels[i]);
 	    	};
 	    }
 
 	    _chart.removeLabels=function() {
 	    	for (var i = 0; i < _chart.xLabels.length; i++) {
-	    		THREEDC.scene.remove(_chart.xLabels[i]);
+	    		_THREEDC.scene.remove(_chart.xLabels[i]);
 	    	};
 	    	_chart.xLabels=[];
 
 	    	for (var i = 0; i < _chart.yLabels.length; i++) {
-	    		THREEDC.scene.remove(_chart.yLabels[i]);
+	    		_THREEDC.scene.remove(_chart.yLabels[i]);
 	    	};
 	    	_chart.yLabels=[];
 	    }
@@ -892,9 +893,9 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	}
 
-	THREEDC.threeDMixin = function (_chart) {
+	_THREEDC.threeDMixin = function (_chart) {
 
-		_chart = THREEDC.baseMixin(_chart);
+		_chart = _THREEDC.baseMixin(_chart);
 		_chart.labels=[];
 
 	    _chart.groupOne=function(group){
@@ -1116,23 +1117,23 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    }
 	    _chart.renderGrids=function(){
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		THREEDC.scene.add(_chart.xGrids[i]);
+	    		_THREEDC.scene.add(_chart.xGrids[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		THREEDC.scene.add(_chart.yGrids[i]);
+	    		_THREEDC.scene.add(_chart.yGrids[i]);
 	    	};
 	    }
 
 		//to fix
 	    _chart.removeGrids=function() {
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		THREEDC.scene.remove(_chart.xGrids[i]);
+	    		_THREEDC.scene.remove(_chart.xGrids[i]);
 	    	};
 	    	_chart.xGrids=[];
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		THREEDC.scene.remove(_chart.yGrids[i]);
+	    		_THREEDC.scene.remove(_chart.yGrids[i]);
 	    	};
 	    	_chart.yGrids=[];
 	    }
@@ -1188,7 +1189,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				        style: "normal",
 				        bevelEnabled: false
 				      });
-				      // Positions the text and adds it to the THREEDC.scene
+				      // Positions the text and adds it to the _THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z;
 				      label.position.x = _chart.coords.x-maxYLabelWidth-_chart._width*0.05;
@@ -1228,7 +1229,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				        style: "normal",
 				        bevelEnabled: false
 				      });
-				      // Positions the text and adds it to the THREEDC.scene
+				      // Positions the text and adds it to the _THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z+step;
 				      label.position.x = _chart.coords.x-maxZLabelWidth-_chart._width*0.05;
@@ -1268,7 +1269,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 				        style: "normal",
 				        bevelEnabled: false
 				      });
-				      // Positions the text and adds it to the THREEDC.scene
+				      // Positions the text and adds it to the _THREEDC.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z+_chart._depth+_chart._depth*0.05;
 				      label.position.x = _chart.coords.x+step;
@@ -1329,13 +1330,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	    _chart.renderLabels=function(){
 	    	for (var i = 0; i < _chart.labels.length; i++) {
-	    		THREEDC.scene.add(_chart.labels[i]);
+	    		_THREEDC.scene.add(_chart.labels[i]);
 	    	};
 	    }
 
 	    _chart.removeLabels=function() {
 	    	for (var i = 0; i < _chart.labels.length; i++) {
-	    		THREEDC.scene.remove(_chart.labels[i]);
+	    		_THREEDC.scene.remove(_chart.labels[i]);
 	    	};
 	    	_chart.labels=[];
 	    }
@@ -1343,7 +1344,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	}
 
-	THREEDC.pieChart = function (location) {
+	_THREEDC.pieChart = function (location) {
 
 	   if(location===undefined){
 	   	location=[0,0,0];
@@ -1351,7 +1352,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		//by default
 		var _radius=50;
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 		_chart._width=_radius;
 		_chart._height=_radius;
 		//by default
@@ -1375,7 +1376,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		}
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		_chart.radius=function(radius){
 			_radius=radius;
@@ -1488,13 +1489,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	THREEDC.barsChart = function (location){
+	_THREEDC.barsChart = function (location){
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 
 			//by default
 		_chart._depth=5;
@@ -1515,7 +1516,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		}
 		_chart._color=0x0000ff;
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		_chart.build = function() {
 		   if(_chart._group===undefined && _chart._data===undefined){
@@ -1585,13 +1586,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	}
 
 
-	THREEDC.TDbarsChart = function (location){
+	_THREEDC.TDbarsChart = function (location){
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.threeDMixin({});
+		var _chart = _THREEDC.threeDMixin({});
 
 		//add to 3Dmixin when added
 		_chart.labels=[];
@@ -1604,7 +1605,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 	    // (0,1)> 1 no separation
 	    //
@@ -1673,15 +1674,15 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	THREEDC.pointsCloudChart = function (location){
+	_THREEDC.pointsCloudChart = function (location){
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		_chart.getPoints=function(points){
 			if(!points){
@@ -1726,7 +1727,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 			// sprite.opacity = 0.80; // translucent particles
 			sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
-			THREEDC.domEvents.bind(sprite, 'mouseover', function(object3d){
+			_THREEDC.domEvents.bind(sprite, 'mouseover', function(object3d){
 				console.log(sprite.coordis);
 			});
 			//particleGroup.add( sprite );
@@ -1743,13 +1744,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	    return _chart;
 	}
 
-	THREEDC.simpleLineChart= function (coords) {
+	_THREEDC.simpleLineChart= function (coords) {
 
 		this.coords=coords;
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		_chart.build = function() {
 
@@ -1783,20 +1784,20 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	  		var extrudeChart = new THREE.Mesh( chartGeometry, materialSide );
 
 			extrudeChart.position.set(coords[0],coords[1],coords[2]);
-			THREEDC.scene.add(extrudeChart);
+			_THREEDC.scene.add(extrudeChart);
 
 	    }
 
 	    return _chart;
 
 	}
-	THREEDC.textChart= function (location) {
+	_THREEDC.textChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -1817,7 +1818,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		_chart._size=10;
 		_chart._curveSegments=3;
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 	    _chart.size=function(number){
 	    	if(!arguments.length){
@@ -1871,13 +1872,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	}
 
-	THREEDC.lineChart= function (location) {
+	_THREEDC.lineChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -1896,7 +1897,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		_chart._depth=5;
 		_chart._opacity=0.8;
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 
 		_chart.build = function() {
@@ -1987,13 +1988,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	}
 
 	//problema con emissive al cambiar de color(probablemente por ser linebasic material)
-	THREEDC.smoothCurveChart= function (location) {
+	_THREEDC.smoothCurveChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.baseMixin({});
+		var _chart = _THREEDC.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -2009,7 +2010,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		}
 		_chart._color=0x0000ff;
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		var unsort_data;
 
@@ -2074,13 +2075,13 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 
 	}
 
-	THREEDC.bubbleChart= function (location) {
+	_THREEDC.bubbleChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.threeDMixin({});
+		var _chart = _THREEDC.threeDMixin({});
 
 			//by default
 		_chart._depth=100;
@@ -2089,7 +2090,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		_chart.getTopRadius=function() {
 			var topRadius;
@@ -2166,18 +2167,18 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 	}
 
 
-	THREEDC.fileTree= function (location) {
+	_THREEDC.fileTree= function (location) {
 
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = THREEDC.threeDMixin({});
+		var _chart = _THREEDC.threeDMixin({});
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
-		THREEDC.allCharts.push(_chart);
+		_THREEDC.allCharts.push(_chart);
 
 		var pi= Math.PI;
 
@@ -2216,7 +2217,7 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 			function buildSons (node) {
 				console.log(node);
 				for (var i = 0; i < node.sons.length; i++) {
-					var coords=THREEDC.sphericalToCartesian(radius,node.sons[i].anglePosition,0);
+					var coords=_THREEDC.sphericalToCartesian(radius,node.sons[i].anglePosition,0);
 					var geometry = new THREE.SphereGeometry( node.sons[i].size/10, 20, 20);
 
 					var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
@@ -2325,62 +2326,62 @@ function THREEDC (THREEDC,camera,scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	THREEDC.dragTrigger=function () {
-	  if(THREEDC.parameters.activate){
-	    THREEDC.scene.add( THREEDC.plane );
-	    THREEDC.domEvents.bind(THREEDC.plane, 'mouseup', function(object3d){
-	      if(THREEDC.chartToDrag){
-	        THREEDC.controls.enabled=true;
-	        THREEDC.container.style.cursor = 'auto';
-	        if(THREEDC.SELECTED.isPanel) THREEDC.SELECTED.reBuild();
-	        THREEDC.SELECTED=null;
-	        THREEDC.chartToDrag=null;
-	        THREEDC.plane.material.visible=false;
+	_THREEDC.dragTrigger=function () {
+	  if(_THREEDC.parameters.activate){
+	    _THREEDC.scene.add( _THREEDC.plane );
+	    _THREEDC.domEvents.bind(_THREEDC.plane, 'mouseup', function(object3d){
+	      if(_THREEDC.chartToDrag){
+	        _THREEDC.controls.enabled=true;
+	        _THREEDC.container.style.cursor = 'auto';
+	        if(_THREEDC.SELECTED.isPanel) _THREEDC.SELECTED.reBuild();
+	        _THREEDC.SELECTED=null;
+	        _THREEDC.chartToDrag=null;
+	        _THREEDC.plane.material.visible=false;
 	      }
 	    });
-	    window.addEventListener( 'mousemove', THREEDC.onMouseMove, false );
+	    window.addEventListener( 'mousemove', _THREEDC.onMouseMove, false );
 	  }else{
-	    window.removeEventListener( 'mousemove', THREEDC.onMouseMove, false );
-	    THREEDC.scene.remove( THREEDC.plane );
-	    THREEDC.domEvents.unbind(THREEDC.plane, 'mouseup');
+	    window.removeEventListener( 'mousemove', _THREEDC.onMouseMove, false );
+	    _THREEDC.scene.remove( _THREEDC.plane );
+	    _THREEDC.domEvents.unbind(_THREEDC.plane, 'mouseup');
 	  }
 	}
 
-	THREEDC.changePlane =function() {
-	  if (THREEDC.parameters.plane==='XY'){
-	    THREEDC.plane.rotation.set(0,0,0); //xy THREEDC.plane
-	  }else if(THREEDC.parameters.plane==='XZ'){
-	    THREEDC.plane.rotation.x = Math.PI / 2; //xz THREEDC.plane
+	_THREEDC.changePlane =function() {
+	  if (_THREEDC.parameters.plane==='XY'){
+	    _THREEDC.plane.rotation.set(0,0,0); //xy _THREEDC.plane
+	  }else if(_THREEDC.parameters.plane==='XZ'){
+	    _THREEDC.plane.rotation.x = Math.PI / 2; //xz _THREEDC.plane
 	  }
 	}
 
-	THREEDC.onMouseMove=function( event ) {
+	_THREEDC.onMouseMove=function( event ) {
 
-	  // calculate THREEDC.mouse position in normalized device coordinates
+	  // calculate _THREEDC.mouse position in normalized device coordinates
 	  // (-1 to +1) for both components
 
 
-	  THREEDC.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	  THREEDC.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+	  _THREEDC.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	  _THREEDC.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-	  THREEDC.raycaster.setFromCamera( THREEDC.mouse, THREEDC.camera );
+	  _THREEDC.raycaster.setFromCamera( _THREEDC.mouse, _THREEDC.camera );
 
-	  if(THREEDC.SELECTED){
-	    THREEDC.plane.material.visible=true;
-	    var intersects = THREEDC.raycaster.intersectObject( THREEDC.plane );
+	  if(_THREEDC.SELECTED){
+	    _THREEDC.plane.material.visible=true;
+	    var intersects = _THREEDC.raycaster.intersectObject( _THREEDC.plane );
 	    if ( intersects.length > 0 ) {
-	      if(THREEDC.SELECTED.isPanel){
-	        THREEDC.SELECTED.position.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
-	        if(THREEDC.SELECTED.iframe) THREEDC.SELECTED.iframe.position.copy(THREEDC.SELECTED.position);
-	        THREEDC.SELECTED.coords.copy( THREEDC.SELECTED.position);
+	      if(_THREEDC.SELECTED.isPanel){
+	        _THREEDC.SELECTED.position.copy(intersects[ 0 ].point.sub( _THREEDC.offset ));
+	        if(_THREEDC.SELECTED.iframe) _THREEDC.SELECTED.iframe.position.copy(_THREEDC.SELECTED.position);
+	        _THREEDC.SELECTED.coords.copy( _THREEDC.SELECTED.position);
 	      }else{
-	        THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( THREEDC.offset ));
-	        if(THREEDC.paint) THREEDC.chartToDrag.reBuild();
-	        !THREEDC.paint;
+	        _THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( _THREEDC.offset ));
+	        if(_THREEDC.paint) _THREEDC.chartToDrag.reBuild();
+	        !_THREEDC.paint;
 	      }
 	    }
 	    return;
 	  }
 	}
-	return THREEDC;
+	return _THREEDC;
 }

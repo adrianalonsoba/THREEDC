@@ -252,7 +252,7 @@ function init () {
 
    // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
 
-  dash = THREEDC({},camera,scene,renderer,container);
+  dash = THREEDC(camera,scene,renderer,container);
 
   //var tree= dash.fileTree([0,0,0]);
 
