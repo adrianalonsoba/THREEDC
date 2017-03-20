@@ -312,26 +312,18 @@ function init () {
 
   dash=THREEDC(camera,scene,renderer,container);
 
+  var city= dash.fileCity();
+
+  city.data(root);
+
+
+
 //  var tree= dash.fileTree([0,0,0]);
 
  // tree.data(root);
 
   //var panel =dash.addPanel([0,0,0],4,[200,200]);
  // panel.addIframe(1234);
-
-
-
-
-    var bars= dash.TDbarsChart([0,0,0]);
-    bars
-        .data(data)
-        .width(400)
-        .height(300)
-        .depth(400)
-        .barSeparation(0.7)
-        .opacity(0.95)
-       // .color(0xffaa00)
-        .gridsOn(0xffffff);
 
   //var cloud= dash.pointsCloudChart([0,0,0]);
   //cloud.getPoints(getRandomPoints(1000));

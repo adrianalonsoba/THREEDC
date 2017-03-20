@@ -2326,6 +2326,113 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
+
+
+	_THREEDC.fileCity= function (location,dimensions) {
+
+
+		var _chart = _THREEDC.threeDMixin({});
+
+		if(location==undefined){
+			location=[0,0,0];
+		}
+
+		if (!dimensions) {_chart.maxDimensions={x:200,y:200,z:200}};
+
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+
+		_THREEDC.allCharts.push(_chart);
+
+		_chart.build= function () {
+
+			var numberOfCityLevels=10; //getNumberOfLevels();
+
+			var group= new THREE.Group();
+
+			createDataStructure();
+
+			buildRootNode();
+
+			buildSons(_chart.rootNode);
+
+			_chart.parts.push(group);
+
+
+			function buildRootNode () {
+				var rootWidth=_chart.maxDimensions.x
+				var rootHeight=_chart.maxDimensions.y/numberOfCityLevels;
+				var rootDepth=_chart.maxDimensions.z;
+
+				var geometry = new THREE.CubeGeometry( rootWidth, rootHeight, rootDepth);
+
+				var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
+				                                             specular: 0x999999,
+				                                             shininess: 100,
+				                                             shading : THREE.SmoothShading,
+				                                             transparent: true
+				} );
+
+				var rootNode = new THREE.Mesh(geometry, material);
+				rootNode.position.set(_chart.coords.x,_chart.coords.y+rootHeight/2,_chart.coords.z);
+				_chart.rootNode.position=rootNode.position;
+				group.add(rootNode);
+
+			}
+
+			function buildSons (node) {
+				//create
+
+				for (var i = 0; i < node.sons.length; i++) {
+					console.log(node.sons[i]);
+				};
+				
+			}
+
+
+			function createDataStructure () {
+
+				findRootNode();
+				findSons(_chart.rootNode);
+
+				function findRootNode () {
+
+					for (var i = 0; i < _chart._data.length; i++) {
+						if(_chart._data[i].parent===null){
+							_chart.rootNode=_chart._data[i];
+							_chart._data.splice(i,1);
+							break;
+						}
+					};
+				}
+
+				function findSons (node) {
+					node.sons=[];
+					for (var i = 0; i < _chart._data.length; i++) {
+						if(_chart._data[i].parent===node.id){
+							node.sons.push(_chart._data[i]);
+						}
+					};
+					//remove found sons
+					var index;
+					for (var i = 0; i < node.sons.length; i++) {
+						 index = _chart._data.indexOf(node.sons[i]);
+						_chart._data.splice(index,1);
+					};
+					//	RECURSIVE
+					for (var i = 0; i < node.sons.length; i++) {
+						findSons(node.sons[i]);
+					};
+				}
+			}
+
+			//_chart.addEvents();
+			//_chart.addLabels();
+			//if (_chart._gridsOn) _chart.addGrids();
+		}
+
+		return _chart;
+	}
+
 	_THREEDC.dragTrigger=function () {
 	  if(_THREEDC.parameters.activate){
 	    _THREEDC.scene.add( _THREEDC.plane );
