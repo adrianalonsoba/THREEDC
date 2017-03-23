@@ -152,7 +152,7 @@ function init () {
   ];
 
   //the empty object will be returned with the library functions
-  dash = THREEDC({},camera,scene,renderer,container,sceneCSS);
+  dash = THREEDC(camera,scene,renderer,container,sceneCSS);
 
   //create a 3D bars chart with the data above at the position (0,0,0)
 

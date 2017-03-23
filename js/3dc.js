@@ -2326,9 +2326,7 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-
-
-	_THREEDC.fileCity= function (location,dimensions) {
+	_THREEDC.fileCity= function (location) {
 
 
 		var _chart = _THREEDC.threeDMixin({});
@@ -2337,7 +2335,8 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		if (!dimensions) {_chart.maxDimensions={x:200,y:200,z:200}};
+			//by default
+		_chart._depth=50;
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
@@ -2353,15 +2352,16 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 
 			buildRootNode();
 
+			var step=50;
+
 			buildSons(_chart.rootNode);
 
-			_chart.parts.push(group);
-
+			//_chart.parts.push(group);
 
 			function buildRootNode () {
-				var rootWidth=_chart.maxDimensions.x
-				var rootHeight=_chart.maxDimensions.y/numberOfCityLevels;
-				var rootDepth=_chart.maxDimensions.z;
+				var rootWidth=_chart._width;
+				var rootHeight=_chart._height/numberOfCityLevels;
+				var rootDepth=_chart._depth;
 
 				var geometry = new THREE.CubeGeometry( rootWidth, rootHeight, rootDepth);
 
@@ -2373,18 +2373,55 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 				} );
 
 				var rootNode = new THREE.Mesh(geometry, material);
-				rootNode.position.set(_chart.coords.x,_chart.coords.y+rootHeight/2,_chart.coords.z);
-				_chart.rootNode.position=rootNode.position;
-				group.add(rootNode);
+				rootNode.dimensions={width:rootWidth,height:rootHeight,depth:rootDepth};
+				rootNode.position.set(_chart.coords.x+rootWidth/2,_chart.coords.y+rootHeight/2,_chart.coords.z);
+				_chart.rootNode.mesh=rootNode;
+				rootNode.name="id:"+_chart.rootNode.id+" size:"+_chart.rootNode.size +" father:"+' null';
+				_chart.parts.push(rootNode);
+				//group.add(rootNode);
 
 			}
 
 			function buildSons (node) {
-				//create
+				//divide the surface using the number of sons and assign a proportional surface to each one acording to its size, the height
+				//only matters when it is a directory with any value for now
 
+
+				//assing buildings to directories and only surface to files
+
+				var step=0;
 				for (var i = 0; i < node.sons.length; i++) {
-					console.log(node.sons[i]);
+
+					var sonWidth=node.mesh.dimensions.width*node.sons[i].size/node.size;  // (FatherWidth*SonSize)/FatherSize
+					if (node.sons[i].sons.length===0) {
+						sonHeight=_chart._height/numberOfCityLevels;  					//height for files FOR NOW
+					}else{
+						sonHeight=_chart._height/numberOfCityLevels; //height for directories FOR NOW
+					}
+					var sonDepth=_chart._depth;				
+
+					var geometry = new THREE.CubeGeometry( sonWidth, sonHeight, sonDepth);
+
+					var material = new THREE.MeshPhongMaterial( {color: Math.random() * 0xffffff,
+					                                             specular: 0x999999,
+					                                             shininess: 100,
+					                                             shading : THREE.SmoothShading,
+					                                             transparent: true
+					} );
+					var sonNode = new THREE.Mesh(geometry, material);
+					sonNode.name="id:"+node.sons[i].id+" size:"+node.sons[i].size +" father:"+node.id;
+					sonNode.dimensions={width:sonWidth,height:sonHeight,depth:sonDepth};
+					sonNode.position.set(node.mesh.position.x+step,node.mesh.position.y+sonHeight,node.mesh.position.z);
+					node.sons[i].mesh=sonNode;
+					_chart.parts.push(sonNode);
+					//group.add(sonNode);
+					step+= sonWidth;
 				};
+				
+				//recursive
+				for (var i = 0; i < node.sons.length; i++) {
+					buildSons(node.sons[i]);
+				};	
 				
 			}
 
@@ -2425,7 +2462,7 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 				}
 			}
 
-			//_chart.addEvents();
+			_chart.addEvents();
 			//_chart.addLabels();
 			//if (_chart._gridsOn) _chart.addGrids();
 		}

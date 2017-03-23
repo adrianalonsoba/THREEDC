@@ -246,6 +246,9 @@ function init () {
 
   var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'juan',parent:'root',size:500},{id:'maria',parent:'root',size:500},{id:'satan',parent:'pepe',size:100},{id:'satanas',parent:'pepe',size:100}];
 
+  var test_data1=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:500},{id:'juan',parent:'root',size:200},{id:'satan',parent:'juan',size:100},{id:'satan',parent:'satan',size:100}];
+
+
    // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
 
   //CUSTOM DASHBOARD//
@@ -307,14 +310,14 @@ function init () {
 
   }
 
-
   var root=generateRandomTree(30000);
 
   dash=THREEDC(camera,scene,renderer,container);
 
-  var city= dash.fileCity();
+  var city= dash.fileCity([0,0,0]);
 
-  city.data(root);
+
+  city.data(test_data1).width(100).height(100).depth(50);
 
 
 
