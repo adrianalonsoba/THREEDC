@@ -262,7 +262,7 @@ function init () {
       var rootNode={};
       rootNode.id='root';
       rootNode.parent=null;
-      rootNode.size=100;
+      rootNode.size=500;
       return rootNode;
     }
 
@@ -270,7 +270,7 @@ function init () {
       var node={};
       //node.parent=parent.id;
       node.id=makeid();
-      node.size=100;
+      node.size=null;
       return node;
     }
 
@@ -317,7 +317,7 @@ function init () {
   var city= dash.fileCity([0,0,0]);
 
 
-  city.data(test_data1).width(100).height(100).depth(50);
+  city.data(root).width(1000).height(100).depth(50);
 
 
 

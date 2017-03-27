@@ -2386,13 +2386,20 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 				//divide the surface using the number of sons and assign a proportional surface to each one acording to its size, the height
 				//only matters when it is a directory with any value for now
 
-
 				//assing buildings to directories and only surface to files
 
-				var step=0;
+				var xOffset=0;
+
 				for (var i = 0; i < node.sons.length; i++) {
 
-					var sonWidth=node.mesh.dimensions.width*node.sons[i].size/node.size;  // (FatherWidth*SonSize)/FatherSize
+					var sonWidth;
+					if (node.sons[i].size!=null) {
+						sonWidth= node.mesh.dimensions.width*node.sons[i].size/node.size;  // (FatherWidth*SonSize)/FatherSize	
+					} 
+					else{
+						sonWidth= node.mesh.dimensions.width/node.sons.length;
+					};
+					
 					if (node.sons[i].sons.length===0) {
 						sonHeight=_chart._height/numberOfCityLevels;  					//height for files FOR NOW
 					}else{
@@ -2411,11 +2418,12 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 					var sonNode = new THREE.Mesh(geometry, material);
 					sonNode.name="id:"+node.sons[i].id+" size:"+node.sons[i].size +" father:"+node.id;
 					sonNode.dimensions={width:sonWidth,height:sonHeight,depth:sonDepth};
-					sonNode.position.set(node.mesh.position.x+step,node.mesh.position.y+sonHeight,node.mesh.position.z);
+					var leftShift=(node.mesh.dimensions.width - sonNode.dimensions.width)/2;
+					sonNode.position.set(node.mesh.position.x-leftShift+xOffset,node.mesh.position.y+sonHeight,node.mesh.position.z);
 					node.sons[i].mesh=sonNode;
 					_chart.parts.push(sonNode);
 					//group.add(sonNode);
-					step+= sonWidth;
+					xOffset+= sonWidth;
 				};
 				
 				//recursive
