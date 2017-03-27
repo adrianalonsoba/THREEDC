@@ -2337,10 +2337,16 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 
 			//by default
 		_chart._depth=50;
+		_chart._equidistance=false;
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
 		_THREEDC.allCharts.push(_chart);
+
+	    _chart.equidistance=function(){
+	    	_chart._equidistance=true;
+	    	return _chart;
+	    }
 
 		_chart.build= function () {
 
@@ -2351,8 +2357,6 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 			createDataStructure();
 
 			buildRootNode();
-
-			var step=50;
 
 			buildSons(_chart.rootNode);
 
@@ -2393,7 +2397,7 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 				for (var i = 0; i < node.sons.length; i++) {
 
 					var sonWidth;
-					if (node.sons[i].size!=null) {
+					if (!_chart._equidistance) {
 						sonWidth= node.mesh.dimensions.width*node.sons[i].size/node.size;  // (FatherWidth*SonSize)/FatherSize	
 					} 
 					else{
@@ -2405,6 +2409,7 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 					}else{
 						sonHeight=_chart._height/numberOfCityLevels; //height for directories FOR NOW
 					}
+
 					var sonDepth=_chart._depth;				
 
 					var geometry = new THREE.CubeGeometry( sonWidth, sonHeight, sonDepth);

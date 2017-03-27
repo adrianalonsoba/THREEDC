@@ -270,7 +270,7 @@ function init () {
       var node={};
       //node.parent=parent.id;
       node.id=makeid();
-      node.size=null;
+      node.size=Math.random()*500;
       return node;
     }
 
@@ -317,7 +317,7 @@ function init () {
   var city= dash.fileCity([0,0,0]);
 
 
-  city.data(root).width(1000).height(100).depth(50);
+  city.data(root).width(1000).height(100).depth(500).equidistance();
 
 
 
