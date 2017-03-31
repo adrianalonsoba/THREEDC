@@ -889,6 +889,17 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 	    	_chart._data=data;
 	    	return _chart;
 	    }
+
+	    _chart.id=function(id){
+	    	if(!arguments.length){
+	    		console.log('argument needed');
+	    		return;
+	    	}
+	    	_chart._id=id;
+	    	return _chart;
+	    }
+
+
 		return _chart;
 
 	}

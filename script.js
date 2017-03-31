@@ -314,10 +314,19 @@ function init () {
 
   dash=THREEDC(camera,scene,renderer,container);
 
-  var city= dash.fileCity([0,0,0]);
+  var bars= dash.barsChart();
+
+    var pie= dash.pieChart();
 
 
-  city.data(root).width(1000).height(100).depth(500).equidistance();
+  bars.dimension(dimByMonth).group(groupByMonth).gridsOn().id(12394);
+
+
+    pie.dimension(dimByOrg).group(groupByOrg).gridsOn().id(1234);
+
+
+
+ 
 
 
 
@@ -335,6 +344,10 @@ function init () {
   //bars.group(groupByRepo);
 
   dash.renderAll();
+
+
+
+
 
   function  getRandomCharts(numberOfRandomCharts) {
     for (var i = 0; i < numberOfRandomCharts; i++) {
