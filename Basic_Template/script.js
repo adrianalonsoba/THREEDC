@@ -90,7 +90,7 @@ function init () {
   ];
 
   //the empty object will be returned with the library functions
-  dash = THREEDC({},camera,scene,renderer,container);
+  dash = THREEDC(camera,scene,renderer,container);
 
   //create a 3D bars chart with the data above at the position (0,0,0)
   var bars= dash.TDbarsChart([-350,0,0]);

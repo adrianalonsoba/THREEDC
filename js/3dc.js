@@ -240,20 +240,20 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 		};
 	}
 
-	//The spherical coordinates of a point in the ISO convention (radius r, inclination θ, azimuth φ) can be obtained from its Cartesian coordinates (x, y, z)
+	//The spherical coordinates of a point in the ISO convention (radius r, inclination theta, azimuth phi) can be obtained from its Cartesian coordinates (x, y, z)
 	_THREEDC.cartesianToSpherical=function (x,y,z) {
 		var r=Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+Math.pow(z,2)) ;
-		var θ=Math.acos(z/r);
-		var φ=Math.atan(y/x);
+		var theta=Math.acos(z/r);
+		var phi=Math.atan(y/x);
 
-		return {r:r,θ:θ,φ:φ};
+		return {r:r,theta:theta,phi:phi};
 	 }
 
-	//Conversely, the Cartesian coordinates may be retrieved from the spherical coordinates (radius r, inclination θ, azimuth φ), where r ∈ [0, ∞), θ ∈ [0, π], φ ∈ [0, 2π), by:
-	_THREEDC.sphericalToCartesian= function  (r,θ,φ) {
-		var x=r*Math.sin(θ)*Math.cos(φ);
-		var y=r*Math.sin(θ)*Math.sin(φ);
-		var z=r*Math.cos(θ);
+	//Conversely, the Cartesian coordinates may be retrieved from the spherical coordinates (radius r, inclination theta, azimuth phi), where r ∈ [0, ∞), theta ∈ [0, π], phi ∈ [0, 2π), by:
+	_THREEDC.sphericalToCartesian= function  (r,theta,phi) {
+		var x=r*Math.sin(theta)*Math.cos(phi);
+		var y=r*Math.sin(theta)*Math.sin(phi);
+		var z=r*Math.cos(theta);
 
 		return {x:x,y:y,z:z};
 	 }
