@@ -218,7 +218,10 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 
 	_THREEDC.removeAll=function() {
 		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
-			_THREEDC.allCharts[i].removeEvents();
+	    	_THREEDC.allCharts[i].removeEvents();
+	    	_THREEDC.allCharts[i].removeLabels();
+	    	_THREEDC.allCharts[i].removeGrids();
+
 	    	for (var j = 0; j < _THREEDC.allCharts[i].parts.length; j++) {
 	    		_THREEDC.scene.remove(_THREEDC.allCharts[i].parts[j]);
 	    	};
