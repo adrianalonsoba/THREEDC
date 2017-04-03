@@ -62,7 +62,7 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 	_THREEDC.plane.rotation.x = Math.PI / 2; //xz _THREEDC.plane
 
 	//it creates a panel to put the charts which are related
-	_THREEDC.addPanel=function (coords,numberOfCharts,size,opacity) {
+	_THREEDC.addPanel=function (coords,numberOfCharts,size,opacity,customEvents) {
 
 
 	  coords = coords || [0,0,0];
@@ -180,6 +180,11 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 	  }
 
 	  _THREEDC.scene.add(panel);
+
+
+		if(customEvents){
+			customEvents(panel);
+		}
 
 		_THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){
 			if(_THREEDC.parameters.activate){

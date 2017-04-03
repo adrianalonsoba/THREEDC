@@ -315,19 +315,21 @@ function init () {
   dash=THREEDC(camera,scene,renderer,container);
 
 
+var panel =dash.addPanel([0,0,0],3,[200,200],0.7,test_function);
 
-var panel= dash.addPanel();
+  var pie= dash.pieChart(panel);
 
-  var bubbles= dash.bubbleChart(panel);
-
-  bubbles.data(data2)
-         .width(500)
-         .height(400)
-         .gridsOn()
-         .depth(400);
+  pie.group(groupByOrg).id(434355354)
+         .dimension(groupByMonth);
 
 
- 
+function test_function (panel) {
+    dash.domEvents.bind(panel, 'click', function(object3d){
+      if(!dash.parameters.activate){
+        console.log(panel);
+      }
+    });
+}
 
 
 
