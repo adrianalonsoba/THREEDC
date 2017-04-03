@@ -314,16 +314,17 @@ function init () {
 
   dash=THREEDC(camera,scene,renderer,container);
 
-  var bars= dash.barsChart();
-
-    var pie= dash.pieChart();
 
 
-  bars.dimension(dimByMonth).group(groupByMonth).gridsOn().id(12394);
+var panel= dash.addPanel();
 
+  var bubbles= dash.bubbleChart(panel);
 
-    pie.dimension(dimByOrg).group(groupByOrg).gridsOn().id(1234);
-
+  bubbles.data(data2)
+         .width(500)
+         .height(400)
+         .gridsOn()
+         .depth(400);
 
 
  

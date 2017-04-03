@@ -1605,6 +1605,20 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 
 		var _chart = _THREEDC.threeDMixin({});
 
+		if(location.isPanel){
+			for (var i = 0; i < location.anchorPoints.length; i++) {
+				if(!location.anchorPoints[i].filled){
+					_chart.coords=location.anchorPoints[i].coords;
+					location.anchorPoints[i].filled=true;
+					location.charts.push(_chart);
+					_chart.panel=location;
+					break;
+				}
+			};
+		}else{
+			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		}
+
 		//add to 3Dmixin when added
 		_chart.labels=[];
 
@@ -2093,6 +2107,21 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 		}
 
 		var _chart = _THREEDC.threeDMixin({});
+
+
+		if(location.isPanel){
+			for (var i = 0; i < location.anchorPoints.length; i++) {
+				if(!location.anchorPoints[i].filled){
+					_chart.coords=location.anchorPoints[i].coords;
+					location.anchorPoints[i].filled=true;
+					location.charts.push(_chart);
+					_chart.panel=location;
+					break;
+				}
+			};
+		}else{
+			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		}
 
 			//by default
 		_chart._depth=100;
