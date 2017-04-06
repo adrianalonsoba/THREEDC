@@ -312,7 +312,7 @@ function init () {
 
   var root=generateRandomTree(30000);
 
-  dash=THREEDC(camera,scene,renderer,container);
+  dash=THREEDC(scene,renderer,container);
 
 
 var panel =dash.addPanel([0,0,0],3,[200,200],0.7,test_function);
@@ -330,8 +330,6 @@ function test_function (panel) {
       }
     });
 }
-
-
 
 //  var tree= dash.fileTree([0,0,0]);
 

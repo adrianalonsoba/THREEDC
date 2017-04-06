@@ -1,9 +1,9 @@
 
-function THREEDC (camera,scene,renderer,container,sceneCSS) {
+function THREEDC (scene,renderer,container,sceneCSS) {
 
 	var _THREEDC={};
 
-	_THREEDC.camera=camera;
+
 	_THREEDC.scene=scene;
 	_THREEDC.renderer=renderer;
 	_THREEDC.container=container;
@@ -18,6 +18,16 @@ function THREEDC (camera,scene,renderer,container,sceneCSS) {
 	_THREEDC.mouse = new THREE.Vector2();
 	_THREEDC.offset = new THREE.Vector3();
 	_THREEDC.paint=true;
+
+	//get camera from scene
+	for (var i = 0; i < scene.children.length; i++) {
+		if(scene.children[i] instanceof THREE.Camera){
+			_THREEDC.camera=scene.children[i];
+		}
+	}
+
+	if(_THREEDC.camera===undefined){console.log('You must add a camera to your scene');return;};
+
 	   //////////////
    // CONTROLS //
    //////////////
