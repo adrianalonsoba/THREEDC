@@ -242,7 +242,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
- dash= THREEDC(camera,scene,renderer,container);
+ dash= THREEDC(scene,renderer,container);
 
   var bars= dash.TDbarsChart([0,0,0]);
   bars

@@ -162,7 +162,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  dash=THREEDC(camera,scene,renderer,container);
+  dash=THREEDC(scene,renderer,container);
 
   var panel1=dash.addPanel([0,0,-200],2,[400,300]);
 

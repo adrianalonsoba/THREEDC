@@ -5,36 +5,15 @@
 
 // standard global variables
 var container, scene, camera, renderer, stats;
-var dash;
-
-//JSON data saved here
-var json_data;
-
-//CROSSFILTER VARS
-
- var cf;
-
- var dimByMonth;
-
- var groupByMonth;
-
-  var dimByOrg;
-
-  var groupByOrg;
-
-
-  var dimByRepo;
-
-  var groupByRepo;
+var dashBoard;
 
 // initialization
   //getJSON call, draw meshes with data
-   $.getJSON("../jsons/scm-commits.json", function(data) {
-      json_data=data;
+
       init();
       // animation loop / game loop
       animate();
-   });
+
 
 ///////////////
 // FUNCTIONS //
@@ -90,7 +69,7 @@ function init () {
   THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
    ///////////
-   // LIGHT //
+   // LIGHTS //
    ///////////
    var light = new THREE.PointLight(0xffffff,0.8);
    light.position.set(0,2500,2500);
@@ -137,68 +116,8 @@ function init () {
    var axes = new THREE.AxisHelper(1000);
    scene.add(axes);
 
-  //STATS
-  stats = new Stats();
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.bottom = '0px';
-  stats.domElement.style.zIndex = 100;
-  container.appendChild( stats.domElement );
 
-   //////////////
-   // CUSTOM //
-   //////////////
-
-   // most objects displayed are a "mesh":
-   //  a collection of points ("geometry") and
-   //  a set of surface parameters ("material")
-
-  var parsed_data=[];
-
-  // Crossfilter and dc.js format
-  json_data.values.forEach(function (value) {
-    var record = {}
-    json_data.names.forEach(function (name, index) {
-        if (name == "date") {
-          var date = new Date(value[index]*1000);
-          record[name] = date;
-          record.month = new Date(date.getFullYear(), date.getMonth(), 1);
-          record.hour = date.getUTCHours();
-        } else {
-          record[name] = value[index];
-        }
-    });
-    parsed_data.push(record);
-  });
-
-  cf=crossfilter(parsed_data);
-  console.log(parsed_data);
-
-  //create a dimension by month
-
-  dimByMonth= cf.dimension(function(p) {return p.month;});
-
-  groupByMonth= dimByMonth.group();
-
-  //create a dimension by org
-
-  dimByOrg= cf.dimension(function(p) {return p.org;});
-
-  groupByOrg= dimByOrg.group();
-
-
-  //create a dimension by author
-
-  dimByAuthor= cf.dimension(function(p) {return p.author;});
-
-  groupByAuthor= dimByAuthor.group();
-
-
-
-  //create a dimension by repository
-
-  dimByRepo= cf.dimension(function(p) {return p.repo;});
-
-  groupByRepo= dimByRepo.group();
+ //CUSTOM dashBoardBOARD//
 
 
   //data without CF
@@ -209,19 +128,11 @@ function init () {
 
   //example data for cloud
 
-  function getRandomPoints(numberOfPoints){
-    var points=[];
-    for (var i = 0; i < numberOfPoints; i++) {
 
-      points[i]={x:Math.random()*100,y:Math.random()*100,z:Math.random()*100};
-     // console.log(points[i]);
-    };
-    return points;
-  }
 
     //3Ddata without CF
 
-  var data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
+   data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
 
             {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:89},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
 
@@ -232,7 +143,7 @@ function init () {
 
       //4Ddata without CF
 
-  var data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
+   data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
 
             {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50},
 
@@ -241,57 +152,17 @@ function init () {
  
   ];
 
- //CUSTOM DASHBOARD//
+
+  dashBoard = THREEDC.dashBoard(scene,renderer,container);
+
+
+  var PIE= THREEDC.pieChart([0,0,0]);
+
+  PIE.data(data1);
 
 
 
-
-  var test_data=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'peter',parent:'pepe',size:100},{id:'satan',parent:'peter',size:100},{id:'manolo',parent:'juan',size:100}];
-
-  var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100},{id:'juan',parent:'root',size:500},{id:'maria',parent:'root',size:500},{id:'satan',parent:'pepe',size:100},{id:'satanas',parent:'satan',size:100}];
-
-   // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
-
-  dash = THREEDC(scene,renderer,container);
-
-  //var tree= dash.fileTree([0,0,0]);
-
- // tree.data(simpledata);
-
-  //var cloud= dash.pointsCloudChart([0,0,0]);
-  //cloud.getPoints(getRandomPoints(1000));
-
- // var bars= dash.barsChart([0,0,0]);
-  //bars.group(groupByRepo);
-
-
-  var bubbles= dash.bubbleChart([0,0,0]);
-
-  bubbles.data(data2)
-         .width(500)
-         .height(400)
-         .gridsOn()
-         .depth(400);
-
-
-
-  dash.renderAll();
-
-  function  getRandomCharts(numberOfRandomCharts) {
-    for (var i = 0; i < numberOfRandomCharts; i++) {
-    var bars= dash.TDbarsChart([Math.random()*1000,Math.random()*1000,Math.random()*1000]);
-    bars
-        .data(data)
-        .width(Math.random()*100+20)
-        .height(Math.random()*100+20)
-        .depth(Math.random()*100+20)
-        .barSeparation(Math.random())
-       // .clickCallBackFunction(function)
-        .opacity(0.95)
-       // .color(0xffaa00)
-        .gridsOn(0xffffff);
-    };
-  }
+  dashBoard.addChart(PIE);
 
 }
 
@@ -309,6 +180,5 @@ function render()
 
 function update()
 {
-  dash.controls.update();
-  stats.update();
+  dashBoard.controls.update();
 }

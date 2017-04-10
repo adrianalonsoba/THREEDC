@@ -178,7 +178,7 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
- dash =  THREEDC(camera,scene,renderer,container);
+ dash =  THREEDC(scene,renderer,container);
 
 
 //PANEL 1
