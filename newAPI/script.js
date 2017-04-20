@@ -149,7 +149,6 @@ function init () {
 
             {key1:'january',key2:'sony',value:34,value2:Math.random()*50},{key1:'february',key2:'sony',value:89,value2:Math.random()*50},{key1:'march',key2:'sony',value:53,value2:Math.random()*50},{key1:'april',key2:'sony',value:76,value2:Math.random()*50}
 
- 
   ];
 
 
@@ -160,9 +159,44 @@ function init () {
 
   PIE.data(data1);
 
+  var bars= THREEDC.barsChart([0,0,0]);
 
+  bars.data(data1).gridsOn();
+
+  var line= THREEDC.lineChart([-200,0,0]);
+
+  line.data(data1).gridsOn();
+
+  var curve = THREEDC.smoothCurveChart([200,0,0]);
+
+  curve.data(data1).gridsOn();
+
+
+    var TDBARS = THREEDC.TDbarsChart([400,0,0]);
+
+TDBARS.data(data).gridsOn();
+
+
+  var curve = THREEDC.smoothCurveChart([200,0,0]);
+
+  curve.data(data1).gridsOn();
+
+
+
+
+
+    var bub = THREEDC.bubbleChart([-400,0,0]);
+
+bub.data(data2).gridsOn();
 
   dashBoard.addChart(PIE);
+  dashBoard.addChart(bars);
+  dashBoard.addChart(line);
+  dashBoard.addChart(curve);
+  dashBoard.addChart(TDBARS);
+   dashBoard.addChart(bub);
+
+
 
 }
 

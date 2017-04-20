@@ -142,16 +142,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	  }
 	}
 
-
-
-
-
 	return dashBoard;
 }
-
-
-
-
 
 	//it creates a panel to put the charts which are related
 	THREEDC.addPanel=function (coords,numberOfCharts,size,opacity,customEvents) {
@@ -1606,7 +1598,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.baseMixin({});
+		var _chart = THREEDC.baseMixin({});
 
 			//by default
 		_chart._depth=5;
@@ -1703,7 +1695,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
@@ -2003,7 +1995,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.baseMixin({});
+		var _chart = THREEDC.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -2119,7 +2111,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.baseMixin({});
+		var _chart = THREEDC.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -2206,7 +2198,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 
 		if(location.isPanel){
@@ -2314,7 +2306,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
@@ -2469,7 +2461,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	THREEDC.fileCity= function (location) {
 
 
-		var _chart = dashBoard.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 		if(location==undefined){
 			location=[0,0,0];
