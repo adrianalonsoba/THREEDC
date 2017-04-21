@@ -74,6 +74,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 
 	dashBoard.addChart=function (chart) {
+		dashBoard.allCharts.push(chart);
 		chart.build();
 		for (var i = 0; i < chart.parts.length; i++) {
 			dashBoard.scene.add(chart.parts[i]);
@@ -1479,8 +1480,6 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		}
 
-	//	THREEDC.allCharts.push(_chart);
-
 		_chart.radius=function(radius){
 			_radius=radius;
 			_chart._width=radius;
@@ -1618,8 +1617,6 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		}
 		_chart._color=0x0000ff;
-
-		dashBoard.allCharts.push(_chart);
 
 		_chart.build = function() {
 		   if(_chart._group===undefined && _chart._data===undefined){

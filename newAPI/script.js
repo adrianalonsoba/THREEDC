@@ -7,12 +7,34 @@
 var container, scene, camera, renderer, stats;
 var dashBoard;
 
+//JSON data saved here
+var json_data;
+
+//CROSSFILTER VARS
+
+ var cf;
+
+ var dimByMonth;
+
+ var groupByMonth;
+
+  var dimByOrg;
+
+  var groupByOrg;
+
+
+  var dimByRepo;
+
+  var groupByRepo;
+
 // initialization
   //getJSON call, draw meshes with data
-
+   $.getJSON("../jsons/scm-commits.json", function(data) {
+      json_data=data;
       init();
       // animation loop / game loop
       animate();
+   });
 
 
 ///////////////
@@ -119,6 +141,54 @@ function init () {
 
  //CUSTOM dashBoardBOARD//
 
+   var parsed_data=[];
+
+  // Crossfilter and dc.js format
+  json_data.values.forEach(function (value) {
+    var record = {}
+    json_data.names.forEach(function (name, index) {
+        if (name == "date") {
+          var date = new Date(value[index]*1000);
+          record[name] = date;
+          record.month = new Date(date.getFullYear(), date.getMonth(), 1);
+          record.hour = date.getUTCHours();
+        } else {
+          record[name] = value[index];
+        }
+    });
+    parsed_data.push(record);
+  });
+
+  cf=crossfilter(parsed_data);
+  console.log(parsed_data);
+
+  //create a dimension by month
+
+  dimByMonth= cf.dimension(function(p) {return p.month;});
+
+  groupByMonth= dimByMonth.group();
+
+  //create a dimension by org
+
+  dimByOrg= cf.dimension(function(p) {return p.org;});
+
+  groupByOrg= dimByOrg.group();
+
+
+  //create a dimension by author
+
+  dimByAuthor= cf.dimension(function(p) {return p.author;});
+
+  groupByAuthor= dimByAuthor.group();
+
+
+
+  //create a dimension by repository
+
+  dimByRepo= cf.dimension(function(p) {return p.repo;});
+
+  groupByRepo= dimByRepo.group();
+
 
   //data without CF
 
@@ -155,6 +225,8 @@ function init () {
   dashBoard = THREEDC.dashBoard(scene,renderer,container);
 
 
+
+/*
   var PIE= THREEDC.pieChart([0,0,0]);
 
   PIE.data(data1);
@@ -189,12 +261,59 @@ TDBARS.data(data).gridsOn();
 
 bub.data(data2).gridsOn();
 
+
+
   dashBoard.addChart(PIE);
   dashBoard.addChart(bars);
   dashBoard.addChart(line);
   dashBoard.addChart(curve);
   dashBoard.addChart(TDBARS);
    dashBoard.addChart(bub);
+
+*/
+
+
+
+  var bars1 =  THREEDC.barsChart([0,0,0]);
+  bars1.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .numberOfXLabels(7)
+      .gridsOn()
+      .depth(30)
+      .numberOfYLabels(4)
+      .color(0x00ffff);
+
+   var bars2 =  THREEDC.barsChart([100,0,100]);
+       bars2.group(groupByAuthor)
+      .dimension(dimByAuthor)
+      .gridsOn()
+      .width(200)
+      .height(200)
+      .numberOfXLabels(7)
+      .depth(30)
+      .color(0xff0000);
+
+
+    var line =  THREEDC.lineChart([300,100,200]);
+       line.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(400)
+      .numberOfXLabels(7)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .depth(30)
+
+      .height(200)
+      .color(0x0000ff);
+
+ dashBoard.addChart(bars1);
+  dashBoard.addChart(bars2);
+
+ dashBoard.addChart(line);
+ 
+ 
 
 
 
