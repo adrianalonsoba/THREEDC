@@ -76,6 +76,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	//coords={x:x,y:y,z:z}
 	dashBoard.addChart=function (chart,coords) {
 
+		chart.parent=dashBoard;
+		chart.dashBoard=dashBoard;
 		if (coords) {chart.coords=new THREE.Vector3( coords.x, coords.y, coords.z );};
 		dashBoard.charts.push(chart);
 		chart.build();
@@ -391,7 +393,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	    	//defined by each implementation
 	    	_chart.build();
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		dashBoard.scene.add(_chart.parts[i]);
+	    		_chart.dashBoard.scene.add(_chart.parts[i]);
 	    	};
 	    }
 
@@ -401,22 +403,23 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	    	_chart.removeGrids();
 
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		dashBoard.scene.remove(_chart.parts[i]);
+	    		_chart.dashBoard.scene.remove(_chart.parts[i]);
 	    	};
-	    	var index = dashBoard.charts.indexOf(_chart);
+	    	var index = _chart.dashBoard.charts.indexOf(_chart);
 
-	    	dashBoard.charts.splice(index, 1);
+	    	_chart.dashBoard.charts.splice(index, 1);
 	    }
 
 	    /*rebuild the chart when a filter is added
 	    * or a chart is moved
 	    */
 	    _chart.reBuild=function(){
+
 	     	_chart.removeEvents();
 	     	_chart.removeLabels();
 	     	_chart.removeGrids();
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		dashBoard.scene.remove(_chart.parts[i]);
+	    		_chart.dashBoard.scene.remove(_chart.parts[i]);
 	    	};
 	    	_chart.parts=[];
 	    	if(_chart.panel){
@@ -433,6 +436,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	    }
 
 	    _chart.addEvents=function(){
+
+	    	var dashBoard=_chart.dashBoard;
 
 	    	//custom events
 	    	if(_chart._addCustomEvents){
@@ -579,6 +584,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	    }
 
 	    _chart.removeEvents=function(){
+	    	var dashBoard=_chart.dashBoard;
 
 	    	for (var i = 0; i < _chart.parts.length; i++) {
 	    		removeEvents(_chart.parts[i]);
@@ -2490,8 +2496,6 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		_chart._equidistance=false;
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-
-		dashBoard.charts.push(_chart);
 
 	    _chart.equidistance=function(){
 	    	_chart._equidistance=true;
