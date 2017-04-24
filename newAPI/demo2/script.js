@@ -113,7 +113,7 @@ function init () {
    scene.add(axes);
 
 
-  myDashBoard = THREEDC.dashBoard(scene,renderer,container);
+  myDashBoard = THREEDC.addDashBoard(scene,renderer.domElement);
 
 
    var data = [{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 },

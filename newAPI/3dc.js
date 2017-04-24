@@ -1,15 +1,11 @@
 
-var THREEDC={};
+var THREEDC={version:'-'};
 
-THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
+THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
+
 	var dashBoard={};
-
-
 	dashBoard.scene=scene;
-	dashBoard.renderer=renderer;
-	dashBoard.container=container;
-
-	dashBoard.version='0.1-b';
+	dashBoard.rendererDOMelement=rendererDOMelement;
 	dashBoard.charts=[];
 	dashBoard.panels=[];
 	dashBoard.textLabel=null;
@@ -37,8 +33,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
    //                 middle click to zoom,
    //                 right  click to pan
    if(!sceneCSS){
- 		dashBoard.controls = new THREE.OrbitControls( dashBoard.camera, dashBoard.renderer.domElement );
-		dashBoard.domEvents  = new THREEx.DomEvents(dashBoard.camera, dashBoard.renderer.domElement);
+ 		dashBoard.controls = new THREE.OrbitControls( dashBoard.camera, dashBoard.rendererDOMelement);
+		dashBoard.domEvents  = new THREEx.DomEvents(dashBoard.camera, dashBoard.rendererDOMelement);
    }else{
 		dashBoard.controls = new THREE.OrbitControls( dashBoard.camera );
 		dashBoard.domEvents  = new THREEx.DomEvents(dashBoard.camera);
@@ -120,7 +116,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	    dashBoard.domEvents.bind(dashBoard.plane, 'mouseup', function(object3d){
 	      if(dashBoard.chartToDrag){
 	        dashBoard.controls.enabled=true;
-	        dashBoard.container.style.cursor = 'auto';
+	        dashBoard.rendererDOMelement.style.cursor = 'auto';
 	        if(dashBoard.SELECTED.isPanel) dashBoard.SELECTED.reBuild();
 	        dashBoard.SELECTED=null;
 	        dashBoard.chartToDrag=null;
@@ -176,6 +172,143 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 	return dashBoard;
 }
+
+THREEDC.dashBoard=function (sceneDIV) {
+
+// standard global variables
+var scene, camera, renderer;
+var dashBoard;
+
+init();
+animate();
+
+
+///////////////
+// FUNCTIONS //
+///////////////
+
+function init () {
+
+   ///////////
+   // SCENE //
+   ///////////
+   scene = new THREE.Scene();
+
+   ////////////
+   // CAMERA //
+   ////////////
+   // set the view size in pixels (custom or according to window size)
+   var SCREEN_WIDTH = window.innerWidth;
+   var SCREEN_HEIGHT = window.innerHeight;
+   // camera attributes
+   var VIEW_ANGLE = 45;
+   var ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
+   var NEAR = 0.1;
+   var FAR = 20000;
+      // set up camera
+   camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+   // add the camera to the scene
+   scene.add(camera);
+   // the camera defaults to position (0,0,0)
+   //    so pull it back (z = 400) and up (y = 100) and set the angle towards the scene origin
+   camera.position.set(0,150,400);
+   camera.lookAt(scene.position);
+
+   //////////////
+   // RENDERER //
+   //////////////
+   renderer = new THREE.WebGLRenderer( {antialias:true} );
+   renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+   renderer.setClearColor( 0xd8d8d8 );
+
+
+   sceneDIV.appendChild( renderer.domElement );
+
+    ////////////
+  // EVENTS //
+  ////////////
+
+
+  // automatically resize renderer
+  THREEx.WindowResize(renderer, camera);
+    // toggle full-screen on given key press
+  THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+
+   ///////////
+   // LIGHTS //
+   ///////////
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(0,2500,2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(0,2500,2500);
+  scene.add( lightbulb );
+  
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(-2500,2500,-2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(-2500,2500,-2500);
+  scene.add( lightbulb );
+
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(2500,2500,-2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(2500,2500,-2500);
+  scene.add( lightbulb );
+
+
+   var ambientLight = new THREE.AmbientLight(0x111111);
+   // scene.add(ambientLight);
+
+   // create a set of coordinate axes to help orient user
+   //    specify length in pixels in each direction
+   var axes = new THREE.AxisHelper(1000);
+   scene.add(axes);
+
+
+  dashBoard = THREEDC.addDashBoard(scene,renderer.domElement);
+
+}
+
+function animate()
+{
+   requestAnimationFrame( animate );
+   render();
+   update();
+}
+
+function render()
+{
+   renderer.render( scene, camera );
+}
+
+function update()
+{
+  dashBoard.controls.update();
+}
+
+	return dashBoard;
+}
+
+
+
 
 	//it creates a panel to put the charts which are related
 	THREEDC.Panel=function (coords,numberOfCharts,size,opacity,customEvents) {
@@ -301,7 +434,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 		dashBoard.domEvents.bind(panel, 'mousedown', function(object3d){
 			if(dashBoard.parameters.activate){
-				dashBoard.container.style.cursor = 'move';
+				dashBoard.rendererDOMelement.style.cursor = 'move';
 				dashBoard.controls.enabled=false;
 				dashBoard.SELECTED=panel;
 				dashBoard.chartToDrag=panel;
@@ -317,7 +450,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		dashBoard.domEvents.bind(panel, 'mouseup', function(object3d){
 	      if(dashBoard.chartToDrag){
 	        dashBoard.controls.enabled=true;
-	        dashBoard.container.style.cursor = 'auto';
+	        dashBoard.rendererDOMelement.style.cursor = 'auto';
 	        dashBoard.SELECTED=null;
 	        dashBoard.chartToDrag=null;
 	        dashBoard.plane.material.visible=false;
@@ -489,7 +622,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 				dashBoard.domEvents.bind(mesh, 'mousedown', function(object3d){
 					if(dashBoard.parameters.activate){
-						dashBoard.container.style.cursor = 'move';
+						dashBoard.rendererDOMelement.style.cursor = 'move';
 						dashBoard.controls.enabled=false;
 						dashBoard.SELECTED=mesh;
 						dashBoard.chartToDrag=_chart;
@@ -500,7 +633,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 					      dashBoard.offset.copy( intersects[ 0 ].point ).sub( dashBoard.plane.position );
 					    }
 					}else{
-						dashBoard.container.style.cursor = 'move';
+						dashBoard.rendererDOMelement.style.cursor = 'move';
 						dashBoard.controls.enabled=false;
 						dashBoard.intervalFilter[0]=mesh.data.key;
 					}
@@ -508,14 +641,14 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 				dashBoard.domEvents.bind(mesh, 'mouseup', function(object3d){
 					if(!dashBoard.parameters.activate){
-						dashBoard.container.style.cursor = 'auto';
+						dashBoard.rendererDOMelement.style.cursor = 'auto';
 						dashBoard.controls.enabled=true;
 						dashBoard.intervalFilter[1]=mesh.data.key;
 						addIntervalFilter();
 					}else{
 				      if(dashBoard.chartToDrag){
 				        dashBoard.controls.enabled=true;
-				        dashBoard.container.style.cursor = 'auto';
+				        dashBoard.rendererDOMelement.style.cursor = 'auto';
 				        dashBoard.SELECTED=null;
 				        dashBoard.chartToDrag=null;
 				        dashBoard.plane.material.visible=false;
