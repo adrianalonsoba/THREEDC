@@ -29,7 +29,7 @@ var json_data;
 
 // initialization
   //getJSON call, draw meshes with data
-   $.getJSON("../jsons/scm-commits.json", function(data) {
+   $.getJSON("../../jsons/scm-commits.json", function(data) {
       json_data=data;
       init();
       // animation loop / game loop
@@ -226,98 +226,17 @@ function init () {
 
 
 
-/*
-  var PIE= THREEDC.pieChart([0,0,0]);
 
-  PIE.data(data1);
-
-  var bars= THREEDC.barsChart([0,0,0]);
-
-  bars.data(data1).gridsOn();
-
-  var line= THREEDC.lineChart([-200,0,0]);
-
-  line.data(data1).gridsOn();
-
-  var curve = THREEDC.smoothCurveChart([200,0,0]);
-
-  curve.data(data1).gridsOn();
+   var data = [{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 },
+               { key: 'bla2', value: 5 }, { key: 'bla2', value: 38 }, { key: 'bla2', value: 200 }];
 
 
-    var TDBARS = THREEDC.TDbarsChart([400,0,0]);
+  var myPieChart= THREEDC.pieChart();
 
-TDBARS.data(data).gridsOn();
-
-
-  var curve = THREEDC.smoothCurveChart([200,0,0]);
-
-  curve.data(data1).gridsOn();
+  myPieChart.data(data);
 
 
-
-
-
-    var bub = THREEDC.bubbleChart([-400,0,0]);
-
-bub.data(data2).gridsOn();
-
-
-
-  dashBoard.addChart(PIE);
-  dashBoard.addChart(bars);
-  dashBoard.addChart(line);
-  dashBoard.addChart(curve);
-  dashBoard.addChart(TDBARS);
-   dashBoard.addChart(bub);
-
-*/
-
-
-
-  var bars1 =  THREEDC.barsChart([0,0,0]);
-  bars1.group(groupByOrg)
-      .dimension(dimByOrg)
-      .width(200)
-      .height(200)
-      .numberOfXLabels(7)
-      .gridsOn()
-      .depth(30)
-      .numberOfYLabels(4)
-      .color(0x00ffff);
-
-   var bars2 =  THREEDC.barsChart([100,0,100]);
-       bars2.group(groupByAuthor)
-      .dimension(dimByAuthor)
-      .gridsOn()
-      .width(200)
-      .height(200)
-      .numberOfXLabels(7)
-      .depth(30)
-      .color(0xff0000);
-
-
-    var line =  THREEDC.lineChart([300,100,200]);
-       line.group(groupByMonth)
-      .dimension(dimByMonth)
-      .width(400)
-      .numberOfXLabels(7)
-      .numberOfYLabels(5)
-      .gridsOn()
-      .depth(30)
-
-      .height(200)
-      .color(0x0000ff);
-
- dashBoard.addChart(bars1);
-  dashBoard.addChart(bars2);
-
- dashBoard.addChart(line);
- 
-
- var panel =THREEDC.Panel();
- 
- dashBoard.addPanel(panel);
-
+  dashBoard.addChart(myPieChart);
 
 
 }

@@ -10,8 +10,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	dashBoard.container=container;
 
 	dashBoard.version='0.1-b';
-	dashBoard.allCharts=[];
-	dashBoard.allPanels=[];
+	dashBoard.charts=[];
+	dashBoard.panels=[];
 	dashBoard.textLabel=null;
 	dashBoard.chartToDrag=null;
 	dashBoard.intervalFilter=[];
@@ -73,13 +73,42 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	dashBoard.plane.rotation.x = Math.PI / 2; //xz dashBoard.plane
 
 
-	dashBoard.addChart=function (chart) {
-		dashBoard.allCharts.push(chart);
+	//coords={x:x,y:y,z:z}
+	dashBoard.addChart=function (chart,coords) {
+
+		if (coords) {chart.coords=new THREE.Vector3( coords.x, coords.y, coords.z );};
+		dashBoard.charts.push(chart);
 		chart.build();
 		for (var i = 0; i < chart.parts.length; i++) {
 			dashBoard.scene.add(chart.parts[i]);
 		}
+
+		return dashBoard;
 	}
+																			
+	dashBoard.listCharts=function () {
+
+		return dashBoard.charts;
+
+	}
+
+
+	dashBoard.listPanels=function () {
+
+		return dashBoard.panel;
+		
+	}
+
+	dashBoard.addPanel=function (panel) {
+
+
+		dashBoard.panels.push(panel);
+
+	    dashBoard.scene.add(panel);
+
+		return dashBoard;
+	}
+
 
 
 
@@ -147,7 +176,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 }
 
 	//it creates a panel to put the charts which are related
-	THREEDC.addPanel=function (coords,numberOfCharts,size,opacity,customEvents) {
+	THREEDC.Panel=function (coords,numberOfCharts,size,opacity,customEvents) {
 
 
 	  coords = coords || [0,0,0];
@@ -264,9 +293,6 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	  	sceneCSS.remove(panel.iframe);
 	  }
 
-	  dashBoard.scene.add(panel);
-
-
 		if(customEvents){
 			customEvents(panel);
 		}
@@ -301,27 +327,27 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	}
 
 	THREEDC.renderAll=function() {
-		for (var i = 0; i < dashBoard.allCharts.length; i++) {
-			dashBoard.allCharts[i].render();
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+			dashBoard.charts[i].render();
 		};
 	}
 
 	THREEDC.removeAll=function() {
-		for (var i = 0; i < dashBoard.allCharts.length; i++) {
-	    	dashBoard.allCharts[i].removeEvents();
-	    	dashBoard.allCharts[i].removeLabels();
-	    	dashBoard.allCharts[i].removeGrids();
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+	    	dashBoard.charts[i].removeEvents();
+	    	dashBoard.charts[i].removeLabels();
+	    	dashBoard.charts[i].removeGrids();
 
-	    	for (var j = 0; j < dashBoard.allCharts[i].parts.length; j++) {
-	    		dashBoard.scene.remove(dashBoard.allCharts[i].parts[j]);
+	    	for (var j = 0; j < dashBoard.charts[i].parts.length; j++) {
+	    		dashBoard.scene.remove(dashBoard.charts[i].parts[j]);
 	    	};
 		};
-		dashBoard.allCharts=[];
+		dashBoard.charts=[];
 	}
 
 	THREEDC.removeEvents=function(){
-		for (var i = 0; i < dashBoard.allCharts.length; i++) {
-			dashBoard.allCharts[i].removeEvents();
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+			dashBoard.charts[i].removeEvents();
 		};
 	}
 
@@ -377,9 +403,9 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 	    	for (var i = 0; i < _chart.parts.length; i++) {
 	    		dashBoard.scene.remove(_chart.parts[i]);
 	    	};
-	    	var index = dashBoard.allCharts.indexOf(_chart);
+	    	var index = dashBoard.charts.indexOf(_chart);
 
-	    	dashBoard.allCharts.splice(index, 1);
+	    	dashBoard.charts.splice(index, 1);
 	    }
 
 	    /*rebuild the chart when a filter is added
@@ -498,8 +524,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 				console.log('click');
 				//_chart._dimension.filterAll();
 				_chart._dimension.filter(mesh.data.key);
-				for (var i = 0; i < dashBoard.allCharts.length; i++) {
-					dashBoard.allCharts[i].reBuild();
+				for (var i = 0; i < dashBoard.charts.length; i++) {
+					dashBoard.charts[i].reBuild();
 				};
 			}
 
@@ -511,8 +537,8 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 				}else{
 					_chart._dimension.filter(dashBoard.intervalFilter);
 				}
-				for (var i = 0; i < dashBoard.allCharts.length; i++) {
-					dashBoard.allCharts[i].reBuild();
+				for (var i = 0; i < dashBoard.charts.length; i++) {
+					dashBoard.charts[i].reBuild();
 				};
 			}
 
@@ -1719,7 +1745,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 	    // (0,1)> 1 no separation
 	    //
@@ -1796,7 +1822,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 		var _chart = dashBoard.baseMixin({});
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 		_chart.getPoints=function(points){
 			if(!points){
@@ -1864,7 +1890,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 		var _chart = dashBoard.baseMixin({});
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 		_chart.build = function() {
 
@@ -1932,7 +1958,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		_chart._size=10;
 		_chart._curveSegments=3;
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 	    _chart.size=function(number){
 	    	if(!arguments.length){
@@ -2010,9 +2036,6 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		_chart._color=0x0000ff;
 		_chart._depth=5;
 		_chart._opacity=0.8;
-
-		dashBoard.allCharts.push(_chart);
-
 
 		_chart.build = function() {
 
@@ -2124,8 +2147,6 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		}
 		_chart._color=0x0000ff;
 
-		dashBoard.allCharts.push(_chart);
-
 		var unsort_data;
 
 		_chart.build = function() {
@@ -2219,7 +2240,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 		_chart.getTopRadius=function() {
 			var topRadius;
@@ -2307,7 +2328,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 		var pi= Math.PI;
 
@@ -2470,7 +2491,7 @@ THREEDC.dashBoard=function (scene,renderer,container,sceneCSS) {
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
-		dashBoard.allCharts.push(_chart);
+		dashBoard.charts.push(_chart);
 
 	    _chart.equidistance=function(){
 	    	_chart._equidistance=true;
