@@ -1,5 +1,6 @@
 
 var THREEDC={version:'-'};
+'use strict';
 
 THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 
@@ -83,6 +84,15 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 
 		return dashBoard;
 	}
+
+
+	dashBoard.removeChart=function (chart) {
+		chart.remove();
+
+		return dashBoard;
+	}
+
+
 																			
 	dashBoard.listCharts=function () {
 
@@ -804,22 +814,22 @@ function update()
 	    }
 	    _chart.renderGrids=function(){
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		dashBoard.scene.add(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.xGrids[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		dashBoard.scene.add(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.yGrids[i]);
 	    	};
 	    }
 
 	    _chart.removeGrids=function() {
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		dashBoard.scene.remove(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.xGrids[i]);
 	    	};
 	    	_chart.xGrids=[];
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		dashBoard.scene.remove(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.yGrids[i]);
 	    	};
 	    	_chart.yGrids=[];
 	    }
@@ -971,22 +981,22 @@ function update()
 
 	    _chart.renderLabels=function(){
 	    	for (var i = 0; i < _chart.xLabels.length; i++) {
-	    		dashBoard.scene.add(_chart.xLabels[i]);
+	    		_chart.dashBoard.scene.add(_chart.xLabels[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yLabels.length; i++) {
-	    		dashBoard.scene.add(_chart.yLabels[i]);
+	    		_chart.dashBoard.scene.add(_chart.yLabels[i]);
 	    	};
 	    }
 
 	    _chart.removeLabels=function() {
 	    	for (var i = 0; i < _chart.xLabels.length; i++) {
-	    		dashBoard.scene.remove(_chart.xLabels[i]);
+	    		_chart.dashBoard.scene.remove(_chart.xLabels[i]);
 	    	};
 	    	_chart.xLabels=[];
 
 	    	for (var i = 0; i < _chart.yLabels.length; i++) {
-	    		dashBoard.scene.remove(_chart.yLabels[i]);
+	    		_chart.dashBoard.scene.remove(_chart.yLabels[i]);
 	    	};
 	    	_chart.yLabels=[];
 	    }
@@ -1386,23 +1396,23 @@ function update()
 	    }
 	    _chart.renderGrids=function(){
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		dashBoard.scene.add(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.xGrids[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		dashBoard.scene.add(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.yGrids[i]);
 	    	};
 	    }
 
 		//to fix
 	    _chart.removeGrids=function() {
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		dashBoard.scene.remove(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.xGrids[i]);
 	    	};
 	    	_chart.xGrids=[];
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		dashBoard.scene.remove(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.yGrids[i]);
 	    	};
 	    	_chart.yGrids=[];
 	    }
@@ -1599,13 +1609,13 @@ function update()
 
 	    _chart.renderLabels=function(){
 	    	for (var i = 0; i < _chart.labels.length; i++) {
-	    		dashBoard.scene.add(_chart.labels[i]);
+	    		_chart.dashBoard.scene.add(_chart.labels[i]);
 	    	};
 	    }
 
 	    _chart.removeLabels=function() {
 	    	for (var i = 0; i < _chart.labels.length; i++) {
-	    		dashBoard.scene.remove(_chart.labels[i]);
+	    		_chart.dashBoard.scene.remove(_chart.labels[i]);
 	    	};
 	    	_chart.labels=[];
 	    }
