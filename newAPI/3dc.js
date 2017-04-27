@@ -107,12 +107,24 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 		
 	}
 
-	dashBoard.addPanel=function (panel) {
+	dashBoard.addPanel=function (panel,coords) {
 
-
+		if (coords) {panel.coords=new THREE.Vector3( coords.x, coords.y, coords.z );};
+		panel.dashBoard=dashBoard;
+		panel.addEvents();
+		panel.makeAnchorPoints();
 		dashBoard.panels.push(panel);
-
 	    dashBoard.scene.add(panel);
+		return dashBoard;
+	}
+
+
+
+	dashBoard.removePanel=function (panel) {
+
+
+
+		panel.remove();
 
 		return dashBoard;
 	}
@@ -321,11 +333,10 @@ function update()
 
 
 	//it creates a panel to put the charts which are related
-	THREEDC.Panel=function (coords,numberOfCharts,size,opacity,customEvents) {
+	//grid->{numberOfRows:number,numberOfColumns:number}
+	THREEDC.Panel=function (grid,size,opacity,customEvents) {
 
-
-	  coords = coords || [0,0,0];
-	  numberOfCharts = numberOfCharts || 4;
+	  grid = grid || {numberOfRows:2,numberOfColumns:2};
 	  opacity = opacity || 0.3;
 
 	  var xSize;
@@ -350,12 +361,14 @@ function update()
 	    } );
 
 	  var panel = new THREE.Mesh(geometry, material);
-	  panel.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
+	  panel.coords=new THREE.Vector3( 0, 0, 0 );
 	  panel.charts=[];
+	  panel.isPanel=true;
+
 
 	  panel.makeAnchorPoints =function() {
 	   	panel.anchorPoints=[];
-	  	var numberOfAnchorPoints=numberOfCharts;
+	  	var numberOfAnchorPoints=grid.numberOfRows*grid.numberOfColumns;
 
 	  	if(numberOfAnchorPoints===4){
 			panel.anchorPoints[0]={filled:false,
@@ -387,9 +400,8 @@ function update()
 
 	  }
 
-	  panel.makeAnchorPoints();
-	  panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
-	  panel.isPanel=true;
+	  //panel.makeAnchorPoints();
+	  //panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
 
 	  panel.reBuild=function() {
 	  	panel.makeAnchorPoints();
@@ -399,7 +411,8 @@ function update()
 	  }
 
 	  panel.remove=function() {
-	  	dashBoard.scene.remove(panel);
+	  	//may remove events?
+	  	panel.dashBoard.scene.remove(panel);
 	  	for (var i = 0; i < panel.charts.length; i++) {
 	  		panel.charts[i].remove();
 	  	};
@@ -438,35 +451,39 @@ function update()
 	  	sceneCSS.remove(panel.iframe);
 	  }
 
+	  panel.addEvents=function() {
+
 		if(customEvents){
 			customEvents(panel);
 		}
 
-		dashBoard.domEvents.bind(panel, 'mousedown', function(object3d){
-			if(dashBoard.parameters.activate){
-				dashBoard.rendererDOMelement.style.cursor = 'move';
-				dashBoard.controls.enabled=false;
-				dashBoard.SELECTED=panel;
-				dashBoard.chartToDrag=panel;
-			    dashBoard.plane.position.copy( panel.position );
-			    dashBoard.raycaster.setFromCamera( dashBoard.mouse, dashBoard.camera );
-			    var intersects = dashBoard.raycaster.intersectObject( dashBoard.plane );
+		panel.dashBoard.domEvents.bind(panel, 'mousedown', function(object3d){
+			if(panel.dashBoard.parameters.activate){
+				panel.dashBoard.rendererDOMelement.style.cursor = 'move';
+				panel.dashBoard.controls.enabled=false;
+				panel.dashBoard.SELECTED=panel;
+				panel.dashBoard.chartToDrag=panel;
+			    panel.dashBoard.plane.position.copy( panel.position );
+			    panel.dashBoard.raycaster.setFromCamera( panel.dashBoard.mouse, panel.dashBoard.camera );
+			    var intersects = panel.dashBoard.raycaster.intersectObject( panel.dashBoard.plane );
 			    if ( intersects.length > 0 ) {
-			      dashBoard.offset.copy( intersects[ 0 ].point ).sub( dashBoard.plane.position );
+			      panel.dashBoard.offset.copy( intersects[ 0 ].point ).sub( panel.dashBoard.plane.position );
 			    }
 			}
 		});
 
-		dashBoard.domEvents.bind(panel, 'mouseup', function(object3d){
-	      if(dashBoard.chartToDrag){
-	        dashBoard.controls.enabled=true;
-	        dashBoard.rendererDOMelement.style.cursor = 'auto';
-	        dashBoard.SELECTED=null;
-	        dashBoard.chartToDrag=null;
-	        dashBoard.plane.material.visible=false;
+		panel.dashBoard.domEvents.bind(panel, 'mouseup', function(object3d){
+	      if(panel.dashBoard.chartToDrag){
+	        panel.dashBoard.controls.enabled=true;
+	        panel.dashBoard.rendererDOMelement.style.cursor = 'auto';
+	        panel.dashBoard.SELECTED=null;
+	        panel.dashBoard.chartToDrag=null;
+	        panel.dashBoard.plane.material.visible=false;
 	        panel.reBuild();
 	      }
 		});
+
+	  }
 
 	  return panel;
 	}
