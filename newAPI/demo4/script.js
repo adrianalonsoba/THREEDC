@@ -63,14 +63,26 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 	  myDashBoard.addChart(myPieChart);
 
 
-	var line =  THREEDC.lineChart();
-	line.group(groupByMonth)
+	var bars =  THREEDC.barsChart();
+	bars.group(groupByMonth)
 	.dimension(dimByMonth)
-	.width(400)
+	.width(250)
 	.numberOfXLabels(5)
 	.numberOfYLabels(5)
 	.gridsOn()
-	.height(150)
+	.height(250)
+	.depth(20)
+	.color(0xff0000);
+
+
+	var line =  THREEDC.smoothCurveChart();
+	line.group(groupByMonth)
+	.dimension(dimByMonth)
+	.width(250)
+	.numberOfXLabels(5)
+	.numberOfYLabels(5)
+	.gridsOn()
+	.height(250)
 	.depth(20)
 	.color(0xff0000);
 
@@ -82,15 +94,20 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 
 	//myDashBoard.addChart(pie,{x:-100,y:0,z:0});
 
-	//myDashBoard.addChart(line,{x:50,y:0,z:0});
+	//myDashBoard.addChart(bars,{x:50,y:0,z:0});
 
 
-	var panel= THREEDC.Panel({numberOfRows:3,numberOfColumns:1},[100,50],1);
+	var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:2});
 
-	myDashBoard.addPanel(panel);
-	myDashBoard.removePanel(panel);
+	myDashBoard.addPanel(panel,{x:100,y:0,z:0});
 
-	console.log(123);
+	panel.addChart(bars);
+
+	panel.addChart(line);
+
+	//myDashBoard.removePanel(panel);
+
+	console.log(myDashBoard);
 
 
 });

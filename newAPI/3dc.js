@@ -103,7 +103,7 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 
 	dashBoard.listPanels=function () {
 
-		return dashBoard.panel;
+		return dashBoard.panels;
 		
 	}
 
@@ -114,23 +114,22 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 		panel.addEvents();
 		panel.makeAnchorPoints();
 		dashBoard.panels.push(panel);
+		panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
 	    dashBoard.scene.add(panel);
 		return dashBoard;
 	}
 
 
-
 	dashBoard.removePanel=function (panel) {
 
+    	var index = dashBoard.panels.indexOf(panel);
 
+    	dashBoard.panels.splice(index, 1);
 
 		panel.remove();
 
 		return dashBoard;
 	}
-
-
-
 
 	dashBoard.dragTrigger=function () {
 	  if(dashBoard.parameters.activate){
@@ -447,9 +446,26 @@ function update()
 
 	  }
 
-	  panel.removeIframe=function() {
-	  	sceneCSS.remove(panel.iframe);
+	  panel.addChart=function(chart,gridPosition) {
+
+		for (var i = 0; i < panel.anchorPoints.length; i++) {
+			if(!panel.anchorPoints[i].filled){
+				chart.coords=panel.anchorPoints[i].coords;
+				panel.anchorPoints[i].filled=true;
+				panel.charts.push(chart);
+				chart.panel=panel;
+				break;
+			}
+		};
+
+		panel.dashBoard.addChart(chart,new THREE.Vector3( chart.coords.x, chart.coords.y, chart.coords.z ));
+
+		return panel;
+
 	  }
+
+
+
 
 	  panel.addEvents=function() {
 
@@ -1656,22 +1672,8 @@ function update()
 		_chart._opacity=0.8;
 		var _data;
 
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					_chart.coords.x=_chart.coords.x+_chart._width;
-					_chart.coords.y=_chart.coords.y+_chart._height;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
-
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		
 		_chart.radius=function(radius){
 			_radius=radius;
 			_chart._width=radius;
@@ -1794,20 +1796,7 @@ function update()
 			//by default
 		_chart._depth=5;
 		_chart._opacity=0.8;
-
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
 		_chart.build = function() {
@@ -2185,19 +2174,9 @@ function update()
 		}
 
 		var _chart = THREEDC.baseMixin({});
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		
 		//by default
 		_chart._color=0x0000ff;
 		_chart._depth=5;
@@ -2298,19 +2277,9 @@ function update()
 		}
 
 		var _chart = THREEDC.baseMixin({});
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		
 		_chart._color=0x0000ff;
 
 		var unsort_data;
