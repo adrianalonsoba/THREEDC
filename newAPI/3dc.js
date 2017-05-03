@@ -338,18 +338,18 @@ function update()
 	  grid = grid || {numberOfRows:2,numberOfColumns:2};
 	  opacity = opacity || 0.3;
 
-	  var xSize;
-	  var ySize;
+	  var width;
+	  var height;
 
 		if(size){
-			xSize=size[0];
-			ySize=size[1];
+			width=size[0];
+			height=size[1];
 		}else{
-			xSize=500;
-			ySize=500;
+			width=500;
+			height=500;
 		}
 
-	  var geometry = new THREE.CubeGeometry( xSize, ySize, 2);
+	  var geometry = new THREE.CubeGeometry( width, height, 2);
 	  var material = new THREE.MeshPhongMaterial( {
 	  											   //color:0xff00ff,
 	                                               specular: 0x999999,
@@ -365,42 +365,28 @@ function update()
 	  panel.isPanel=true;
 
 
-	  panel.makeAnchorPoints =function() {
+	  panel.makeAnchorPoints=function() {
 	   	panel.anchorPoints=[];
 	  	var numberOfAnchorPoints=grid.numberOfRows*grid.numberOfColumns;
+	  	var auxPosition =new THREE.Vector3( panel.coords.x-width/2, panel.coords.y-height/2, panel.coords.z );
+	  	var auxInitialPosition=new THREE.Vector3( panel.coords.x-width/2, panel.coords.y-height/2, panel.coords.z );
+	  	var stepX=width/grid.numberOfColumns;
+	  	var stepY=height/grid.numberOfRows;
 
-	  	if(numberOfAnchorPoints===4){
-			panel.anchorPoints[0]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[1]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[2]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-			panel.anchorPoints[3]={filled:false,
-				                   coords:new THREE.Vector3( panel.coords.x,panel.coords.y, panel.coords.z )};
-	  	}
+	  	for (var i = 1; i < grid.numberOfRows+1; i++) {
+	  		for (var j = 1; j < grid.numberOfColumns+1; j++) {
+	  			panel.anchorPoints.push({filled:false,
+								  		 coords:new THREE.Vector3(auxPosition.x,auxPosition.y,auxPosition.z),
+								   		 row:i,
+								         column:j});
 
-	   	if(numberOfAnchorPoints===3){
-			panel.anchorPoints[0]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[1]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[2]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-	  	}
-
-	   	if(numberOfAnchorPoints===2){
-			panel.anchorPoints[0]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[1]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-	  	}
-
+	  			auxPosition.x+=stepX;
+	  		};
+	  		auxPosition.x=auxInitialPosition.x;
+	  		auxPosition.y+=stepY;
+	  	};
 
 	  }
-
-	  //panel.makeAnchorPoints();
-	  //panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
 
 	  panel.reBuild=function() {
 	  	panel.makeAnchorPoints();
@@ -425,7 +411,7 @@ function update()
 		// width of iframe in pixels
 		var elementWidth = 1024;
 		// force iframe to have same relative dimensions as planeGeometry
-		var aspectRatio = ySize / xSize;
+		var aspectRatio = height / width;
 		var elementHeight = elementWidth * aspectRatio;
 		element.style.width  = elementWidth + "px";
 		element.style.height = elementHeight + "px";
@@ -437,8 +423,8 @@ function update()
 		cssObject.rotation.copy(panel.rotation);
 		// resize cssObject to same size as planeMesh (plus a border)
 		var percentBorder = 0.1;
-		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / xSize);
-		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / xSize);
+		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / width);
+		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / width);
 		sceneCSS.add(cssObject);
 		panel.iframe=cssObject;
 	  	
@@ -446,17 +432,37 @@ function update()
 
 	  }
 
+	  //gridPosition=> {row:number,column:number}
 	  panel.addChart=function(chart,gridPosition) {
 
-		for (var i = 0; i < panel.anchorPoints.length; i++) {
-			if(!panel.anchorPoints[i].filled){
+	  	if(!gridPosition){
+	  		console.log('grid position needed (row and column)');
+	  		return;
+	  	}
+
+  		for (var i = 0; i < panel.anchorPoints.length; i++) {
+  			console.log(panel.anchorPoints[i]);
+  			console.log(gridPosition);
+
+  			
+  			if (panel.anchorPoints[i].row===gridPosition.row&&
+				panel.anchorPoints[i].column===gridPosition.column&&
+  				panel.anchorPoints[i].filled===false) {
+
+				panel.anchorPoints[i].filled===true;
 				chart.coords=panel.anchorPoints[i].coords;
 				panel.anchorPoints[i].filled=true;
 				panel.charts.push(chart);
 				chart.panel=panel;
 				break;
-			}
-		};
+
+  			}else{
+  				console.log('invalid or filled grid position');
+  				return;
+  			};
+
+  		};
+
 
 		panel.dashBoard.addChart(chart,new THREE.Vector3( chart.coords.x, chart.coords.y, chart.coords.z ));
 

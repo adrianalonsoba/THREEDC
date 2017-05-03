@@ -99,15 +99,20 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 
 	var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:2});
 
-	myDashBoard.addPanel(panel,{x:100,y:0,z:0});
+	myDashBoard.addPanel(panel,{x:0,y:0,z:0});
 
-	panel.addChart(bars);
+	panel.addChart(bars,{row:1,column:2});
 
-	panel.addChart(line);
+	//panel.addChart(line);
 
 	//myDashBoard.removePanel(panel);
 
 	console.log(myDashBoard);
+
+
+	  	for (var i = 0; i < panel.anchorPoints.length; i++) {
+	  		console.log(panel.anchorPoints[i]);
+	  	};
 
 
 });
