@@ -66,11 +66,11 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 	var bars =  THREEDC.barsChart();
 	bars.group(groupByMonth)
 	.dimension(dimByMonth)
-	.width(250)
+	.width(200)
 	.numberOfXLabels(5)
 	.numberOfYLabels(5)
 	.gridsOn()
-	.height(250)
+	.height(200)
 	.depth(20)
 	.color(0xff0000);
 
@@ -78,11 +78,11 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 	var line =  THREEDC.smoothCurveChart();
 	line.group(groupByMonth)
 	.dimension(dimByMonth)
-	.width(250)
+	.width(200)
 	.numberOfXLabels(5)
 	.numberOfYLabels(5)
 	.gridsOn()
-	.height(250)
+	.height(200)
 	.depth(20)
 	.color(0xff0000);
 
@@ -101,18 +101,32 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 
 	myDashBoard.addPanel(panel,{x:0,y:0,z:0});
 
-	panel.addChart(bars,{row:1,column:2});
+	panel.addChart(bars,{row:2,column:1});
+
+	panel.addChart(pie,{row:2,column:1});
 
 	//panel.addChart(line);
 
 	//myDashBoard.removePanel(panel);
+	
 
-	console.log(myDashBoard);
+
+	var imagePrefix = "../../examples/Three.js/images/dawnmountain-";
+	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+	var imageSuffix = ".png";
+	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );	
+	
+	var materialArray = [];
+	for (var i = 0; i < 6; i++)
+		materialArray.push( new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+			side: THREE.BackSide
+		}));
+	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+	myDashBoard.scene.add( skyBox );
 
 
-	  	for (var i = 0; i < panel.anchorPoints.length; i++) {
-	  		console.log(panel.anchorPoints[i]);
-	  	};
 
 
 });

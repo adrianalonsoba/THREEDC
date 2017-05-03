@@ -440,29 +440,29 @@ function update()
 	  		return;
 	  	}
 
-  		for (var i = 0; i < panel.anchorPoints.length; i++) {
-  			console.log(panel.anchorPoints[i]);
-  			console.log(gridPosition);
+	  	var pointFound=false;
 
-  			
-  			if (panel.anchorPoints[i].row===gridPosition.row&&
-				panel.anchorPoints[i].column===gridPosition.column&&
-  				panel.anchorPoints[i].filled===false) {
+  		for (var i = 0; i < panel.anchorPoints.length; i++) {
+  			if(panel.anchorPoints[i].row===gridPosition.row&&
+			   panel.anchorPoints[i].column===gridPosition.column&&
+  			   panel.anchorPoints[i].filled===false) {
 
 				panel.anchorPoints[i].filled===true;
 				chart.coords=panel.anchorPoints[i].coords;
 				panel.anchorPoints[i].filled=true;
 				panel.charts.push(chart);
 				chart.panel=panel;
+				chart.panelPosition={row:panel.anchorPoints[i].row,column:panel.anchorPoints[i].column};
+				pointFound=true;
 				break;
-
-  			}else{
-  				console.log('invalid or filled grid position');
-  				return;
-  			};
+  			}
 
   		};
 
+  		if(!pointFound){
+			console.log('invalid or filled grid position');
+			return;
+  		}
 
 		panel.dashBoard.addChart(chart,new THREE.Vector3( chart.coords.x, chart.coords.y, chart.coords.z ));
 
