@@ -75,7 +75,7 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 	.color(0xff0000);
 
 
-	var line =  THREEDC.smoothCurveChart();
+	var line =  THREEDC.lineChart();
 	line.group(groupByMonth)
 	.dimension(dimByMonth)
 	.width(200)
@@ -84,7 +84,7 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 	.gridsOn()
 	.height(200)
 	.depth(20)
-	.color(0xff0000);
+	.color(0xff00ff);
 
 	var pie =  THREEDC.pieChart();
 	pie.group(groupByOrg)
@@ -101,9 +101,9 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 
 	myDashBoard.addPanel(panel,{x:0,y:0,z:0});
 
-	panel.addChart(bars,{row:2,column:1});
+	panel.addChart(bars,{row:1,column:1});
 
-	panel.addChart(pie,{row:2,column:1});
+	panel.addChart(line,{row:2,column:1});
 
 	//panel.addChart(line);
 

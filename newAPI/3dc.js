@@ -360,6 +360,8 @@ function update()
 	    } );
 
 	  var panel = new THREE.Mesh(geometry, material);
+	  panel.dimensions=[width,height];
+	  panel.opacity=opacity;
 	  panel.coords=new THREE.Vector3( 0, 0, 0 );
 	  panel.charts=[];
 	  panel.isPanel=true;
