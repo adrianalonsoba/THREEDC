@@ -365,7 +365,7 @@ function update()
 			height=500;
 		}
 
-	  var geometry = new THREE.CubeGeometry( width, height, 2);
+	  var geometry = new THREE.CubeGeometry( width, height, 0.01);
 	  var material = new THREE.MeshPhongMaterial( {
 	  											   //color:0xff00ff,
 	                                               specular: 0x999999,
@@ -377,6 +377,7 @@ function update()
 
 	  var panel = new THREE.Mesh(geometry, material);
 	  panel.dimensions=[width,height];
+	  panel.grid=grid;
 	  panel.opacity=opacity;
 	  panel.coords=new THREE.Vector3( 0, 0, 0 );
 	  panel.charts=[];
@@ -1899,19 +1900,7 @@ function update()
 
 		var _chart = THREEDC.threeDMixin({});
 
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
 		//add to 3Dmixin when added
 		_chart.labels=[];
@@ -2378,20 +2367,8 @@ function update()
 		var _chart = THREEDC.threeDMixin({});
 
 
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
 
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 			//by default
 		_chart._depth=100;
 		_chart._opacity=0.8;

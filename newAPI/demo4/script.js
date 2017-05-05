@@ -105,13 +105,41 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 
 	panel.addChart(line,{row:2,column:1});
 
-	myDashBoard.removeAllCharts();
-
 	//panel.addChart(line);
 
 	//myDashBoard.removePanel(panel);
-	
 
+
+  var data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
+
+            {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:89},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
+
+            {key1:'january',key2:'microsoft',value:10},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:4},{key1:'april',key2:'microsoft',value:12},
+
+            {key1:'january',key2:'sony',value:56},{key1:'february',key2:'sony',value:21},{key1:'march',key2:'sony',value:23},{key1:'april',key2:'sony',value:12}
+  ];
+
+      //4Ddata without CF
+
+  var data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
+
+            {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50},
+
+            {key1:'january',key2:'sony',value:34,value2:Math.random()*50},{key1:'february',key2:'sony',value:89,value2:Math.random()*50},{key1:'march',key2:'sony',value:53,value2:Math.random()*50},{key1:'april',key2:'sony',value:76,value2:Math.random()*50}
+
+ 
+  ];
+
+
+	  var bubbles= THREEDC.TDbarsChart();
+
+  bubbles.data(data)
+         .width(200)
+         .height(200)
+         .gridsOn()
+         .depth(250);
+
+panel.addChart(bubbles,{row:1,column:2});
 
 	var imagePrefix = "../../examples/Three.js/images/dawnmountain-";
 	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
