@@ -93,6 +93,22 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 	}
 
 
+	dashBoard.removeAllCharts=function() {
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+	    	dashBoard.charts[i].removeEvents();
+	    	dashBoard.charts[i].removeLabels();
+	    	dashBoard.charts[i].removeGrids();
+
+	    	for (var j = 0; j < dashBoard.charts[i].parts.length; j++) {
+	    		dashBoard.scene.remove(dashBoard.charts[i].parts[j]);
+	    	};
+		};
+		dashBoard.charts=[];
+
+		return dashBoard;
+	}
+
+
 																			
 	dashBoard.listCharts=function () {
 
@@ -253,7 +269,7 @@ function init () {
   // automatically resize renderer
   THREEx.WindowResize(renderer, camera);
     // toggle full-screen on given key press
-  THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+ // THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
 
    ///////////
    // LIGHTS //
@@ -1908,7 +1924,7 @@ function update()
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		dashBoard.charts.push(_chart);
+		
 
 	    // (0,1)> 1 no separation
 	    //
@@ -1985,7 +2001,7 @@ function update()
 
 		var _chart = dashBoard.baseMixin({});
 
-		dashBoard.charts.push(_chart);
+		
 
 		_chart.getPoints=function(points){
 			if(!points){
@@ -2053,7 +2069,7 @@ function update()
 
 		var _chart = dashBoard.baseMixin({});
 
-		dashBoard.charts.push(_chart);
+		
 
 		_chart.build = function() {
 
@@ -2121,7 +2137,7 @@ function update()
 		_chart._size=10;
 		_chart._curveSegments=3;
 
-		dashBoard.charts.push(_chart);
+		
 
 	    _chart.size=function(number){
 	    	if(!arguments.length){
@@ -2383,7 +2399,7 @@ function update()
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		dashBoard.charts.push(_chart);
+		
 
 		_chart.getTopRadius=function() {
 			var topRadius;
@@ -2471,7 +2487,7 @@ function update()
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
-		dashBoard.charts.push(_chart);
+		
 
 		var pi= Math.PI;
 

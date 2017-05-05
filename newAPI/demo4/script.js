@@ -105,6 +105,8 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 
 	panel.addChart(line,{row:2,column:1});
 
+	myDashBoard.removeAllCharts();
+
 	//panel.addChart(line);
 
 	//myDashBoard.removePanel(panel);
