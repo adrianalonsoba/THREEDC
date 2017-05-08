@@ -92,7 +92,6 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 		return dashBoard;
 	}
 
-
 	dashBoard.removeAllCharts=function() {
 		for (var i = 0; i < dashBoard.charts.length; i++) {
 	    	dashBoard.charts[i].removeEvents();
@@ -1686,12 +1685,12 @@ function update()
 	   if(location===undefined){
 	   	location=[0,0,0];
 	   }
-		//by default
-		var _radius=50;
 
 		var _chart = THREEDC.baseMixin({});
-		_chart._width=_radius;
-		_chart._height=_radius;
+				//by default
+		_chart._radius=50;
+		_chart._width=_chart._radius;
+		_chart._height=_chart._radius;
 		//by default
 		_chart._depth=5;
 		_chart._opacity=0.8;
@@ -1700,7 +1699,8 @@ function update()
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		
 		_chart.radius=function(radius){
-			_radius=radius;
+			_chart._radius=radius;
+			_chart._radius=radius;
 			_chart._width=radius;
 			_chart._height=radius;
 			return _chart;
@@ -1779,11 +1779,11 @@ function update()
 	                                               	 		opacity:_chart._opacity,
 	                                           				transparent: true
 	            } );
-	             // Creats the shape, based on the value and the _radius
+	             // Creats the shape, based on the value and the _chart._radius
 				var shape = new THREE.Shape();
 				var angToMove = (Math.PI*2*(_data[i].value/valTotal));
 				shape.moveTo(0,0);
-				shape.arc(0,0,_radius,angPrev,
+				shape.arc(0,0,_chart._radius,angPrev,
 				        angPrev+angToMove,false);
 				shape.lineTo(0,0);
 				var nextAng = angPrev + angToMove;
@@ -1793,7 +1793,7 @@ function update()
 				piePart.material.color.setHex(origin_color);
 				piePart.origin_color=origin_color;
 				//piePart.rotation.set(0,0,0);
-				piePart.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z);
+				piePart.position.set(_chart.coords.x+_chart._radius,_chart.coords.y+_chart._radius,_chart.coords.z);
 				piePart.name ="key:"+_data[i].key+" value:"+_data[i].value;
 				piePart.data={
 					key:_data[i].key,

@@ -90,9 +90,8 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
 	pie.group(groupByOrg)
 	  .dimension(dimByOrg)
 	  .depth(20)
-	  .radius(50);
+	  .radius(125);
 
-	//myDashBoard.addChart(pie,{x:-100,y:0,z:0});
 
 	//myDashBoard.addChart(bars,{x:50,y:0,z:0});
 
@@ -139,7 +138,7 @@ $.getJSON("../../jsons/scm-commits.json", function(data) {
          .gridsOn()
          .depth(250);
 
-panel.addChart(bubbles,{row:1,column:2});
+panel.addChart(pie,{row:1,column:2});
 
 	var imagePrefix = "../../examples/Three.js/images/dawnmountain-";
 	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
