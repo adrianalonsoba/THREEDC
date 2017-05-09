@@ -312,15 +312,17 @@ function init () {
 
   var root=generateRandomTree(30000);
 
-  dash=THREEDC(scene,renderer,container);
+  dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
 
-var panel =dash.addPanel([0,0,0],3,[200,200],0.7,test_function);
+//var panel =dash.addPanel([0,0,0],3,[200,200],0.7,test_function);
 
-  var pie= dash.pieChart(panel);
+  var pie= THREEDC.pieChart();
 
   pie.group(groupByOrg).id(434355354)
          .dimension(groupByMonth);
+
+dash.addChart(pie);
 
 
 function test_function (panel) {
@@ -344,7 +346,6 @@ function test_function (panel) {
  // var bars= dash.barsChart([0,0,0]);
   //bars.group(groupByRepo);
 
-  dash.renderAll();
 
 
 

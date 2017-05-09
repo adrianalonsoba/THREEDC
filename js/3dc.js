@@ -1,32 +1,30 @@
 
-function THREEDC (scene,renderer,container,sceneCSS) {
+var THREEDC={version:'-'};
+'use strict';
 
-	var _THREEDC={};
+THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 
-
-	_THREEDC.scene=scene;
-	_THREEDC.renderer=renderer;
-	_THREEDC.container=container;
-
-	_THREEDC.version='0.1-b';
-	_THREEDC.allCharts=[];
-	_THREEDC.allPanels=[];
-	_THREEDC.textLabel=null;
-	_THREEDC.chartToDrag=null;
-	_THREEDC.intervalFilter=[];
-	_THREEDC.raycaster = new THREE.Raycaster();
-	_THREEDC.mouse = new THREE.Vector2();
-	_THREEDC.offset = new THREE.Vector3();
-	_THREEDC.paint=true;
+	var dashBoard={};
+	dashBoard.scene=scene;
+	dashBoard.rendererDOMelement=rendererDOMelement;
+	dashBoard.charts=[];
+	dashBoard.panels=[];
+	dashBoard.textLabel=null;
+	dashBoard.chartToDrag=null;
+	dashBoard.intervalFilter=[];
+	dashBoard.raycaster = new THREE.Raycaster();
+	dashBoard.mouse = new THREE.Vector2();
+	dashBoard.offset = new THREE.Vector3();
+	dashBoard.paint=true;
 
 	//get camera from scene
 	for (var i = 0; i < scene.children.length; i++) {
 		if(scene.children[i] instanceof THREE.Camera){
-			_THREEDC.camera=scene.children[i];
+			dashBoard.camera=scene.children[i];
 		}
 	}
 
-	if(_THREEDC.camera===undefined){console.log('You must add a camera to your scene');return;};
+	if(dashBoard.camera===undefined){console.log('You must add a camera to your scene');return;};
 
 	   //////////////
    // CONTROLS //
@@ -36,61 +34,337 @@ function THREEDC (scene,renderer,container,sceneCSS) {
    //                 middle click to zoom,
    //                 right  click to pan
    if(!sceneCSS){
- 		_THREEDC.controls = new THREE.OrbitControls( _THREEDC.camera, _THREEDC.renderer.domElement );
-		_THREEDC.domEvents  = new THREEx.DomEvents(_THREEDC.camera, _THREEDC.renderer.domElement);
+ 		dashBoard.controls = new THREE.OrbitControls( dashBoard.camera, dashBoard.rendererDOMelement);
+		dashBoard.domEvents  = new THREEx.DomEvents(dashBoard.camera, dashBoard.rendererDOMelement);
    }else{
-		_THREEDC.controls = new THREE.OrbitControls( _THREEDC.camera );
-		_THREEDC.domEvents  = new THREEx.DomEvents(_THREEDC.camera);
+		dashBoard.controls = new THREE.OrbitControls( dashBoard.camera );
+		dashBoard.domEvents  = new THREEx.DomEvents(dashBoard.camera);
    }
-    _THREEDC.controls.enableDamping = true;
-	_THREEDC.controls.dampingFactor = 0.25;
+    dashBoard.controls.enableDamping = true;
+	dashBoard.controls.dampingFactor = 0.25;
 
 	//a little graphical interface//
-	_THREEDC.gui = new dat.GUI();
+	dashBoard.gui = new dat.GUI();
 
-	_THREEDC.parameters =
+	dashBoard.parameters =
 	{
 		plane:"XZ",
 		activate:false,
 		activateFilter:false
 	};
 
-	var folder1 = _THREEDC.gui.addFolder('Drag');
-	var activateDrag = folder1.add( _THREEDC.parameters, 'activate' ).name('On/Off').listen();
+	var folder1 = dashBoard.gui.addFolder('Drag');
+	var activateDrag = folder1.add( dashBoard.parameters, 'activate' ).name('On/Off').listen();
 	activateDrag.onChange(function(value)
-	{ _THREEDC.dragTrigger(); });
-	var dragChange = folder1.add( _THREEDC.parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
+	{ dashBoard.dragTrigger(); });
+	var dragChange = folder1.add( dashBoard.parameters, 'plane', [ "XZ", "XY" ] ).name('Plane').listen();
 	dragChange.onChange(function(value)
-	{   _THREEDC.changePlane();   });
+	{   dashBoard.changePlane();   });
 	folder1.close();
-	_THREEDC.gui.close();
+	dashBoard.gui.close();
 
-	_THREEDC.plane = new THREE.Mesh(
+	dashBoard.plane = new THREE.Mesh(
 		new THREE.PlaneBufferGeometry( 2000, 2000, 8, 8 ),
 		new THREE.MeshBasicMaterial( { transparent:true,opacity:0.5,side: THREE.DoubleSide,visible: false } )
 	);
-	_THREEDC.plane.rotation.x = Math.PI / 2; //xz _THREEDC.plane
-
-	//it creates a panel to put the charts which are related
-	_THREEDC.addPanel=function (coords,numberOfCharts,size,opacity,customEvents) {
+	dashBoard.plane.rotation.x = Math.PI / 2; //xz dashBoard.plane
 
 
-	  coords = coords || [0,0,0];
-	  numberOfCharts = numberOfCharts || 4;
-	  opacity = opacity || 0.3;
+	//coords={x:x,y:y,z:z}
+	dashBoard.addChart=function (chart,coords) {
 
-	  var xSize;
-	  var ySize;
-
-		if(size){
-			xSize=size[0];
-			ySize=size[1];
-		}else{
-			xSize=500;
-			ySize=500;
+		chart.parent=dashBoard;
+		chart.dashBoard=dashBoard;
+		if (coords) {chart.coords=new THREE.Vector3( coords.x, coords.y, coords.z );};
+		dashBoard.charts.push(chart);
+		chart.build();
+		for (var i = 0; i < chart.parts.length; i++) {
+			dashBoard.scene.add(chart.parts[i]);
 		}
 
-	  var geometry = new THREE.CubeGeometry( xSize, ySize, 2);
+		return dashBoard;
+	}
+
+
+	dashBoard.removeChart=function (chart) {
+		chart.remove();
+
+		return dashBoard;
+	}
+
+	dashBoard.removeAllCharts=function() {
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+	    	dashBoard.charts[i].removeEvents();
+	    	dashBoard.charts[i].removeLabels();
+	    	dashBoard.charts[i].removeGrids();
+
+	    	for (var j = 0; j < dashBoard.charts[i].parts.length; j++) {
+	    		dashBoard.scene.remove(dashBoard.charts[i].parts[j]);
+	    	};
+		};
+		dashBoard.charts=[];
+
+		return dashBoard;
+	}
+
+
+																			
+	dashBoard.listCharts=function () {
+
+		return dashBoard.charts;
+
+	}
+
+
+	dashBoard.listPanels=function () {
+
+		return dashBoard.panels;
+		
+	}
+
+	dashBoard.addPanel=function (panel,coords) {
+
+		if (coords) {panel.coords=new THREE.Vector3( coords.x, coords.y, coords.z );};
+		panel.dashBoard=dashBoard;
+		panel.addEvents();
+		panel.makeAnchorPoints();
+		dashBoard.panels.push(panel);
+		panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
+	    dashBoard.scene.add(panel);
+		return dashBoard;
+	}
+
+
+	dashBoard.removePanel=function (panel) {
+
+    	var index = dashBoard.panels.indexOf(panel);
+
+    	dashBoard.panels.splice(index, 1);
+
+		panel.remove();
+
+		return dashBoard;
+	}
+
+	dashBoard.dragTrigger=function () {
+	  if(dashBoard.parameters.activate){
+	    dashBoard.scene.add( dashBoard.plane );
+	    dashBoard.domEvents.bind(dashBoard.plane, 'mouseup', function(object3d){
+	      if(dashBoard.chartToDrag){
+	        dashBoard.controls.enabled=true;
+	        dashBoard.rendererDOMelement.style.cursor = 'auto';
+	        if(dashBoard.SELECTED.isPanel) dashBoard.SELECTED.reBuild();
+	        dashBoard.SELECTED=null;
+	        dashBoard.chartToDrag=null;
+	        dashBoard.plane.material.visible=false;
+	      }
+	    });
+	    window.addEventListener( 'mousemove', dashBoard.onMouseMove, false );
+	  }else{
+	    window.removeEventListener( 'mousemove', dashBoard.onMouseMove, false );
+	    dashBoard.scene.remove( dashBoard.plane );
+	    dashBoard.domEvents.unbind(dashBoard.plane, 'mouseup');
+	  }
+	}
+
+
+
+	dashBoard.changePlane =function() {
+	  if (dashBoard.parameters.plane==='XY'){
+	    dashBoard.plane.rotation.set(0,0,0); //xy dashBoard.plane
+	  }else if(dashBoard.parameters.plane==='XZ'){
+	    dashBoard.plane.rotation.x = Math.PI / 2; //xz dashBoard.plane
+	  }
+	}
+
+	dashBoard.onMouseMove=function( event ) {
+
+	  // calculate dashBoard.mouse position in normalized device coordinates
+	  // (-1 to +1) for both components
+
+
+	  dashBoard.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	  dashBoard.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
+	  dashBoard.raycaster.setFromCamera( dashBoard.mouse, dashBoard.camera );
+
+	  if(dashBoard.SELECTED){
+	    dashBoard.plane.material.visible=true;
+	    var intersects = dashBoard.raycaster.intersectObject( dashBoard.plane );
+	    if ( intersects.length > 0 ) {
+	      if(dashBoard.SELECTED.isPanel){
+	        dashBoard.SELECTED.position.copy(intersects[ 0 ].point.sub( dashBoard.offset ));
+	        if(dashBoard.SELECTED.iframe) dashBoard.SELECTED.iframe.position.copy(dashBoard.SELECTED.position);
+	        dashBoard.SELECTED.coords.copy( dashBoard.SELECTED.position);
+	      }else{
+	        dashBoard.chartToDrag.coords.copy(intersects[ 0 ].point.sub( dashBoard.offset ));
+	        if(dashBoard.paint) dashBoard.chartToDrag.reBuild();
+	        !dashBoard.paint;
+	      }
+	    }
+	    return;
+	  }
+	}
+
+	return dashBoard;
+}
+
+THREEDC.dashBoard=function (sceneDIV) {
+
+// standard global variables
+var scene, camera, renderer;
+var dashBoard;
+
+init();
+animate();
+
+
+///////////////
+// FUNCTIONS //
+///////////////
+
+function init () {
+
+   ///////////
+   // SCENE //
+   ///////////
+   scene = new THREE.Scene();
+
+   ////////////
+   // CAMERA //
+   ////////////
+   // set the view size in pixels (custom or according to window size)
+   var SCREEN_WIDTH = window.innerWidth;
+   var SCREEN_HEIGHT = window.innerHeight;
+   // camera attributes
+   var VIEW_ANGLE = 45;
+   var ASPECT = SCREEN_WIDTH / SCREEN_HEIGHT;
+   var NEAR = 0.1;
+   var FAR = 20000;
+      // set up camera
+   camera = new THREE.PerspectiveCamera( VIEW_ANGLE, ASPECT, NEAR, FAR);
+   // add the camera to the scene
+   scene.add(camera);
+   // the camera defaults to position (0,0,0)
+   //    so pull it back (z = 400) and up (y = 100) and set the angle towards the scene origin
+   camera.position.set(0,150,400);
+   camera.lookAt(scene.position);
+
+   //////////////
+   // RENDERER //
+   //////////////
+   renderer = new THREE.WebGLRenderer( {antialias:true} );
+   renderer.setSize(SCREEN_WIDTH, SCREEN_HEIGHT);
+   renderer.setClearColor( 0xd8d8d8 );
+
+
+   sceneDIV.appendChild( renderer.domElement );
+
+    ////////////
+  // EVENTS //
+  ////////////
+
+
+  // automatically resize renderer
+  THREEx.WindowResize(renderer, camera);
+    // toggle full-screen on given key press
+ // THREEx.FullScreen.bindKey({ charCode : 'm'.charCodeAt(0) });
+
+   ///////////
+   // LIGHTS //
+   ///////////
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(0,2500,2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(0,2500,2500);
+  scene.add( lightbulb );
+  
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(-2500,2500,-2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(-2500,2500,-2500);
+  scene.add( lightbulb );
+
+   var light = new THREE.PointLight(0xffffff,0.8);
+   light.position.set(2500,2500,-2500);
+   scene.add(light);
+
+  // create a small sphere to show position of light
+  var lightbulb = new THREE.Mesh( 
+    new THREE.SphereGeometry( 100, 16, 8 ), 
+    new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+  );
+  lightbulb.position.set(2500,2500,-2500);
+  scene.add( lightbulb );
+
+
+   var ambientLight = new THREE.AmbientLight(0x111111);
+   // scene.add(ambientLight);
+
+   // create a set of coordinate axes to help orient user
+   //    specify length in pixels in each direction
+   var axes = new THREE.AxisHelper(1000);
+   scene.add(axes);
+
+
+  dashBoard = THREEDC.addDashBoard(scene,renderer.domElement);
+
+}
+
+function animate()
+{
+   requestAnimationFrame( animate );
+   render();
+   update();
+}
+
+function render()
+{
+   renderer.render( scene, camera );
+}
+
+function update()
+{
+  dashBoard.controls.update();
+}
+
+	return dashBoard;
+}
+
+
+
+
+	//it creates a panel to put the charts which are related
+	//grid->{numberOfRows:number,numberOfColumns:number}
+	THREEDC.Panel=function (grid,size,opacity,customEvents) {
+
+	  grid = grid || {numberOfRows:2,numberOfColumns:2};
+	  opacity = opacity || 0.3;
+
+	  var width;
+	  var height;
+
+		if(size){
+			width=size[0];
+			height=size[1];
+		}else{
+			width=500;
+			height=500;
+		}
+
+	  var geometry = new THREE.CubeGeometry( width, height, 0.01);
 	  var material = new THREE.MeshPhongMaterial( {
 	  											   //color:0xff00ff,
 	                                               specular: 0x999999,
@@ -101,46 +375,36 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    } );
 
 	  var panel = new THREE.Mesh(geometry, material);
-	  panel.coords=new THREE.Vector3( coords[0], coords[1], coords[2] );
+	  panel.dimensions=[width,height];
+	  panel.grid=grid;
+	  panel.opacity=opacity;
+	  panel.coords=new THREE.Vector3( 0, 0, 0 );
 	  panel.charts=[];
+	  panel.isPanel=true;
 
-	  panel.makeAnchorPoints =function() {
+
+	  panel.makeAnchorPoints=function() {
 	   	panel.anchorPoints=[];
-	  	var numberOfAnchorPoints=numberOfCharts;
+	  	var numberOfAnchorPoints=grid.numberOfRows*grid.numberOfColumns;
+	  	var auxPosition =new THREE.Vector3( panel.coords.x-width/2, panel.coords.y-height/2, panel.coords.z );
+	  	var auxInitialPosition=new THREE.Vector3( panel.coords.x-width/2, panel.coords.y-height/2, panel.coords.z );
+	  	var stepX=width/grid.numberOfColumns;
+	  	var stepY=height/grid.numberOfRows;
 
-	  	if(numberOfAnchorPoints===4){
-			panel.anchorPoints[0]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[1]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[2]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-			panel.anchorPoints[3]={filled:false,
-				                   coords:new THREE.Vector3( panel.coords.x,panel.coords.y, panel.coords.z )};
-	  	}
+	  	for (var i = 1; i < grid.numberOfRows+1; i++) {
+	  		for (var j = 1; j < grid.numberOfColumns+1; j++) {
+	  			panel.anchorPoints.push({filled:false,
+								  		 coords:new THREE.Vector3(auxPosition.x,auxPosition.y,auxPosition.z),
+								   		 row:i,
+								         column:j});
 
-	   	if(numberOfAnchorPoints===3){
-			panel.anchorPoints[0]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[1]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[2]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-	  	}
-
-	   	if(numberOfAnchorPoints===2){
-			panel.anchorPoints[0]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y-ySize/2, panel.coords.z )};
-			panel.anchorPoints[1]={filled:false,
-								   coords:new THREE.Vector3( panel.coords.x-xSize/2, panel.coords.y, panel.coords.z )};
-	  	}
-
+	  			auxPosition.x+=stepX;
+	  		};
+	  		auxPosition.x=auxInitialPosition.x;
+	  		auxPosition.y+=stepY;
+	  	};
 
 	  }
-
-	  panel.makeAnchorPoints();
-	  panel.position.set(panel.coords.x,panel.coords.y,panel.coords.z);
-	  panel.isPanel=true;
 
 	  panel.reBuild=function() {
 	  	panel.makeAnchorPoints();
@@ -150,7 +414,8 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	  }
 
 	  panel.remove=function() {
-	  	_THREEDC.scene.remove(panel);
+	  	//may remove events?
+	  	panel.dashBoard.scene.remove(panel);
 	  	for (var i = 0; i < panel.charts.length; i++) {
 	  		panel.charts[i].remove();
 	  	};
@@ -164,7 +429,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		// width of iframe in pixels
 		var elementWidth = 1024;
 		// force iframe to have same relative dimensions as planeGeometry
-		var aspectRatio = ySize / xSize;
+		var aspectRatio = height / width;
 		var elementHeight = elementWidth * aspectRatio;
 		element.style.width  = elementWidth + "px";
 		element.style.height = elementHeight + "px";
@@ -176,8 +441,8 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		cssObject.rotation.copy(panel.rotation);
 		// resize cssObject to same size as planeMesh (plus a border)
 		var percentBorder = 0.1;
-		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / xSize);
-		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / xSize);
+		cssObject.scale.x /= (1 + percentBorder) * (elementWidth / width);
+		cssObject.scale.y /= (1 + percentBorder) * (elementWidth / width);
 		sceneCSS.add(cssObject);
 		panel.iframe=cssObject;
 	  	
@@ -185,73 +450,111 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	  }
 
-	  panel.removeIframe=function() {
-	  	sceneCSS.remove(panel.iframe);
+	  //gridPosition=> {row:number,column:number}
+	  panel.addChart=function(chart,gridPosition) {
+
+	  	if(!gridPosition){
+	  		console.log('grid position needed (row and column)');
+	  		return;
+	  	}
+
+	  	var pointFound=false;
+
+  		for (var i = 0; i < panel.anchorPoints.length; i++) {
+  			if(panel.anchorPoints[i].row===gridPosition.row&&
+			   panel.anchorPoints[i].column===gridPosition.column&&
+  			   panel.anchorPoints[i].filled===false) {
+
+				panel.anchorPoints[i].filled===true;
+				chart.coords=panel.anchorPoints[i].coords;
+				panel.anchorPoints[i].filled=true;
+				panel.charts.push(chart);
+				chart.panel=panel;
+				chart.panelPosition={row:panel.anchorPoints[i].row,column:panel.anchorPoints[i].column};
+				pointFound=true;
+				break;
+  			}
+
+  		};
+
+  		if(!pointFound){
+			console.log('invalid or filled grid position');
+			return;
+  		}
+
+		panel.dashBoard.addChart(chart,new THREE.Vector3( chart.coords.x, chart.coords.y, chart.coords.z ));
+
+		return panel;
+
 	  }
 
-	  _THREEDC.scene.add(panel);
 
+
+
+	  panel.addEvents=function() {
 
 		if(customEvents){
 			customEvents(panel);
 		}
 
-		_THREEDC.domEvents.bind(panel, 'mousedown', function(object3d){
-			if(_THREEDC.parameters.activate){
-				_THREEDC.container.style.cursor = 'move';
-				_THREEDC.controls.enabled=false;
-				_THREEDC.SELECTED=panel;
-				_THREEDC.chartToDrag=panel;
-			    _THREEDC.plane.position.copy( panel.position );
-			    _THREEDC.raycaster.setFromCamera( _THREEDC.mouse, _THREEDC.camera );
-			    var intersects = _THREEDC.raycaster.intersectObject( _THREEDC.plane );
+		panel.dashBoard.domEvents.bind(panel, 'mousedown', function(object3d){
+			if(panel.dashBoard.parameters.activate){
+				panel.dashBoard.rendererDOMelement.style.cursor = 'move';
+				panel.dashBoard.controls.enabled=false;
+				panel.dashBoard.SELECTED=panel;
+				panel.dashBoard.chartToDrag=panel;
+			    panel.dashBoard.plane.position.copy( panel.position );
+			    panel.dashBoard.raycaster.setFromCamera( panel.dashBoard.mouse, panel.dashBoard.camera );
+			    var intersects = panel.dashBoard.raycaster.intersectObject( panel.dashBoard.plane );
 			    if ( intersects.length > 0 ) {
-			      _THREEDC.offset.copy( intersects[ 0 ].point ).sub( _THREEDC.plane.position );
+			      panel.dashBoard.offset.copy( intersects[ 0 ].point ).sub( panel.dashBoard.plane.position );
 			    }
 			}
 		});
 
-		_THREEDC.domEvents.bind(panel, 'mouseup', function(object3d){
-	      if(_THREEDC.chartToDrag){
-	        _THREEDC.controls.enabled=true;
-	        _THREEDC.container.style.cursor = 'auto';
-	        _THREEDC.SELECTED=null;
-	        _THREEDC.chartToDrag=null;
-	        _THREEDC.plane.material.visible=false;
+		panel.dashBoard.domEvents.bind(panel, 'mouseup', function(object3d){
+	      if(panel.dashBoard.chartToDrag){
+	        panel.dashBoard.controls.enabled=true;
+	        panel.dashBoard.rendererDOMelement.style.cursor = 'auto';
+	        panel.dashBoard.SELECTED=null;
+	        panel.dashBoard.chartToDrag=null;
+	        panel.dashBoard.plane.material.visible=false;
 	        panel.reBuild();
 	      }
 		});
 
+	  }
+
 	  return panel;
 	}
 
-	_THREEDC.renderAll=function() {
-		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
-			_THREEDC.allCharts[i].render();
+	THREEDC.renderAll=function() {
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+			dashBoard.charts[i].render();
 		};
 	}
 
-	_THREEDC.removeAll=function() {
-		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
-	    	_THREEDC.allCharts[i].removeEvents();
-	    	_THREEDC.allCharts[i].removeLabels();
-	    	_THREEDC.allCharts[i].removeGrids();
+	THREEDC.removeAll=function() {
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+	    	dashBoard.charts[i].removeEvents();
+	    	dashBoard.charts[i].removeLabels();
+	    	dashBoard.charts[i].removeGrids();
 
-	    	for (var j = 0; j < _THREEDC.allCharts[i].parts.length; j++) {
-	    		_THREEDC.scene.remove(_THREEDC.allCharts[i].parts[j]);
+	    	for (var j = 0; j < dashBoard.charts[i].parts.length; j++) {
+	    		dashBoard.scene.remove(dashBoard.charts[i].parts[j]);
 	    	};
 		};
-		_THREEDC.allCharts=[];
+		dashBoard.charts=[];
 	}
 
-	_THREEDC.removeEvents=function(){
-		for (var i = 0; i < _THREEDC.allCharts.length; i++) {
-			_THREEDC.allCharts[i].removeEvents();
+	THREEDC.removeEvents=function(){
+		for (var i = 0; i < dashBoard.charts.length; i++) {
+			dashBoard.charts[i].removeEvents();
 		};
 	}
 
 	//The spherical coordinates of a point in the ISO convention (radius r, inclination theta, azimuth phi) can be obtained from its Cartesian coordinates (x, y, z)
-	_THREEDC.cartesianToSpherical=function (x,y,z) {
+	THREEDC.cartesianToSpherical=function (x,y,z) {
 		var r=Math.sqrt(Math.pow(x,2)+Math.pow(y,2)+Math.pow(z,2)) ;
 		var theta=Math.acos(z/r);
 		var phi=Math.atan(y/x);
@@ -260,7 +563,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	 }
 
 	//Conversely, the Cartesian coordinates may be retrieved from the spherical coordinates (radius r, inclination theta, azimuth phi), where r ∈ [0, ∞), theta ∈ [0, π], phi ∈ [0, 2π), by:
-	_THREEDC.sphericalToCartesian= function  (r,theta,phi) {
+	THREEDC.sphericalToCartesian= function  (r,theta,phi) {
 		var x=r*Math.sin(theta)*Math.cos(phi);
 		var y=r*Math.sin(theta)*Math.sin(phi);
 		var z=r*Math.cos(theta);
@@ -273,7 +576,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	/*base object whose methods are inherited for each implementation
 	* the properties of a chart are given by a function chain
 	*/
-	_THREEDC.baseMixin = function (_chart) {
+	THREEDC.baseMixin = function (_chart) {
 		_chart={parts:[],
 				xLabels:[],
 				yLabels:[],
@@ -290,7 +593,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    	//defined by each implementation
 	    	_chart.build();
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		_THREEDC.scene.add(_chart.parts[i]);
+	    		_chart.dashBoard.scene.add(_chart.parts[i]);
 	    	};
 	    }
 
@@ -300,22 +603,23 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    	_chart.removeGrids();
 
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		_THREEDC.scene.remove(_chart.parts[i]);
+	    		_chart.dashBoard.scene.remove(_chart.parts[i]);
 	    	};
-	    	var index = _THREEDC.allCharts.indexOf(_chart);
+	    	var index = _chart.dashBoard.charts.indexOf(_chart);
 
-	    	_THREEDC.allCharts.splice(index, 1);
+	    	_chart.dashBoard.charts.splice(index, 1);
 	    }
 
 	    /*rebuild the chart when a filter is added
 	    * or a chart is moved
 	    */
 	    _chart.reBuild=function(){
+
 	     	_chart.removeEvents();
 	     	_chart.removeLabels();
 	     	_chart.removeGrids();
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		_THREEDC.scene.remove(_chart.parts[i]);
+	    		_chart.dashBoard.scene.remove(_chart.parts[i]);
 	    	};
 	    	_chart.parts=[];
 	    	if(_chart.panel){
@@ -333,6 +637,8 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	    _chart.addEvents=function(){
 
+	    	var dashBoard=_chart.dashBoard;
+
 	    	//custom events
 	    	if(_chart._addCustomEvents){
 		    	for (var i = 0; i < _chart.parts.length; i++) {
@@ -349,12 +655,12 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	    	function addInfoEvents (mesh) {
 				//adds mouseover events
-				_THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){
+				dashBoard.domEvents.bind(mesh, 'mouseover', function(object3d){
 					changeMeshColor(mesh);
 					showInfo(mesh);
 				});
 
-				_THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){
+				dashBoard.domEvents.bind(mesh, 'mouseout', function(object3d){
 					//restores the original color
 					if(mesh.type!='Line'){
 						mesh.material.emissive.setHex(mesh.currentHex);
@@ -365,54 +671,54 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 			function addEvents (mesh) {
 
 				//adds mouseover events
-				_THREEDC.domEvents.bind(mesh, 'mouseover', function(object3d){
+				dashBoard.domEvents.bind(mesh, 'mouseover', function(object3d){
 					changeMeshColor(mesh);
 					showInfo(mesh);
 				});
 
-				_THREEDC.domEvents.bind(mesh, 'mouseout', function(object3d){
+				dashBoard.domEvents.bind(mesh, 'mouseout', function(object3d){
 					//restores the original color
 					if(mesh.type!='Line'){
 						mesh.material.emissive.setHex(mesh.currentHex);
 					}
 				});
 
-				//_THREEDC.domEvents.bind(mesh, 'click', function(object3d){
+				//dashBoard.domEvents.bind(mesh, 'click', function(object3d){
 				//	addFilter(mesh);
 				//});
 
-				_THREEDC.domEvents.bind(mesh, 'mousedown', function(object3d){
-					if(_THREEDC.parameters.activate){
-						_THREEDC.container.style.cursor = 'move';
-						_THREEDC.controls.enabled=false;
-						_THREEDC.SELECTED=mesh;
-						_THREEDC.chartToDrag=_chart;
-					    _THREEDC.plane.position.copy( mesh.position );
-					    _THREEDC.raycaster.setFromCamera( _THREEDC.mouse, _THREEDC.camera );
-					    var intersects = _THREEDC.raycaster.intersectObject( _THREEDC.plane );
+				dashBoard.domEvents.bind(mesh, 'mousedown', function(object3d){
+					if(dashBoard.parameters.activate){
+						dashBoard.rendererDOMelement.style.cursor = 'move';
+						dashBoard.controls.enabled=false;
+						dashBoard.SELECTED=mesh;
+						dashBoard.chartToDrag=_chart;
+					    dashBoard.plane.position.copy( mesh.position );
+					    dashBoard.raycaster.setFromCamera( dashBoard.mouse, dashBoard.camera );
+					    var intersects = dashBoard.raycaster.intersectObject( dashBoard.plane );
 					    if ( intersects.length > 0 ) {
-					      _THREEDC.offset.copy( intersects[ 0 ].point ).sub( _THREEDC.plane.position );
+					      dashBoard.offset.copy( intersects[ 0 ].point ).sub( dashBoard.plane.position );
 					    }
 					}else{
-						_THREEDC.container.style.cursor = 'move';
-						_THREEDC.controls.enabled=false;
-						_THREEDC.intervalFilter[0]=mesh.data.key;
+						dashBoard.rendererDOMelement.style.cursor = 'move';
+						dashBoard.controls.enabled=false;
+						dashBoard.intervalFilter[0]=mesh.data.key;
 					}
 				});
 
-				_THREEDC.domEvents.bind(mesh, 'mouseup', function(object3d){
-					if(!_THREEDC.parameters.activate){
-						_THREEDC.container.style.cursor = 'auto';
-						_THREEDC.controls.enabled=true;
-						_THREEDC.intervalFilter[1]=mesh.data.key;
+				dashBoard.domEvents.bind(mesh, 'mouseup', function(object3d){
+					if(!dashBoard.parameters.activate){
+						dashBoard.rendererDOMelement.style.cursor = 'auto';
+						dashBoard.controls.enabled=true;
+						dashBoard.intervalFilter[1]=mesh.data.key;
 						addIntervalFilter();
 					}else{
-				      if(_THREEDC.chartToDrag){
-				        _THREEDC.controls.enabled=true;
-				        _THREEDC.container.style.cursor = 'auto';
-				        _THREEDC.SELECTED=null;
-				        _THREEDC.chartToDrag=null;
-				        _THREEDC.plane.material.visible=false;
+				      if(dashBoard.chartToDrag){
+				        dashBoard.controls.enabled=true;
+				        dashBoard.rendererDOMelement.style.cursor = 'auto';
+				        dashBoard.SELECTED=null;
+				        dashBoard.chartToDrag=null;
+				        dashBoard.plane.material.visible=false;
 				      }
 					}
 				});
@@ -423,27 +729,27 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 				console.log('click');
 				//_chart._dimension.filterAll();
 				_chart._dimension.filter(mesh.data.key);
-				for (var i = 0; i < _THREEDC.allCharts.length; i++) {
-					_THREEDC.allCharts[i].reBuild();
+				for (var i = 0; i < dashBoard.charts.length; i++) {
+					dashBoard.charts[i].reBuild();
 				};
 			}
 
 			function addIntervalFilter () {
 				console.log('mouseup');
 				//_chart._dimension.filterAll();
-				if(_THREEDC.intervalFilter[0]===_THREEDC.intervalFilter[1]){
-					_chart._dimension.filter(_THREEDC.intervalFilter[0]);
+				if(dashBoard.intervalFilter[0]===dashBoard.intervalFilter[1]){
+					_chart._dimension.filter(dashBoard.intervalFilter[0]);
 				}else{
-					_chart._dimension.filter(_THREEDC.intervalFilter);
+					_chart._dimension.filter(dashBoard.intervalFilter);
 				}
-				for (var i = 0; i < _THREEDC.allCharts.length; i++) {
-					_THREEDC.allCharts[i].reBuild();
+				for (var i = 0; i < dashBoard.charts.length; i++) {
+					dashBoard.charts[i].reBuild();
 				};
 			}
 
 			//creates a 3D text label
 			function showInfo (mesh) {
-				  _THREEDC.scene.remove(_THREEDC.textLabel);
+				  dashBoard.scene.remove(dashBoard.textLabel);
 			      var txt = mesh.name;
 			      var curveSeg = 3;
 			      var material = new THREE.MeshPhongMaterial( {color:mesh.origin_color,
@@ -460,13 +766,13 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 			        style: "normal",
 			        bevelEnabled: false
 			      });
-			      // Positions the text and adds it to the _THREEDC.scene
-			      _THREEDC.textLabel = new THREE.Mesh( geometry, material );
-			      _THREEDC.textLabel.position.z = mesh.position.z;
-			      _THREEDC.textLabel.position.x = mesh.position.x;
-			      _THREEDC.textLabel.position.y = _chart._height+10+_chart.coords.y;
+			      // Positions the text and adds it to the dashBoard.scene
+			      dashBoard.textLabel = new THREE.Mesh( geometry, material );
+			      dashBoard.textLabel.position.z = mesh.position.z;
+			      dashBoard.textLabel.position.x = mesh.position.x;
+			      dashBoard.textLabel.position.y = _chart._height+10+_chart.coords.y;
 			      //textLabel.rotation.set(3*Math.PI/2,0,0);
-			      _THREEDC.scene.add(_THREEDC.textLabel);
+			      dashBoard.scene.add(dashBoard.textLabel);
 			}
 
 			function changeMeshColor (mesh) {
@@ -478,6 +784,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    }
 
 	    _chart.removeEvents=function(){
+	    	var dashBoard=_chart.dashBoard;
 
 	    	for (var i = 0; i < _chart.parts.length; i++) {
 	    		removeEvents(_chart.parts[i]);
@@ -485,11 +792,11 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 			function removeEvents(mesh){
 				//removes mouseover events
-				_THREEDC.domEvents.unbind(mesh, 'mouseover');
-				_THREEDC.domEvents.unbind(mesh, 'mouseout');
-				//_THREEDC.domEvents.unbind(mesh, 'click');
-				_THREEDC.domEvents.unbind(mesh, 'mousedown');
-				_THREEDC.domEvents.unbind(mesh, 'mouseup');
+				dashBoard.domEvents.unbind(mesh, 'mouseover');
+				dashBoard.domEvents.unbind(mesh, 'mouseout');
+				//dashBoard.domEvents.unbind(mesh, 'click');
+				dashBoard.domEvents.unbind(mesh, 'mousedown');
+				dashBoard.domEvents.unbind(mesh, 'mouseup');
 			}
 	    }
 
@@ -564,22 +871,22 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    }
 	    _chart.renderGrids=function(){
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		_THREEDC.scene.add(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.xGrids[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		_THREEDC.scene.add(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.yGrids[i]);
 	    	};
 	    }
 
 	    _chart.removeGrids=function() {
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		_THREEDC.scene.remove(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.xGrids[i]);
 	    	};
 	    	_chart.xGrids=[];
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		_THREEDC.scene.remove(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.yGrids[i]);
 	    	};
 	    	_chart.yGrids=[];
 	    }
@@ -692,7 +999,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 			        style: "normal",
 			        bevelEnabled: false
 			      });
-			      // Positions the text and adds it to the _THREEDC.scene
+			      // Positions the text and adds it to the dashBoard.scene
 			      var label = new THREE.Mesh( geometry, material );
 			      label.position.z = _chart.coords.z;
 			      label.position.x = _chart.coords.x-maxYLabelWidth-15;
@@ -719,7 +1026,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 			        style: "normal",
 			        bevelEnabled: false
 			      });
-			      // Positions the text and adds it to the _THREEDC.scene
+			      // Positions the text and adds it to the dashBoard.scene
 			      var label = new THREE.Mesh( geometry, material );
 			      label.position.z = _chart.coords.z;
 			      label.position.x = _chart.coords.x+step;
@@ -731,22 +1038,22 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	    _chart.renderLabels=function(){
 	    	for (var i = 0; i < _chart.xLabels.length; i++) {
-	    		_THREEDC.scene.add(_chart.xLabels[i]);
+	    		_chart.dashBoard.scene.add(_chart.xLabels[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yLabels.length; i++) {
-	    		_THREEDC.scene.add(_chart.yLabels[i]);
+	    		_chart.dashBoard.scene.add(_chart.yLabels[i]);
 	    	};
 	    }
 
 	    _chart.removeLabels=function() {
 	    	for (var i = 0; i < _chart.xLabels.length; i++) {
-	    		_THREEDC.scene.remove(_chart.xLabels[i]);
+	    		_chart.dashBoard.scene.remove(_chart.xLabels[i]);
 	    	};
 	    	_chart.xLabels=[];
 
 	    	for (var i = 0; i < _chart.yLabels.length; i++) {
-	    		_THREEDC.scene.remove(_chart.yLabels[i]);
+	    		_chart.dashBoard.scene.remove(_chart.yLabels[i]);
 	    	};
 	    	_chart.yLabels=[];
 	    }
@@ -922,9 +1229,9 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	}
 
-	_THREEDC.threeDMixin = function (_chart) {
+	THREEDC.threeDMixin = function (_chart) {
 
-		_chart = _THREEDC.baseMixin(_chart);
+		_chart = THREEDC.baseMixin(_chart);
 		_chart.labels=[];
 
 	    _chart.groupOne=function(group){
@@ -1146,23 +1453,23 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    }
 	    _chart.renderGrids=function(){
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		_THREEDC.scene.add(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.xGrids[i]);
 	    	};
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		_THREEDC.scene.add(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.add(_chart.yGrids[i]);
 	    	};
 	    }
 
 		//to fix
 	    _chart.removeGrids=function() {
 	    	for (var i = 0; i < _chart.xGrids.length; i++) {
-	    		_THREEDC.scene.remove(_chart.xGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.xGrids[i]);
 	    	};
 	    	_chart.xGrids=[];
 
 	    	for (var i = 0; i < _chart.yGrids.length; i++) {
-	    		_THREEDC.scene.remove(_chart.yGrids[i]);
+	    		_chart.dashBoard.scene.remove(_chart.yGrids[i]);
 	    	};
 	    	_chart.yGrids=[];
 	    }
@@ -1218,7 +1525,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 				        style: "normal",
 				        bevelEnabled: false
 				      });
-				      // Positions the text and adds it to the _THREEDC.scene
+				      // Positions the text and adds it to the dashBoard.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z;
 				      label.position.x = _chart.coords.x-maxYLabelWidth-_chart._width*0.05;
@@ -1258,7 +1565,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 				        style: "normal",
 				        bevelEnabled: false
 				      });
-				      // Positions the text and adds it to the _THREEDC.scene
+				      // Positions the text and adds it to the dashBoard.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z+step;
 				      label.position.x = _chart.coords.x-maxZLabelWidth-_chart._width*0.05;
@@ -1298,7 +1605,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 				        style: "normal",
 				        bevelEnabled: false
 				      });
-				      // Positions the text and adds it to the _THREEDC.scene
+				      // Positions the text and adds it to the dashBoard.scene
 				      var label = new THREE.Mesh( geometry, material );
 				      label.position.z = _chart.coords.z+_chart._depth+_chart._depth*0.05;
 				      label.position.x = _chart.coords.x+step;
@@ -1359,13 +1666,13 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	    _chart.renderLabels=function(){
 	    	for (var i = 0; i < _chart.labels.length; i++) {
-	    		_THREEDC.scene.add(_chart.labels[i]);
+	    		_chart.dashBoard.scene.add(_chart.labels[i]);
 	    	};
 	    }
 
 	    _chart.removeLabels=function() {
 	    	for (var i = 0; i < _chart.labels.length; i++) {
-	    		_THREEDC.scene.remove(_chart.labels[i]);
+	    		_chart.dashBoard.scene.remove(_chart.labels[i]);
 	    	};
 	    	_chart.labels=[];
 	    }
@@ -1373,42 +1680,27 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	}
 
-	_THREEDC.pieChart = function (location) {
+	THREEDC.pieChart = function (location) {
 
 	   if(location===undefined){
 	   	location=[0,0,0];
 	   }
-		//by default
-		var _radius=50;
 
-		var _chart = _THREEDC.baseMixin({});
-		_chart._width=_radius;
-		_chart._height=_radius;
+		var _chart = THREEDC.baseMixin({});
+				//by default
+		_chart._radius=50;
+		_chart._width=_chart._radius;
+		_chart._height=_chart._radius;
 		//by default
 		_chart._depth=5;
 		_chart._opacity=0.8;
 		var _data;
 
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					_chart.coords.x=_chart.coords.x+_chart._width;
-					_chart.coords.y=_chart.coords.y+_chart._height;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
-
-		_THREEDC.allCharts.push(_chart);
-
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		
 		_chart.radius=function(radius){
-			_radius=radius;
+			_chart._radius=radius;
+			_chart._radius=radius;
 			_chart._width=radius;
 			_chart._height=radius;
 			return _chart;
@@ -1487,11 +1779,11 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	                                               	 		opacity:_chart._opacity,
 	                                           				transparent: true
 	            } );
-	             // Creats the shape, based on the value and the _radius
+	             // Creats the shape, based on the value and the _chart._radius
 				var shape = new THREE.Shape();
 				var angToMove = (Math.PI*2*(_data[i].value/valTotal));
 				shape.moveTo(0,0);
-				shape.arc(0,0,_radius,angPrev,
+				shape.arc(0,0,_chart._radius,angPrev,
 				        angPrev+angToMove,false);
 				shape.lineTo(0,0);
 				var nextAng = angPrev + angToMove;
@@ -1501,7 +1793,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 				piePart.material.color.setHex(origin_color);
 				piePart.origin_color=origin_color;
 				//piePart.rotation.set(0,0,0);
-				piePart.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z);
+				piePart.position.set(_chart.coords.x+_chart._radius,_chart.coords.y+_chart._radius,_chart.coords.z);
 				piePart.name ="key:"+_data[i].key+" value:"+_data[i].value;
 				piePart.data={
 					key:_data[i].key,
@@ -1518,34 +1810,19 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	_THREEDC.barsChart = function (location){
+	THREEDC.barsChart = function (location){
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.baseMixin({});
+		var _chart = THREEDC.baseMixin({});
 
 			//by default
 		_chart._depth=5;
 		_chart._opacity=0.8;
-
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
-
-		_THREEDC.allCharts.push(_chart);
 
 		_chart.build = function() {
 		   if(_chart._group===undefined && _chart._data===undefined){
@@ -1615,27 +1892,15 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	}
 
 
-	_THREEDC.TDbarsChart = function (location){
+	THREEDC.TDbarsChart = function (location){
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
 		//add to 3Dmixin when added
 		_chart.labels=[];
@@ -1648,7 +1913,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		_THREEDC.allCharts.push(_chart);
+		
 
 	    // (0,1)> 1 no separation
 	    //
@@ -1717,15 +1982,15 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	_THREEDC.pointsCloudChart = function (location){
+	THREEDC.pointsCloudChart = function (location){
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.baseMixin({});
+		var _chart = dashBoard.baseMixin({});
 
-		_THREEDC.allCharts.push(_chart);
+		
 
 		_chart.getPoints=function(points){
 			if(!points){
@@ -1770,7 +2035,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 			// sprite.opacity = 0.80; // translucent particles
 			sprite.material.blending = THREE.AdditiveBlending; // "glowing" particles
-			_THREEDC.domEvents.bind(sprite, 'mouseover', function(object3d){
+			dashBoard.domEvents.bind(sprite, 'mouseover', function(object3d){
 				console.log(sprite.coordis);
 			});
 			//particleGroup.add( sprite );
@@ -1787,13 +2052,13 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	    return _chart;
 	}
 
-	_THREEDC.simpleLineChart= function (coords) {
+	THREEDC.simpleLineChart= function (coords) {
 
 		this.coords=coords;
 
-		var _chart = _THREEDC.baseMixin({});
+		var _chart = dashBoard.baseMixin({});
 
-		_THREEDC.allCharts.push(_chart);
+		
 
 		_chart.build = function() {
 
@@ -1827,20 +2092,20 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	  		var extrudeChart = new THREE.Mesh( chartGeometry, materialSide );
 
 			extrudeChart.position.set(coords[0],coords[1],coords[2]);
-			_THREEDC.scene.add(extrudeChart);
+			dashBoard.scene.add(extrudeChart);
 
 	    }
 
 	    return _chart;
 
 	}
-	_THREEDC.textChart= function (location) {
+	THREEDC.textChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.baseMixin({});
+		var _chart = dashBoard.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -1861,7 +2126,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		_chart._size=10;
 		_chart._curveSegments=3;
 
-		_THREEDC.allCharts.push(_chart);
+		
 
 	    _chart.size=function(number){
 	    	if(!arguments.length){
@@ -1915,33 +2180,20 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	}
 
-	_THREEDC.lineChart= function (location) {
+	THREEDC.lineChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.baseMixin({});
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
+		var _chart = THREEDC.baseMixin({});
+
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		
 		//by default
 		_chart._color=0x0000ff;
 		_chart._depth=5;
 		_chart._opacity=0.8;
-
-		_THREEDC.allCharts.push(_chart);
-
 
 		_chart.build = function() {
 
@@ -2031,29 +2283,17 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	}
 
 	//problema con emissive al cambiar de color(probablemente por ser linebasic material)
-	_THREEDC.smoothCurveChart= function (location) {
+	THREEDC.smoothCurveChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.baseMixin({});
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
-		_chart._color=0x0000ff;
+		var _chart = THREEDC.baseMixin({});
 
-		_THREEDC.allCharts.push(_chart);
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+		
+		_chart._color=0x0000ff;
 
 		var unsort_data;
 
@@ -2118,29 +2358,17 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 
 	}
 
-	_THREEDC.bubbleChart= function (location) {
+	THREEDC.bubbleChart= function (location) {
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 
-		if(location.isPanel){
-			for (var i = 0; i < location.anchorPoints.length; i++) {
-				if(!location.anchorPoints[i].filled){
-					_chart.coords=location.anchorPoints[i].coords;
-					location.anchorPoints[i].filled=true;
-					location.charts.push(_chart);
-					_chart.panel=location;
-					break;
-				}
-			};
-		}else{
-			_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-		}
 
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 			//by default
 		_chart._depth=100;
 		_chart._opacity=0.8;
@@ -2148,7 +2376,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 		_chart._color=0x0000ff;
 
-		_THREEDC.allCharts.push(_chart);
+		
 
 		_chart.getTopRadius=function() {
 			var topRadius;
@@ -2225,18 +2453,18 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 	}
 
 
-	_THREEDC.fileTree= function (location) {
+	THREEDC.fileTree= function (location) {
 
 
 		if(location==undefined){
 			location=[0,0,0];
 		}
 
-		var _chart = _THREEDC.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
-		_THREEDC.allCharts.push(_chart);
+		
 
 		var pi= Math.PI;
 
@@ -2275,7 +2503,7 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 			function buildSons (node) {
 				console.log(node);
 				for (var i = 0; i < node.sons.length; i++) {
-					var coords=_THREEDC.sphericalToCartesian(radius,node.sons[i].anglePosition,0);
+					var coords=dashBoard.sphericalToCartesian(radius,node.sons[i].anglePosition,0);
 					var geometry = new THREE.SphereGeometry( node.sons[i].size/10, 20, 20);
 
 					var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
@@ -2384,10 +2612,10 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	_THREEDC.fileCity= function (location) {
+	THREEDC.fileCity= function (location) {
 
 
-		var _chart = _THREEDC.threeDMixin({});
+		var _chart = THREEDC.threeDMixin({});
 
 		if(location==undefined){
 			location=[0,0,0];
@@ -2398,8 +2626,6 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		_chart._equidistance=false;
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
-
-		_THREEDC.allCharts.push(_chart);
 
 	    _chart.equidistance=function(){
 	    	_chart._equidistance=true;
@@ -2541,62 +2767,3 @@ function THREEDC (scene,renderer,container,sceneCSS) {
 		return _chart;
 	}
 
-	_THREEDC.dragTrigger=function () {
-	  if(_THREEDC.parameters.activate){
-	    _THREEDC.scene.add( _THREEDC.plane );
-	    _THREEDC.domEvents.bind(_THREEDC.plane, 'mouseup', function(object3d){
-	      if(_THREEDC.chartToDrag){
-	        _THREEDC.controls.enabled=true;
-	        _THREEDC.container.style.cursor = 'auto';
-	        if(_THREEDC.SELECTED.isPanel) _THREEDC.SELECTED.reBuild();
-	        _THREEDC.SELECTED=null;
-	        _THREEDC.chartToDrag=null;
-	        _THREEDC.plane.material.visible=false;
-	      }
-	    });
-	    window.addEventListener( 'mousemove', _THREEDC.onMouseMove, false );
-	  }else{
-	    window.removeEventListener( 'mousemove', _THREEDC.onMouseMove, false );
-	    _THREEDC.scene.remove( _THREEDC.plane );
-	    _THREEDC.domEvents.unbind(_THREEDC.plane, 'mouseup');
-	  }
-	}
-
-	_THREEDC.changePlane =function() {
-	  if (_THREEDC.parameters.plane==='XY'){
-	    _THREEDC.plane.rotation.set(0,0,0); //xy _THREEDC.plane
-	  }else if(_THREEDC.parameters.plane==='XZ'){
-	    _THREEDC.plane.rotation.x = Math.PI / 2; //xz _THREEDC.plane
-	  }
-	}
-
-	_THREEDC.onMouseMove=function( event ) {
-
-	  // calculate _THREEDC.mouse position in normalized device coordinates
-	  // (-1 to +1) for both components
-
-
-	  _THREEDC.mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	  _THREEDC.mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
-	  _THREEDC.raycaster.setFromCamera( _THREEDC.mouse, _THREEDC.camera );
-
-	  if(_THREEDC.SELECTED){
-	    _THREEDC.plane.material.visible=true;
-	    var intersects = _THREEDC.raycaster.intersectObject( _THREEDC.plane );
-	    if ( intersects.length > 0 ) {
-	      if(_THREEDC.SELECTED.isPanel){
-	        _THREEDC.SELECTED.position.copy(intersects[ 0 ].point.sub( _THREEDC.offset ));
-	        if(_THREEDC.SELECTED.iframe) _THREEDC.SELECTED.iframe.position.copy(_THREEDC.SELECTED.position);
-	        _THREEDC.SELECTED.coords.copy( _THREEDC.SELECTED.position);
-	      }else{
-	        _THREEDC.chartToDrag.coords.copy(intersects[ 0 ].point.sub( _THREEDC.offset ));
-	        if(_THREEDC.paint) _THREEDC.chartToDrag.reBuild();
-	        !_THREEDC.paint;
-	      }
-	    }
-	    return;
-	  }
-	}
-	return _THREEDC;
-}

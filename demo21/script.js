@@ -157,12 +157,13 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-   dash= THREEDC(scene,renderer,container);
+  dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
+  var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:2});
 
-  var panel=dash.addPanel([0,0,0],3);
+  dash.addPanel(panel,{x:0,y:0,z:0});
 
-  var bars =  dash.barsChart(panel);
+  var bars =  THREEDC.barsChart();
   bars.group(groupByOrg)
       .dimension(dimByOrg)
       .width(200)
@@ -173,7 +174,7 @@ function init () {
       .numberOfYLabels(4)
       .color(0x00ffff);
 
-   var line =  dash.barsChart(panel);
+   var line =  THREEDC.barsChart();
        line.group(groupByAuthor)
       .dimension(dimByAuthor)
       .gridsOn()
@@ -184,22 +185,25 @@ function init () {
       .color(0xff0000);
 
 
-    var line =  dash.lineChart(panel);
-       line.group(groupByMonth)
+    var line1 =  THREEDC.lineChart();
+       line1.group(groupByMonth)
       .dimension(dimByMonth)
       .width(400)
       .numberOfXLabels(7)
       .numberOfYLabels(5)
       .gridsOn()
       .depth(30)
-
       .height(200)
       .color(0x0000ff);
 
+   panel.addChart(bars,{row:2,column:1});
+
+  panel.addChart(line,{row:2,column:2});
+
+ panel.addChart(line1,{row:1,column:1});
 
 
 
-  dash.renderAll();
 
 }
 

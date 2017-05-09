@@ -162,12 +162,14 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
-  dash=THREEDC(scene,renderer,container);
+  dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
-  var panel1=dash.addPanel([0,0,-200],2,[400,300]);
+  var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:1},[500,500]);
+
+  dash.addPanel(panel,{x:0,y:0,z:0});
 
 
-  var line =  dash.lineChart(panel1);
+  var line =  THREEDC.lineChart();
    line.group(groupByMonth)
   .dimension(dimByMonth)
   .width(400)
@@ -178,15 +180,18 @@ function init () {
   .depth(20)
   .color(0xff0000);
 
-   var pie =  dash.pieChart(panel1);
+   var pie =  THREEDC.pieChart();
    pie.group(groupByOrg)
       .dimension(dimByOrg)
       .depth(20)
       .radius(50);
 
 
+    panel.addChart(pie,{row:1,column:1});
 
-  dash.renderAll();
+    panel.addChart(line,{row:2,column:1});
+
+
 
 }
 
