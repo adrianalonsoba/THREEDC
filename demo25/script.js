@@ -252,7 +252,7 @@ function init () {
 
    // var simpledata=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:100}];
 
-  dash = THREEDC(scene,renderer,container);
+  dash = THREEDC.addDashBoard(scene,renderer.domElement);
 
   //var tree= dash.fileTree([0,0,0]);
 
@@ -265,7 +265,7 @@ function init () {
   //bars.group(groupByRepo);
 
 
-  var bubbles= dash.bubbleChart([0,0,0]);
+  var bubbles= THREEDC.bubbleChart([0,0,0]);
 
   bubbles.data(data2)
          .width(500)
@@ -273,9 +273,7 @@ function init () {
          .gridsOn()
          .depth(400);
 
-
-
-  dash.renderAll();
+dash.addChart(bubbles);
 
   function  getRandomCharts(numberOfRandomCharts) {
     for (var i = 0; i < numberOfRandomCharts; i++) {
