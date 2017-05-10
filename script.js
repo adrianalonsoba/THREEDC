@@ -324,7 +324,7 @@ function init () {
 
 
 
-  var city= THREEDC.simpleFileCity().data(root).width(500).equidistance().separationFactor(0.8);
+  var city= THREEDC.fileCity().data(root).width(500).depth(500).equidistance().separationFactor(0.8);
 
 dash.addChart(city,{x:-250,y:0,z:0});
 

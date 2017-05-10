@@ -450,6 +450,13 @@ function update()
 
 	  }
 
+  	  panel.id=function(id) {
+
+	  	panel._id=id;
+	  	return panel;
+
+	  }
+
 	  //gridPosition=> {row:number,column:number}
 	  panel.addChart=function(chart,gridPosition) {
 
@@ -2775,3 +2782,165 @@ function update()
 		return _chart;
 	}
 
+	THREEDC.fileCity= function (location) {
+
+
+		var _chart = THREEDC.threeDMixin({});
+
+		if(location==undefined){
+			location=[0,0,0];
+		}
+
+			//by default
+		_chart._depth=50;
+		_chart._equidistance=false;
+		_chart._separationFactor=1;
+
+		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
+
+	    _chart.equidistance=function(){
+	    	_chart._equidistance=true;
+	    	return _chart;
+	    }
+
+	    _chart.separationFactor=function(number){
+	    	_chart._separationFactor=number;
+	    	return _chart;
+	    }
+
+		_chart.build= function () {
+
+			var numberOfCityLevels=10; //getNumberOfLevels();
+
+			var group= new THREE.Group();
+
+			createDataStructure();
+
+			buildRootNode();
+
+			buildSons(_chart.rootNode);
+
+			//_chart.parts.push(group);
+
+			function buildRootNode () {
+				var rootWidth=_chart._width;
+				var rootHeight=_chart._height/numberOfCityLevels;
+				var rootDepth=_chart._depth;
+
+				var geometry = new THREE.CubeGeometry( rootWidth, rootHeight, rootDepth);
+
+				var material = new THREE.MeshPhongMaterial( {color: 0xff00ff,
+				                                             specular: 0x999999,
+				                                             shininess: 100,
+				                                             shading : THREE.SmoothShading,
+				                                             transparent: true
+				} );
+
+				var rootNode = new THREE.Mesh(geometry, material);
+				rootNode.dimensions={width:rootWidth,height:rootHeight,depth:rootDepth};
+				rootNode.position.set(_chart.coords.x+rootWidth/2,_chart.coords.y+rootHeight/2,_chart.coords.z);
+				_chart.rootNode.mesh=rootNode;
+				rootNode.name="id:"+_chart.rootNode.id+" size:"+_chart.rootNode.size +" father:"+' null';
+				_chart.parts.push(rootNode);
+				//group.add(rootNode);
+
+			}
+
+			function buildSons (node) {
+				//divide the surface using the number of sons and assign a proportional surface to each one acording to its size, the height
+				//only matters when it is a directory with any value for now
+
+				//assing buildings to directories and only surface to files
+
+				var xOffset=0;
+
+				for (var i = 0; i < node.sons.length; i++) {
+
+					var sonWidth;
+					if (!_chart._equidistance) {
+						sonWidth= node.mesh.dimensions.width*node.sons[i].size/node.size*_chart._separationFactor;  // (FatherWidth*SonSize)/FatherSize	
+						sonShift=node.mesh.dimensions.width*node.sons[i].size/node.size;
+					} 
+					else{
+						sonWidth= node.mesh.dimensions.width/node.sons.length*_chart._separationFactor;
+						sonShift=node.mesh.dimensions.width/node.sons.length;
+					};
+					
+					if (node.sons[i].sons.length===0) {
+						sonHeight=_chart._height/numberOfCityLevels;  					//height for files FOR NOW
+					}else{
+						sonHeight=_chart._height/numberOfCityLevels; //height for directories FOR NOW
+					}
+
+					var sonDepth=_chart._depth;				
+
+					var geometry = new THREE.CubeGeometry( sonWidth, sonHeight, sonDepth);
+
+					var material = new THREE.MeshPhongMaterial( {color: Math.random() * 0xffffff,
+					                                             specular: 0x999999,
+					                                             shininess: 100,
+					                                             shading : THREE.SmoothShading,
+					                                             transparent: true
+					} );
+					var sonNode = new THREE.Mesh(geometry, material);
+					sonNode.name="id:"+node.sons[i].id+" size:"+node.sons[i].size +" father:"+node.id;
+					sonNode.dimensions={width:sonWidth,height:sonHeight,depth:sonDepth};
+					var leftShift=(node.mesh.dimensions.width - sonNode.dimensions.width)/2;
+					sonNode.position.set(node.mesh.position.x-leftShift+xOffset,node.mesh.position.y+sonHeight,node.mesh.position.z);
+					node.sons[i].mesh=sonNode;
+					_chart.parts.push(sonNode);
+					//group.add(sonNode);
+					xOffset+= sonShift;
+				};
+				
+				//recursive
+				for (var i = 0; i < node.sons.length; i++) {
+					buildSons(node.sons[i]);
+				};	
+				
+			}
+
+
+			function createDataStructure () {
+
+				findRootNode();
+				findSons(_chart.rootNode);
+
+				function findRootNode () {
+
+					for (var i = 0; i < _chart._data.length; i++) {
+						if(_chart._data[i].parent===null){
+							_chart.rootNode=_chart._data[i];
+							_chart._data.splice(i,1);
+							break;
+						}
+					};
+				}
+
+				function findSons (node) {
+					node.sons=[];
+					for (var i = 0; i < _chart._data.length; i++) {
+						if(_chart._data[i].parent===node.id){
+							node.sons.push(_chart._data[i]);
+						}
+					};
+					//remove found sons
+					var index;
+					for (var i = 0; i < node.sons.length; i++) {
+						 index = _chart._data.indexOf(node.sons[i]);
+						_chart._data.splice(index,1);
+					};
+					//	RECURSIVE
+					for (var i = 0; i < node.sons.length; i++) {
+						findSons(node.sons[i]);
+					};
+				}
+			}
+
+			_chart.addEvents();
+			//_chart.addLabels();
+			//if (_chart._gridsOn) _chart.addGrids();
+		}
+
+		return _chart;
+	}
