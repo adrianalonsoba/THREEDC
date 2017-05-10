@@ -2612,7 +2612,7 @@ function update()
 		return _chart;
 	}
 
-	THREEDC.fileCity= function (location) {
+	THREEDC.simpleFileCity= function (location) {
 
 
 		var _chart = THREEDC.threeDMixin({});
@@ -2624,11 +2624,17 @@ function update()
 			//by default
 		_chart._depth=50;
 		_chart._equidistance=false;
+		_chart._separationFactor=1;
 
 		_chart.coords= new THREE.Vector3( location[0], location[1], location[2] );
 
 	    _chart.equidistance=function(){
 	    	_chart._equidistance=true;
+	    	return _chart;
+	    }
+
+	    _chart.separationFactor=function(number){
+	    	_chart._separationFactor=number;
 	    	return _chart;
 	    }
 
@@ -2682,10 +2688,12 @@ function update()
 
 					var sonWidth;
 					if (!_chart._equidistance) {
-						sonWidth= node.mesh.dimensions.width*node.sons[i].size/node.size;  // (FatherWidth*SonSize)/FatherSize	
+						sonWidth= node.mesh.dimensions.width*node.sons[i].size/node.size*_chart._separationFactor;  // (FatherWidth*SonSize)/FatherSize	
+						sonShift=node.mesh.dimensions.width*node.sons[i].size/node.size;
 					} 
 					else{
-						sonWidth= node.mesh.dimensions.width/node.sons.length;
+						sonWidth= node.mesh.dimensions.width/node.sons.length*_chart._separationFactor;
+						sonShift=node.mesh.dimensions.width/node.sons.length;
 					};
 					
 					if (node.sons[i].sons.length===0) {
@@ -2712,7 +2720,7 @@ function update()
 					node.sons[i].mesh=sonNode;
 					_chart.parts.push(sonNode);
 					//group.add(sonNode);
-					xOffset+= sonWidth;
+					xOffset+= sonShift;
 				};
 				
 				//recursive

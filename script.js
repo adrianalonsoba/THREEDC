@@ -322,7 +322,11 @@ function init () {
   pie.group(groupByOrg).id(434355354)
          .dimension(groupByMonth);
 
-dash.addChart(pie);
+
+
+  var city= THREEDC.simpleFileCity().data(root).width(500).equidistance().separationFactor(0.8);
+
+dash.addChart(city,{x:-250,y:0,z:0});
 
 
 function test_function (panel) {
