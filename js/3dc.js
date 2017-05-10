@@ -2852,52 +2852,41 @@ function update()
 
 				//assing buildings to directories and only surface to files
 
-				var xOffset=0;
+				//makeAnchorPoints();
 
-				for (var i = 0; i < node.sons.length; i++) {
+				function makeAnchorPoints () {
+					var numberOfAnchorPoints=node.sons.length;
+					if (numberOfAnchorPoints%2!=0) {numberOfAnchorPoints=numberOfAnchorPoints+1};
+					var numberOfRows=numberOfAnchorPoints/2;
+					var numberOfColumns=numberOfRows;
 
-					var sonWidth;
-					if (!_chart._equidistance) {
-						sonWidth= node.mesh.dimensions.width*node.sons[i].size/node.size*_chart._separationFactor;  // (FatherWidth*SonSize)/FatherSize	
-						sonShift=node.mesh.dimensions.width*node.sons[i].size/node.size;
-					} 
-					else{
-						sonWidth= node.mesh.dimensions.width/node.sons.length*_chart._separationFactor;
-						sonShift=node.mesh.dimensions.width/node.sons.length;
-					};
+				   	node.anchorPoints=[];
+				  	var auxPosition =new THREE.Vector3( node.coords.x-width/2, node.coords.y-height/2, node.coords.z );
+				  	var auxInitialPosition=new THREE.Vector3( node.coords.x-width/2, node.coords.y-height/2, node.coords.z );
+				  	var stepX=width/grid.numberOfColumns;
+				  	var stepY=height/grid.numberOfRows;
+
+				  	for (var i = 1; i < grid.numberOfRows+1; i++) {
+				  		for (var j = 1; j < grid.numberOfColumns+1; j++) {
+				  			node.anchorPoints.push({filled:false,
+											  		 coords:new THREE.Vector3(auxPosition.x,auxPosition.y,auxPosition.z),
+											   		 row:i,
+											         column:j});
+
+				  			auxPosition.x+=stepX;
+				  		};
+				  		auxPosition.x=auxInitialPosition.x;
+				  		auxPosition.y+=stepY;
+				  	};
+
 					
-					if (node.sons[i].sons.length===0) {
-						sonHeight=_chart._height/numberOfCityLevels;  					//height for files FOR NOW
-					}else{
-						sonHeight=_chart._height/numberOfCityLevels; //height for directories FOR NOW
-					}
+				}
 
-					var sonDepth=_chart._depth;				
-
-					var geometry = new THREE.CubeGeometry( sonWidth, sonHeight, sonDepth);
-
-					var material = new THREE.MeshPhongMaterial( {color: Math.random() * 0xffffff,
-					                                             specular: 0x999999,
-					                                             shininess: 100,
-					                                             shading : THREE.SmoothShading,
-					                                             transparent: true
-					} );
-					var sonNode = new THREE.Mesh(geometry, material);
-					sonNode.name="id:"+node.sons[i].id+" size:"+node.sons[i].size +" father:"+node.id;
-					sonNode.dimensions={width:sonWidth,height:sonHeight,depth:sonDepth};
-					var leftShift=(node.mesh.dimensions.width - sonNode.dimensions.width)/2;
-					sonNode.position.set(node.mesh.position.x-leftShift+xOffset,node.mesh.position.y+sonHeight,node.mesh.position.z);
-					node.sons[i].mesh=sonNode;
-					_chart.parts.push(sonNode);
-					//group.add(sonNode);
-					xOffset+= sonShift;
-				};
-				
 				//recursive
 				for (var i = 0; i < node.sons.length; i++) {
 					buildSons(node.sons[i]);
 				};	
-				
+
 			}
 
 
