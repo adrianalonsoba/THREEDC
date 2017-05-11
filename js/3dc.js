@@ -450,7 +450,7 @@ function update()
 
 	  }
 
-  	  panel.id=function(id) {
+  	  panel.setId=function(id) {
 
 	  	panel._id=id;
 	  	return panel;
@@ -1222,7 +1222,7 @@ function update()
 	    	return _chart;
 	    }
 
-	    _chart.id=function(id){
+	    _chart.setId=function(id){
 	    	if(!arguments.length){
 	    		console.log('argument needed');
 	    		return;

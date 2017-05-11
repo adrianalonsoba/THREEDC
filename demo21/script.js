@@ -161,6 +161,8 @@ function init () {
 
   var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:2});
 
+  //panel.id(1234);
+
   dash.addPanel(panel,{x:0,y:0,z:0});
 
   var bars =  THREEDC.barsChart();
@@ -196,11 +198,14 @@ function init () {
       .height(200)
       .color(0x0000ff);
 
+
    panel.addChart(bars,{row:2,column:1});
 
   panel.addChart(line,{row:2,column:2});
 
  panel.addChart(line1,{row:1,column:1});
+
+
 
 
 
