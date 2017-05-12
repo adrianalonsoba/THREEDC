@@ -30,7 +30,7 @@ var json_data;
 
 // initialization
   //getJSON call, draw meshes with data
-   $.getJSON("jsons/scm-commits.json", function(data) {
+   $.getJSON("../jsons/scm-commits.json", function(data) {
       json_data=data;
       init();
       // animation loop / game loop
@@ -315,34 +315,12 @@ function init () {
   dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
 
-  var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:1},[500,500]);
-
-  dash.addPanel(panel,{x:0,y:0,z:0});
+//var panel =dash.addPanel([0,0,0],3,[200,200],0.7,test_function);
 
 
-  var line =  THREEDC.lineChart();
-   line.group(groupByMonth)
-  .dimension(dimByMonth)
-  .width(400)
-  .numberOfXLabels(5)
-  .numberOfYLabels(5)
-    .animation(25)
-  .gridsOn()
-  .height(150)
-  .depth(20)
-  .color(0xff0000);
+  var city= THREEDC.simpleFileCity().data(root).width(500).depth(500).animation(50).equidistance().separationFactor(0.8);
 
-   var pie =  THREEDC.pieChart();
-   pie.group(groupByOrg)
-      .dimension(dimByOrg)
-      .depth(20)
-      .animation(5)
-      .radius(50);
-
- panel.addChart(line,{row:2,column:1});
-    panel.addChart(pie,{row:1,column:1});
-
-   
+dash.addChart(city,{x:-250,y:0,z:0});
 
 
 function test_function (panel) {
