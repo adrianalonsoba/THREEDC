@@ -3,36 +3,93 @@
 // initialization
 //getJSON call, draw meshes with data
 $.getJSON("../jsons/opnfv-commits.json", function (data) {
-    var json_data = data;
+     window.json_data = data;
     init(json_data);
 });
 
  function init (data) {
 
+	var scenediv=document.getElementById( 'ThreeJS' );
 
- 	console.log(data);
- var scenediv=document.getElementById( 'ThreeJS' );
+    var keysObj = Object.keys(json_data[0]);
+    window.parsed_data = [];
+    json_data.forEach(function (value) {
+        var record = {};
 
- var cf= crossfilter(data);
+        keysObj.forEach(function (name) {
+            if (name == "utc_author") {
+                var date = new Date(value[name]);
+                record[name] = date;
+            } else {
+                record[name] = value[name];
+            }
+        });
+        parsed_data.push(record);
+    });
+    console.log(parsed_data);
+    window.cf = crossfilter(parsed_data);
 
 
-   //create a dimension by month
+	//create a dimension by week
 
-  dimByWeek= cf.dimension(function(p) {return p.tz;});
+    var dimbyYandQ = cf.dimension(function (d) {
+        return Number.parseInt(
+        d.utc_author.getFullYear().toString() +
+        (Math.floor(d.utc_author.getMonth() / 3) + 1).toString());
+    });
 
-  groupByWeek= dimByWeek.group();
+  	var groupbyYandQ = dimbyYandQ.group();
 
 
-	 var myDashBoard = THREEDC.dashBoard(scenediv);
+  	//create a dimension by tz
 
-	 var data1 = [{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 },
-	             { key: 'bla2', value: 5 }, { key: 'bla2', value: 38 }, { key: 'bla2', value: 200 }];
+    var dimbytz = cf.dimension(function (p) { return p.tz; });
+    var groupbytz = dimbytz.group();
 
-	  var myPieChart= THREEDC.pieChart();
 
-	  myPieChart.dimension(dimByWeek).group(groupByWeek).radius(100);
+    ////create a dimension by org
+    var dimByOrg = cf.dimension(function (p) { return p.Author_org_name; });
+    var groupByOrg = dimByOrg.group();
 
-	  myDashBoard.addChart(myPieChart);
+    //create a dim by authors
+    var dimAuthors = cf.dimension(function (p) { return p.Author_name; });
+    var groupAuth = dimAuthors.group();
+
+
+	var myDashBoard = THREEDC.dashBoard(scenediv);
+
+	var myPieChart= THREEDC.pieChart();
+
+	var mybarchartTzs=THREEDC.barsChart();
+
+	myPieChart.dimension(dimByOrg).group(groupByOrg).rotation({x:0,y:45,z:0});
+
+	mybarchartTzs.dimension(dimbytz).group(groupbytz).rotation({x:0,y:45,z:0}).gridsOn().width(200).color(0xff8000);
+
+	myDashBoard.addChart(myPieChart);
+
+	myDashBoard.addChart(mybarchartTzs,{x:200,y:0,z:0});
+
+
+
+
+	var imagePrefix = "../../examples/Three.js/images/dawnmountain-";
+	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+	var imageSuffix = ".png";
+	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );	
+	
+	var materialArray = [];
+	for (var i = 0; i < 6; i++)
+		materialArray.push( new THREE.MeshBasicMaterial({
+			map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+			side: THREE.BackSide
+		}));
+	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+	myDashBoard.scene.add( skyBox );
+
+
+
  }
 
 
