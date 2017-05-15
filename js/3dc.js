@@ -632,8 +632,8 @@ function update()
 
 
 			}else{
-				for (var i = 0; i < chart.parts.length; i++) {
-					_chart.dashBoard.scene.add(chart.parts[i]);
+				for (var i = 0; i < _chart.parts.length; i++) {
+					_chart.dashBoard.scene.add(_chart.parts[i]);
 				}
 
 			}
@@ -800,7 +800,7 @@ function update()
 	                                            	           shading : THREE.SmoothShading
 			      } );
 			      var geometry = new THREE.TextGeometry( txt, {
-			        size: 8,
+			        size: mesh.parentChart._height/10,
 			        height: 2,
 			        curveSegments: 3,
 			        font: "helvetiker",
@@ -1740,8 +1740,8 @@ function update()
 		var _chart = THREEDC.baseMixin({});
 				//by default
 		_chart._radius=50;
-		_chart._width=_chart._radius;
-		_chart._height=_chart._radius;
+		_chart._width=_chart._radius*2;
+		_chart._height=_chart._radius*2;
 		//by default
 		_chart._depth=5;
 		_chart._opacity=0.8;
@@ -1751,9 +1751,8 @@ function update()
 		
 		_chart.radius=function(radius){
 			_chart._radius=radius;
-			_chart._radius=radius;
-			_chart._width=radius;
-			_chart._height=radius;
+			_chart._width=radius*2;
+			_chart._height=radius*2;
 			return _chart;
 		}
 
