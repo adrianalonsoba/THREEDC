@@ -800,7 +800,10 @@ function update()
 
 			//creates a 3D text label
 			function showInfo (mesh) {
-				  dashBoard.scene.remove(dashBoard.textLabel);
+				  //dashBoard.scene.remove(dashBoard.textLabel);
+				  //remove previous label
+				  if (dashBoard.textLabel) {dashBoard.textLabel.parent.remove(dashBoard.textLabel);};
+				  //mesh.parentChart.threeGroup.remove(dashBoard.textLabel);
 			      var txt = mesh.name;
 			      var curveSeg = 3;
 			      var material = new THREE.MeshPhongMaterial( {color:mesh.origin_color,
@@ -819,10 +822,10 @@ function update()
 			      });
 			      // Positions the text and adds it to the dashBoard.scene
 			      dashBoard.textLabel = new THREE.Mesh( geometry, material );
-			      dashBoard.textLabel.rotation.set(mesh.parentChart._rotation.x,mesh.parentChart._rotation.y,mesh.parentChart._rotation.z);
-			      dashBoard.textLabel.position.set(mesh.parent.position.x,mesh.parent.position.y+mesh.parentChart._height+10,mesh.parent.position.z);
-			      
-			      dashBoard.scene.add(dashBoard.textLabel);
+			     // dashBoard.textLabel.rotation.set(mesh.parent.rotation.x,mesh.parent.rotation.y,mesh.parent.rotation.z);
+			      dashBoard.textLabel.position.set(mesh.parent.position.x,mesh.parent.position.y+mesh.parentChart._height+mesh.parentChart._height*0.1,mesh.parent.position.z);
+			      mesh.parentChart.threeGroup.add(dashBoard.textLabel);
+			     // dashBoard.scene.add(dashBoard.textLabel);
 			      console.log(mesh.position);
 			}
 
@@ -1872,6 +1875,7 @@ function update()
 					value:_data[i].value
 				};
 				piePart.parentChart=_chart;
+				_chart.threeGroup.add(piePart);
 				_chart.parts.push(piePart);
 				angPrev=nextAng;
 			}
