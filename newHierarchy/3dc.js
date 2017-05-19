@@ -1296,7 +1296,8 @@ function update()
 	    		console.log('argument needed');
 	    		return;
 	    	}
-	    	_chart._rotation=rotationObject;
+	    	
+	    	_chart._rotation={x:rotationObject.x*Math.PI/180,y:rotationObject.y*Math.PI/180,z:rotationObject.z*Math.PI/180};
 	    	return _chart;
 	    }
 
@@ -1867,7 +1868,6 @@ function update()
 				var piePart = new THREE.Mesh( geometry, material );
 				piePart.material.color.setHex(origin_color);
 				piePart.origin_color=origin_color;
-				piePart.rotation.set(_chart._rotation.x,_chart._rotation.y,_chart._rotation.z);
 				piePart.position.set(_chart.coords.x+_chart._radius,_chart.coords.y+_chart._radius,_chart.coords.z);
 				piePart.name ="key:"+_data[i].key+" value:"+_data[i].value;
 				piePart.data={
@@ -2345,6 +2345,7 @@ function update()
 					};
 					linePart.parentChart=_chart;
 					x+=barWidth;
+					_chart.threeGroup.add(linePart);
 					_chart.parts.push(linePart);
 		   		}
 		   	};

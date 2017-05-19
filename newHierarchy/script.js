@@ -252,17 +252,21 @@ function init () {
   dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
 
-  var bars =  THREEDC.barsChart();
+  var bars =  THREEDC.lineChart();
     bars.group(groupByMonth)
         .dimension(dimByMonth)
         .width(400)
         .numberOfXLabels(5)
         .numberOfYLabels(5)
         .gridsOn()
-        .rotation({x:0,y:Math.PI / 2,z:0})
+        .rotation({x:0,y:0,z:90})
         .height(150)
         .depth(20)
         .color(0xff0000);
+
+
+
+
 
 
   var pie =THREEDC.pieChart();
@@ -270,9 +274,10 @@ function init () {
 
 
 
-dash.addChart(bars, {x:100,y:100,z:100});
+dash.addChart(bars, {x:100,y:0,z:0});
 
-dash.addChart(pie, {x:0,y:0,z:0});
+
+dash.addChart(pie, {x:110,y:111,z:110});
 
 
 }
