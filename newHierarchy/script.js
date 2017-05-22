@@ -224,7 +224,7 @@ function init () {
 
   var data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
 
-            {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:800000000},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
+            {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:80},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
 
             {key1:'january',key2:'microsoft',value:10},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:4},{key1:'april',key2:'microsoft',value:12},
 
@@ -282,16 +282,16 @@ function init () {
 
 
 
-    var bubbles= THREEDC.bubbleChart();
+    var bubbles= THREEDC.TDbarsChart();
 
-  bubbles.data(data2)
+  bubbles.data(data)
          .width(500)
          .height(400)
          .gridsOn('purple')
         // .rotation({x:0,y:0,z:90})
          .depth(400);
 
-dash.addChart(bubbles,{x:100,y:0,z:0});
+dash.addChart(bubbles,{x:0,y:0,z:0});
 
 
 

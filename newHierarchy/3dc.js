@@ -1506,9 +1506,9 @@ function update()
 				                                           transparent: true
 				} );
 
-				var geometryXY = new THREE.CubeGeometry( _chart._width, _chart._height, 1);
-				var geometryYZ = new THREE.CubeGeometry( _chart._depth, _chart._height, 1);
-				var geometryXZ = new THREE.CubeGeometry( _chart._width, _chart._depth, 1);
+				var geometryXY = new THREE.CubeGeometry( _chart._width, _chart._height, 0.0001);
+				var geometryYZ = new THREE.CubeGeometry( _chart._depth, _chart._height, 0.0001);
+				var geometryXZ = new THREE.CubeGeometry( _chart._width, _chart._depth, 0.0001);
 
 				var boxXY=new THREE.Mesh(geometryXY, material);
 				boxXY.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y+_chart._height/2,_chart.coords.z);
@@ -2439,6 +2439,7 @@ function update()
 			splineObject.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z)
 
 			_chart.parts.push(splineObject);
+			_chart.threeGroup.add(splineObject);
 
 
 			_chart.addEvents();
