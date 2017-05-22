@@ -41,6 +41,66 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
   	var groupbyYandQ = dimbyYandQ.group();
 
 
+    var groupAuthors = dimbyYandQ.group().reduce(function reduceAdd(p, v) {
+        if (!p[v.Author_name]) {
+            p[v.Author_name] = (p[v.Author_name] || 0) + 1;
+            p.counting = p.counting + 1;
+        };
+        return p;
+    },
+
+    function reduceRemove(p, v) {
+        if (p[v.Author_name]) {
+            p[v.Author_name] = (p[v.Author_name] || 0) - 1;
+            delete p[v.Author_name];
+            p.counting = p.counting - 1;
+
+        }
+        return p;
+    },
+
+    function reduceInitial() {
+        return { counting: 0 };
+    });
+
+    var grouporgWeek = dimbyYandQ.group().reduce(function reduceAdd(p, v) {
+        var findorg = function (element) {
+            if (!element.key) return false;
+            return element.key === v.Author_org_name;
+        };
+        var elementIndex = p.findIndex(findorg);
+        if (elementIndex === -1) {
+            //init
+            p.push({ key: v.Author_org_name, value: 1 });
+        } else {
+            p[elementIndex].value = p[elementIndex].value + 1;
+        }
+        return p;
+    },
+
+    function reduceRemove(p, v) {
+        var findorg = function (element) {
+            if (!element.key) return false;
+            return element.key === v.Author_org_name;
+        };
+        var elementIndex = p.findIndex(findorg);
+        if (elementIndex !== -1) {
+            p[elementIndex].value = p[elementIndex].value - 1;
+            if (p[elementIndex].value <= 0) {
+                //remove that element.
+                p.splice(elementIndex, 1);
+            }
+        }
+
+
+        return p;
+    },
+
+    function reduceInitial() {
+        return [];
+    });
+
+
   	//create a dimension by tz
 
     var dimbytz = cf.dimension(function (p) { return p.tz; });
@@ -62,13 +122,19 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
 	var mybarchartTzs=THREEDC.barsChart();
 
+    var mybarchart3d = THREEDC.TDbarsChart();
+
 	myPieChart.dimension(dimByOrg).group(groupByOrg).rotation({x:0,y:45,z:0});
 
-	mybarchartTzs.dimension(dimbytz).group(groupbytz).rotation({x:0,y:45,z:0}).gridsOn().width(200).color(0xff8000);
+	mybarchartTzs.dimension(dimbytz).group(groupbytz).rotation({x:0,y:-45,z:0}).gridsOn().width(200).color(0xff80ff);
+
+    mybarchart3d.dimension(dimbyYandQ).group(grouporgWeek).gridsOn();
 
 	myDashBoard.addChart(myPieChart);
 
-	myDashBoard.addChart(mybarchartTzs,{x:200,y:0,z:0});
+	myDashBoard.addChart(mybarchartTzs,{x:100,y:0,z:0});
+
+    myDashBoard.addChart(mybarchart3d,{x:-100,y:0,z:0})
 
 
 

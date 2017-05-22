@@ -75,11 +75,11 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 
 		chart.parent=dashBoard;
 		chart.dashBoard=dashBoard;
-		if (coords) {chart.coords=new THREE.Vector3( coords.x, coords.y, coords.z );};
+		if (coords) {chart.coords=new THREE.Vector3( coords.x, coords.y, coords.z )} else {chart.coords=new THREE.Vector3( 0, 0, 0 )} 
 		dashBoard.charts.push(chart);
 		chart.build();
 		
-		chart.threeGroup.position.set(coords.x, coords.y, coords.z );
+		chart.threeGroup.position.set(chart.coords.x, chart.coords.y, chart.coords.z );
 		chart.threeGroup.rotation.set(chart._rotation.x,chart._rotation.y,chart._rotation.z);
 
 		
@@ -2016,7 +2016,26 @@ function update()
 	    	return _chart;
 	    }
 
+	    function parseData() {
+	    	_chart._data=[];
+			console.log('dimension',_chart._dimension.top(1));
+			console.log('group',_chart._group.top(1));
+			var uData=_chart._group.top(1);
+			console.log(uData[0].value.length);
+
+			//_chart._data[0].key1=_chart._group.top(1).key;
+
+			for (var i = 0; i < uData[0].value.length; i++) {
+				_chart._data.push({key1:uData[0].key,
+									  key2:uData[0].value[i].key,
+									  value:uData[0].value[i].value})
+			}
+
+	    }
+
 		_chart.build = function() {
+
+			if (_chart._group&&_chart._dimension) {parseData();}
 			/*
 		   if(_chart._groupOne===undefined || _chart._groupTwo===undefined){
 		   	console.log('You must define two groups and dimensions');
