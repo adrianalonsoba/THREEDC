@@ -1351,7 +1351,7 @@ function update()
 	    	addXYGrid();
 	    	addXZgrid();
 	    	addYZgrid();
-	    	addGridBox();
+	    	if (_chart._gridColor) {addGridBox();};
 	    	_chart.renderGrids();
 
 	    	function addXYGrid () {
@@ -1502,7 +1502,7 @@ function update()
 				                                           specular: 0x999999,
 				                                           shininess: 100,
 				                                           shading : THREE.SmoothShading,
-				                                           opacity:0.8,
+				                                           opacity:0.6,
 				                                           transparent: true
 				} );
 
@@ -1513,19 +1513,26 @@ function update()
 				var boxXY=new THREE.Mesh(geometryXY, material);
 				boxXY.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y+_chart._height/2,_chart.coords.z);
 				//scene.add(boxXY);
-				_chart.xGrids.push(boxXY);
+				//_chart.xGrids.push(boxXY);
+				_chart.threeGroup.add(boxXY);
 
 				var boxYZ=new THREE.Mesh(geometryYZ, material);
 				boxYZ.rotation.y = Math.PI / 2; //ZY plane
 				boxYZ.position.set(_chart.coords.x+_chart._width,_chart.coords.y+_chart._height/2,_chart.coords.z+_chart._depth/2);
 				//scene.add(boxYZ);
-				_chart.xGrids.push(boxYZ);
+				//_chart.xGrids.push(boxYZ);
+				_chart.threeGroup.add(boxYZ);
+
 
 				var boxXZ=new THREE.Mesh(geometryXZ, material);
 				boxXZ.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y,_chart.coords.z+_chart._depth/2);
 				boxXZ.rotation.x = Math.PI / 2; //XZ plane
 				//scene.add(boxXZ);
-				_chart.xGrids.push(boxXZ);
+				//_chart.xGrids.push(boxXZ);
+				_chart.threeGroup.add(boxXZ);
+
+
+
 	    	}
 
 	    }
@@ -1609,7 +1616,9 @@ function update()
 				      label.position.x = _chart.coords.x-maxYLabelWidth-_chart._width*0.05;
 				      label.position.y = _chart.coords.y+step;
 				     // label.rotation.set(3*Math.PI/2,0,0);
-				      _chart.labels.push(label);
+				    //  _chart.labels.push(label);
+				      _chart.threeGroup.add(label);
+
 		    	}
 	   	   }
 
@@ -1649,7 +1658,8 @@ function update()
 				      label.position.x = _chart.coords.x-maxZLabelWidth-_chart._width*0.05;
 				      label.position.y = _chart.coords.y;
 				      label.rotation.set(3*Math.PI/2,0,0);
-				      _chart.labels.push(label);
+				     // _chart.labels.push(label);
+				     _chart.threeGroup.add(label);
 		    	}
 	   	   }
 
@@ -1689,7 +1699,8 @@ function update()
 				      label.position.x = _chart.coords.x+step;
 				      label.position.y = _chart.coords.y;
 				      label.rotation.set(3*Math.PI/2,0,3*Math.PI/2);
-				      _chart.labels.push(label);
+				      //_chart.labels.push(label);
+				      _chart.threeGroup.add(label);
 		    	}
 	   	   }
 

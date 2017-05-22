@@ -287,7 +287,8 @@ function init () {
   bubbles.data(data2)
          .width(500)
          .height(400)
-         .gridsOn()
+         .gridsOn('purple')
+        // .rotation({x:0,y:0,z:90})
          .depth(400);
 
 dash.addChart(bubbles,{x:100,y:0,z:0});
