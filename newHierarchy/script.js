@@ -252,21 +252,29 @@ function init () {
   dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
 
-  var bars =  THREEDC.lineChart();
+  var bars =  THREEDC.barsChart();
     bars.group(groupByMonth)
         .dimension(dimByMonth)
         .width(400)
         .numberOfXLabels(5)
         .numberOfYLabels(5)
         .gridsOn()
-        .rotation({x:0,y:0,z:90})
+        .rotation({x:90,y:90,z:90})
         .height(150)
         .depth(20)
         .color(0xff0000);
 
-
-
-
+  var line =  THREEDC.lineChart();
+    line.group(groupByAuthor)
+        .dimension(dimByAuthor)
+        .width(400)
+        .numberOfXLabels(5)
+        .numberOfYLabels(5)
+        .gridsOn()
+      //  .rotation({x:0,y:0,z:90})
+        .height(150)
+        .depth(20)
+        .color(0xff00ff);
 
 
   var pie =THREEDC.pieChart();
@@ -274,10 +282,26 @@ function init () {
 
 
 
-dash.addChart(bars, {x:100,y:0,z:0});
+    var bubbles= THREEDC.bubbleChart();
+
+  bubbles.data(data2)
+         .width(500)
+         .height(400)
+         .gridsOn()
+         .depth(400);
+
+dash.addChart(bubbles,{x:100,y:0,z:0});
 
 
-dash.addChart(pie, {x:110,y:111,z:110});
+
+//dash.addChart(bars, {x:100,y:0,z:0});
+
+
+//dash.addChart(pie, {x:110,y:111,z:110});
+
+
+//dash.addChart(line, {x:-110,y:111,z:110});
+
 
 
 }

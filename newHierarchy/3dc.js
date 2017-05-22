@@ -120,12 +120,7 @@ THREEDC.addDashBoard=function (scene,rendererDOMelement,sceneCSS) {
 	dashBoard.removeAllCharts=function() {
 		for (var i = 0; i < dashBoard.charts.length; i++) {
 	    	dashBoard.charts[i].removeEvents();
-	    	dashBoard.charts[i].removeLabels();
-	    	dashBoard.charts[i].removeGrids();
-
-	    	for (var j = 0; j < dashBoard.charts[i].parts.length; j++) {
-	    		dashBoard.scene.remove(dashBoard.charts[i].parts[j]);
-	    	};
+    		dashBoard.scene.remove(dashBoard.charts[i].threeGroup);
 		};
 		dashBoard.charts=[];
 
@@ -641,20 +636,15 @@ function update()
 
 
 			}else{
-				for (var i = 0; i < _chart.parts.length; i++) {
-					_chart.dashBoard.scene.add(_chart.parts[i]);
-				}
-
+				_chart.dashBoard.scene.add(_chart.threeGroup);
 			}
 	    }
 
 	    _chart.remove=function(){
 	    	_chart.removeEvents();
-	    	_chart.removeLabels();
-	    	_chart.removeGrids();
 
 	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		_chart.dashBoard.scene.remove(_chart.parts[i]);
+	    		_chart.dashBoard.scene.remove(_chart.threeGroup);
 	    	};
 	    	var index = _chart.dashBoard.charts.indexOf(_chart);
 
@@ -667,12 +657,13 @@ function update()
 	    _chart.reBuild=function(){
 
 	     	_chart.removeEvents();
-	     	_chart.removeLabels();
-	     	_chart.removeGrids();
-	    	for (var i = 0; i < _chart.parts.length; i++) {
-	    		_chart.dashBoard.scene.remove(_chart.parts[i]);
-	    	};
+	     	//_chart.removeLabels();
+	     	//_chart.removeGrids();
+	    	//for (var i = 0; i < _chart.parts.length; i++) {
+	    		//_chart.dashBoard.scene.remove(_chart.parts[i]);
+	    	//};
 	    	_chart.parts=[];
+	    	_chart.threeGroup.children=[];
 	    	if(_chart.panel){
 				for (var i = 0; i < _chart.panel.anchorPoints.length; i++) {
 					if(!_chart.panel.anchorPoints[i].filled){
@@ -788,14 +779,16 @@ function update()
 			function addIntervalFilter () {
 				console.log('mouseup');
 				//_chart._dimension.filterAll();
-				if(dashBoard.intervalFilter[0]===dashBoard.intervalFilter[1]){
-					_chart._dimension.filter(dashBoard.intervalFilter[0]);
-				}else{
-					_chart._dimension.filter(dashBoard.intervalFilter);
+				if(_chart._dimension){
+					if(dashBoard.intervalFilter[0]===dashBoard.intervalFilter[1]){
+						_chart._dimension.filter(dashBoard.intervalFilter[0]);
+					}else{
+						_chart._dimension.filter(dashBoard.intervalFilter);
+					}
+					for (var i = 0; i < dashBoard.charts.length; i++) {
+						dashBoard.charts[i].reBuild();
+					};
 				}
-				for (var i = 0; i < dashBoard.charts.length; i++) {
-					dashBoard.charts[i].reBuild();
-				};
 			}
 
 			//creates a 3D text label
@@ -826,7 +819,6 @@ function update()
 			      dashBoard.textLabel.position.set(mesh.parent.position.x,mesh.parent.position.y+mesh.parentChart._height+mesh.parentChart._height*0.1,mesh.parent.position.z);
 			      mesh.parentChart.threeGroup.add(dashBoard.textLabel);
 			     // dashBoard.scene.add(dashBoard.textLabel);
-			      console.log(mesh.position);
 			}
 
 			function changeMeshColor (mesh) {
@@ -1387,7 +1379,10 @@ function update()
 					var horizontalLine = new THREE.Line( horizontalGeometry, material );
 
 					horizontalLine.position.set(_chart.coords.x,_chart.coords.y+step,_chart.coords.z);
-					_chart.yGrids.push(horizontalLine);
+					//_chart.yGrids.push(horizontalLine);
+					_chart.threeGroup.add(horizontalLine);
+
+
 
 		    	}
 
@@ -1402,7 +1397,9 @@ function update()
 					var verticalLine = new THREE.Line( verticalGeometry, material );
 
 					verticalLine.position.set(_chart.coords.x+step,_chart.coords.y,_chart.coords.z);
-					_chart.xGrids.push(verticalLine);
+					//_chart.xGrids.push(verticalLine);
+					_chart.threeGroup.add(verticalLine);
+
 
 		    	}
 	    	}
@@ -1431,7 +1428,8 @@ function update()
 					var verticalLine = new THREE.Line( verticalGeometry, material );
 
 					verticalLine.position.set(_chart.coords.x+step,_chart.coords.y,_chart.coords.z);
-					_chart.xGrids.push(verticalLine);
+					//_chart.xGrids.push(verticalLine);
+					_chart.threeGroup.add(verticalLine);
 		    	}
 
 		    	function putZGrid (step) {
@@ -1445,7 +1443,8 @@ function update()
 					var horizontalLine = new THREE.Line( horizontalGeometry, material );
 
 					horizontalLine.position.set(_chart.coords.x,_chart.coords.y,_chart.coords.z+step);
-					_chart.yGrids.push(horizontalLine);
+					//_chart.yGrids.push(horizontalLine);
+					_chart.threeGroup.add(horizontalLine);
 
 		    	}
 	    	}
@@ -1474,7 +1473,8 @@ function update()
 					var horizontalLine = new THREE.Line( horizontalGeometry, material );
 
 					horizontalLine.position.set(_chart.coords.x+_chart._width,_chart.coords.y+step,_chart.coords.z);
-					_chart.yGrids.push(horizontalLine);
+					//_chart.yGrids.push(horizontalLine);
+					_chart.threeGroup.add(horizontalLine);
 
 		    	}
 
@@ -1489,7 +1489,8 @@ function update()
 					var horizontalLine = new THREE.Line( horizontalGeometry, material );
 
 					horizontalLine.position.set(_chart.coords.x+_chart._width,_chart.coords.y,_chart.coords.z+step);
-					_chart.yGrids.push(horizontalLine);
+					//_chart.yGrids.push(horizontalLine);
+					_chart.threeGroup.add(horizontalLine);
 
 		    	}
 
@@ -2047,6 +2048,7 @@ function update()
 		            };
 		            bar.parentChart=_chart;
 		            _chart.parts.push(bar);
+		            _chart.threeGroup.add(bar);
 					 stepX+=_chart._width/numberOfKeys1.length;
 		   			dataPos++;
 		   		};
@@ -2514,6 +2516,7 @@ function update()
 			            };
 			            bubble.parentChart=_chart;
 			            _chart.parts.push(bubble);
+			            _chart.threeGroup.add(bubble);
 		   			};
 
 		            stepX+=_chart._width/numberOfKeys1.length;
