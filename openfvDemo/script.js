@@ -134,12 +134,12 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
 	myDashBoard.addChart(mybarchartTzs,{x:100,y:0,z:0});
 
-    myDashBoard.addChart(mybarchart3d,{x:-100,y:0,z:0})
+    myDashBoard.addChart(mybarchart3d,{x:-100,y:0,z:0});
 
 
 
 
-	var imagePrefix = "../../examples/Three.js/images/dawnmountain-";
+	var imagePrefix = "../../examples/Three.js/images/moondust-";
 	var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
 	var imageSuffix = ".png";
 	var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );	
@@ -153,6 +153,20 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 	var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
 	var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
 	myDashBoard.scene.add( skyBox );
+
+
+    var obj = { Clear:function(){ clearFilters(); }};
+
+    myDashBoard.gui.add(obj,'Clear').name('Clear filters');
+
+    function clearFilters() {
+        dimByOrg.filterAll();
+        dimbytz.filterAll();
+        dimbyYandQ.filterAll();
+        for (var i = 0; i < myDashBoard.charts.length; i++) {
+            myDashBoard.charts[i].reBuild();
+        }
+    }
 
 
 
