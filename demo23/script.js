@@ -242,9 +242,9 @@ function init () {
 
  //CUSTOM DASHBOARD//
 
- dash= THREEDC(scene,renderer,container);
+ dash= THREEDC.addDashBoard(scene,renderer.domElement);
 
-  var bars= dash.TDbarsChart([0,0,0]);
+  var bars= THREEDC.TDbarsChart([0,0,0]);
   bars
       .data(data)
       .width(400)
@@ -263,13 +263,15 @@ function init () {
   //bars.group(groupByRepo);
   getRandomCharts(100);
 
-  dash.renderAll();
+
+  dash.addChart(bars,{x:0,y:0,z:0});
+
 
 
 
   function  getRandomCharts(numberOfRandomCharts) {
     for (var i = 0; i < numberOfRandomCharts; i++) {
-    var bars= dash.TDbarsChart([Math.random()*1000,Math.random()*1000,Math.random()*1000]);
+    var bars= THREEDC.TDbarsChart();
     bars
         .data(data)
         .width(Math.random()*100+20)
@@ -280,7 +282,10 @@ function init () {
         .opacity(0.95)
        // .color(0xffaa00)
         .gridsOn(0xffffff);
+
+        dash.addChart(bars,{x:Math.random()*1000,y:Math.random()*1000,z:Math.random()*1000});
     };
+
   }
 
 }
