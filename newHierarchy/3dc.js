@@ -1846,7 +1846,7 @@ function update()
 
 			var  extrudeOpts = {curveSegments:curveSegments,
 								amount: _chart._depth,
-								bevelEnabled: true,
+								bevelEnabled: false,
 								bevelSegments: 4,
 								steps: 2,
 								bevelSize: 1,
@@ -2357,7 +2357,7 @@ function update()
 					lineShape.lineTo( 0, 0 );
 					var extrusionSettings = {curveSegments:1,
 					 						 amount: _chart._depth,
-					 						 bevelEnabled: true,
+					 						 bevelEnabled: false,
 					 						 bevelSegments: 4,
 					 						 steps: 2,
 					 						 bevelSize: 1,
