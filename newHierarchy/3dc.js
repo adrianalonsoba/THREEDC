@@ -1137,6 +1137,7 @@ function update()
 		}
 
 		_chart.sortCFData=function() {
+			/*
 		    var unsort_data=_chart._group.top(Infinity);
 
 			var dates=[];
@@ -1158,6 +1159,8 @@ function update()
 					}
 				};
 			};
+			*/
+			_data=_chart._group.all();
 
 			return _data;
 		}
@@ -2215,7 +2218,7 @@ function update()
 			location=[0,0,0];
 		}
 
-		var _chart = dashBoard.baseMixin({});
+		var _chart = THREEDC.baseMixin({});
 		if(location.isPanel){
 			for (var i = 0; i < location.anchorPoints.length; i++) {
 				if(!location.anchorPoints[i].filled){
@@ -2281,9 +2284,10 @@ function update()
 		    text3D = new THREE.Mesh( geometry, material );
 		    text3D.origin_color=origin_color;
     		text3D.position.copy(_chart.coords);
-	      	_chart.parts.push(text3D);
-			
-			_chart.addEvents();
+	      //	_chart.parts.push(text3D);
+	      //	_chart.threeGroup.add(text3D);
+			_chart.dashBoard.scene.add(text3D);
+			//_chart.addEvents();
 	    }
 
 	    return _chart;
