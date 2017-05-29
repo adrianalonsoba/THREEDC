@@ -67,10 +67,36 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
     //CLEAR FILTERS TEXT
 
+
     var text= THREEDC.textChart();
     text.data('Clear filters').color('black').size(5);
     myDashBoard.addChart(text,{x:-55,y:10,z:-49});
-    console.log(text);
+
+    var helper = new THREE.BoundingBoxHelper(text.mesh, 0xffffff);
+    helper.update();
+    helper.visible=true;
+    helper.opacity=0;
+    myDashBoard.scene.add(helper);
+
+    myDashBoard.domEvents.bind(helper, 'mousedown', function(object3d){
+        clearFilters();
+    });
+
+    //CHANGE BACKGROUND TEXT
+
+    var text= THREEDC.textChart();
+    text.data('Change background').color('black').size(5);
+    myDashBoard.addChart(text,{x:-55,y:0,z:-49});
+
+    var helper = new THREE.BoundingBoxHelper(text.mesh, 0xffffff);
+    helper.update();
+    helper.visible=true;
+    helper.opacity=0;
+    myDashBoard.scene.add(helper);
+
+    myDashBoard.domEvents.bind(helper, 'mousedown', function(object3d){
+       ChangeBackGround();
+    });
 
     // PIE CHART, COMMITS PER ORG
 
@@ -88,7 +114,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
    myDashBoard.addChart(pieOrgs,{x:-15,y:20,z:-20});
 
    var pieTitle= THREEDC.textChart();
-   pieTitle.data('Commits per Org').color('green').size(5);
+   pieTitle.data('Commits per Org').color('orange').size(5);
    myDashBoard.addChart(pieTitle,{x:-26,y:30,z:-30});
 
 
@@ -167,6 +193,8 @@ function clearFilters() {
     var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
     myDashBoard.scene.add( skyBox );
 
+    function ChangeBackGround() {
+    }
 
 
 }

@@ -2284,10 +2284,11 @@ function update()
 		    text3D = new THREE.Mesh( geometry, material );
 		    text3D.origin_color=origin_color;
     		text3D.position.copy(_chart.coords);
-	      //	_chart.parts.push(text3D);
-	      //	_chart.threeGroup.add(text3D);
+	      	//_chart.parts.push(text3D);
+	      	//_chart.threeGroup.add(text3D);
 			_chart.dashBoard.scene.add(text3D);
-			//_chart.addEvents();
+			_chart.mesh=text3D;
+
 	    }
 
 	    return _chart;
