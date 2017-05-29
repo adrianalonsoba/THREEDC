@@ -884,6 +884,29 @@ function update()
 
 	    	_chart.renderGrids();
 
+    		if (_chart._gridColor) {addGridBox()};
+
+
+	    	function addGridBox () {
+				var material = new THREE.MeshPhongMaterial( {
+														   color:_chart._gridColor || 0x0000ff,
+				                                           specular: 0x999999,
+				                                           shininess: 100,
+				                                           shading : THREE.SmoothShading,
+				                                           opacity:0.6,
+				                                           transparent: true
+				} );
+
+				var geometryXY = new THREE.CubeGeometry( _chart._width, _chart._height, 0.0001);
+
+
+				var boxXY=new THREE.Mesh(geometryXY, material);
+				boxXY.position.set(_chart.coords.x+_chart._width/2,_chart.coords.y+_chart._height/2,_chart.coords.z);
+				//scene.add(boxXY);
+				//_chart.xGrids.push(boxXY);
+				_chart.threeGroup.add(boxXY);
+	    	}
+
 	    	function putXGrid (step) {
 
 				var verticalGeometry = new THREE.Geometry();
@@ -2024,7 +2047,7 @@ function update()
 			console.log('dimension',_chart._dimension.top(1));
 			console.log('group',_chart._group.top(1));
 			var uData=_chart._group.top(1);
-			console.log(uData[0].value.length);
+			console.log(uData[0].key);
 
 			//_chart._data[0].key1=_chart._group.top(1).key;
 
