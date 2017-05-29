@@ -35,6 +35,43 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
     var myDashBoard= THREEDC.dashBoard(scenediv);
 
+
+    //TOTEM INFO
+
+    var geometry = new THREE.PlaneBufferGeometry( 150, 250);
+    var material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
+    var totem = new THREE.Mesh( geometry, material );
+    totem.position.set(0,100,-50);
+    myDashBoard.scene.add( totem );
+
+    //LOGO
+
+    var geometry = new THREE.PlaneBufferGeometry( 75, 40);
+    var logoTexture = THREE.ImageUtils.loadTexture( '../images/opnfv.png' );
+    var material = new THREE.MeshBasicMaterial( {map:logoTexture, side: THREE.FrontSide} );
+    var logoContainer = new THREE.Mesh( geometry, material );
+    logoContainer.position.set(0,175,-49);
+    myDashBoard.scene.add( logoContainer );
+
+    //TEXT
+    var pieTitle= THREEDC.textChart();
+    pieTitle.data('GIT ANALYTICS').color('black').size(5);
+    myDashBoard.addChart(pieTitle,{x:-30,y:140,z:-49});
+
+
+    var text= THREEDC.textChart();
+    text.data('Clik on pie parts, bars and bubbles to filter').color('black').size(4);
+    myDashBoard.addChart(text,{x:-55,y:120,z:-49});
+
+
+
+    //CLEAR FILTERS TEXT
+
+    var text= THREEDC.textChart();
+    text.data('Clear filters').color('black').size(5);
+    myDashBoard.addChart(text,{x:-55,y:10,z:-49});
+    console.log(text);
+
     // PIE CHART, COMMITS PER ORG
 
     dimByOrg= cf.dimension(function(p) {return p.Author_org_name;});
@@ -45,13 +82,14 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
     pieOrgs.dimension(dimByOrg)
            .group(groupByOrg)
-           .radius(50);
+           .opacity(1)
+           .radius(30);
 
-   myDashBoard.addChart(pieOrgs,{x:0,y:0,z:0});
+   myDashBoard.addChart(pieOrgs,{x:-15,y:20,z:-20});
 
    var pieTitle= THREEDC.textChart();
-   pieTitle.data('Commits per Org').color('green');
-   myDashBoard.addChart(pieTitle,{x:0,y:-20,z:0});
+   pieTitle.data('Commits per Org').color('green').size(5);
+   myDashBoard.addChart(pieTitle,{x:-26,y:30,z:-30});
 
 
 
@@ -109,6 +147,26 @@ function clearFilters() {
         myDashBoard.charts[i].reBuild();
     }
 }
+
+
+
+//BACKGROUNDS
+
+    var imagePrefix = "../../examples/Three.js/images/dawnmountain-";
+    var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
+    var imageSuffix = ".png";
+    var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );   
+    
+    var materialArray = [];
+    for (var i = 0; i < 6; i++)
+        materialArray.push( new THREE.MeshBasicMaterial({
+            map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
+            side: THREE.BackSide
+        }));
+    var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
+    var skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
+    myDashBoard.scene.add( skyBox );
+
 
 
 }

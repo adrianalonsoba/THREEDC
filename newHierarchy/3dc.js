@@ -1884,7 +1884,7 @@ function update()
 				piePart.material.color.setHex(origin_color);
 				piePart.origin_color=origin_color;
 				piePart.position.set(_chart.coords.x+_chart._radius,_chart.coords.y+_chart._radius,_chart.coords.z);
-				piePart.name ="key:"+_data[i].key+" value:"+_data[i].value;
+				piePart.name ="key: "+_data[i].key+" value: "+_data[i].value;
 				piePart.data={
 					key:_data[i].key,
 					value:_data[i].value
@@ -1964,7 +1964,7 @@ function update()
 				bar.origin_color=origin_color;
 				bar.position.set(x+_chart.coords.x,y+_chart.coords.y,_chart.coords.z+_chart._depth/2);
 				//bar.rotation.set(_chart._rotation.x,_chart._rotation.y,_chart._rotation.z);
-				bar.name = "key:"+_data[i].key+" value: "+_data[i].value;
+				bar.name = "key: "+_data[i].key+" value: "+_data[i].value;
 				bar.data={
 					key:_data[i].key,
 					value:_data[i].value
@@ -2073,7 +2073,7 @@ function update()
 		            var bar = new THREE.Mesh(geometry, material);
 		            bar.origin_color=origin_color;
 		            bar.position.set(stepX+_chart.coords.x,y+_chart.coords.y,stepZ+_chart.coords.z);
-		            bar.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value;
+		            bar.name = "key1: "+_chart._data[dataPos].key1+" key2: "+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value;
 		            bar.data={
 		            	key1:_chart._data[dataPos].key1,
 		            	key2:_chart._data[dataPos].key2,
@@ -2374,7 +2374,7 @@ function update()
 					var linePart = new THREE.Mesh( charGeometry, material );
 					linePart.origin_color=origin_color;
 					linePart.position.set(x+_chart.coords.x,_chart.coords.y,_chart.coords.z);
-					linePart.name="key:"+_data[i].key+" value: "+_data[i].value;
+					linePart.name="key: "+_data[i].key+" value: "+_data[i].value;
 					linePart.data={
 						key:_data[i].key,
 						value:_data[i].value
@@ -2542,7 +2542,7 @@ function update()
 			            bubble.origin_color=origin_color;
 			            y=(_chart._height*_chart._data[dataPos].value)/topValue;
 			            bubble.position.set(stepX+_chart.coords.x,y+_chart.coords.y,stepZ+_chart.coords.z);
-			            bubble.name = "key1:"+_chart._data[dataPos].key1+" key2:"+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value+" value2: "+_chart._data[dataPos].value2;
+			            bubble.name = "key1 :"+_chart._data[dataPos].key1+" key2: "+_chart._data[dataPos].key2+" value: "+_chart._data[dataPos].value+" value2: "+_chart._data[dataPos].value2;
 			            bubble.data={
 			            	key1:_chart._data[dataPos].key1,
 			            	key2:_chart._data[dataPos].key2,
