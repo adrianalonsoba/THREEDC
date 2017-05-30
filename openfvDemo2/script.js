@@ -44,6 +44,15 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
     totem.position.set(0,100,-50);
     myDashBoard.scene.add( totem );
 
+    //FLOOR
+    var geometry = new THREE.PlaneBufferGeometry( 5000, 5000);
+    var material = new THREE.MeshBasicMaterial( {map:THREE.ImageUtils.loadTexture( '../images/ground2.jpg'), side: THREE.DoubleSide} );
+    var floor = new THREE.Mesh( geometry, material );
+    floor.position.set(0,-400,0);
+    floor.rotation.x=Math.PI / 2;
+    myDashBoard.scene.add(floor);
+
+
     //LOGO
 
     var geometry = new THREE.PlaneBufferGeometry( 100, 60);
@@ -85,7 +94,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
     //CHANGE BACKGROUND TEXT
 
     var text= THREEDC.textChart();
-    text.data('Change background').color('black').size(5);
+    text.data('Switch background').color('black').size(5);
     myDashBoard.addChart(text,{x:-55,y:0,z:-49});
 
     var helper = new THREE.BoundingBoxHelper(text.mesh, 0xffffff);
@@ -159,7 +168,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
 
     //3D BARS CHART
-    //create a dimension by week
+    //create a dimension by year and quat
     var dimbyYandQ = cf.dimension(function (d) {
         return Number.parseInt(
         d.utc_author.getFullYear().toString() +
@@ -217,9 +226,9 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
         for (var j = 0; j < orgs.length; j++) {
             var found = mydata[i].value.find(findorg);
             if (found) {
-                data1.push({ key1: mydata[i].key, key2: found.key, value: found.value });
+                data1.push({ key1:found.key , key2: mydata[i].key, value: found.value });
             } else {
-                data1.push({ key1: mydata[i].key, key2: orgs[j].key, value: 0 });
+                data1.push({ key1:orgs[j].key , key2: mydata[i].key, value: 0 });
             }
         }
     }
@@ -229,7 +238,9 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
    // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(grouporgWeek);
 
-    window.mybar3d.data(data1).gridsOn(0xffffff);
+    window.mybar3d.data(data1).width(250).gridsOn(0xffffff);
+
+    console.log(data1);
 
 
    myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
@@ -257,9 +268,9 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
             for (var j = 0; j < orgs.length; j++) {
                 var found = mydata[i].value.find(findorg);
                 if (found) {
-                    data1.push({ key1: mydata[i].key, key2: found.key, value: found.value });
+                    data1.push({ key1:found.key , key2: mydata[i].key, value: found.value });
                 } else {
-                    data1.push({ key1: mydata[i].key, key2: orgs[j].key, value: 0 });
+                    data1.push({ key1:orgs[j].key , key2: mydata[i].key, value: 0 });
                 }
             }
         }
@@ -267,7 +278,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
    // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(grouporgWeek);
 
-    window.mybar3d.data(data1).gridsOn(0xffffff);
+    window.mybar3d.data(data1).width(250).gridsOn(0xffffff);
 
 
    myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
@@ -289,6 +300,8 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
      var alternate=true;
      var skyBox;
+
+
 
     var imagePrefix = "../images/dawnmountain-";
     var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];

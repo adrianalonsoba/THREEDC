@@ -1145,7 +1145,6 @@ function update()
 			for (var i = 1; i < _chart._data.length; i++) {
 				if (_chart._data[i].key2.length > topZvalue.length) topZvalue=_chart._data[i].key2;
 			};
-			console.log(topZvalue);
 			return topZvalue;
 		}
 
@@ -2103,8 +2102,10 @@ function update()
 		            	value:_chart._data[dataPos].value
 		            };
 		            bar.parentChart=_chart;
-		            _chart.parts.push(bar);
-		            _chart.threeGroup.add(bar);
+		            if (_chart._data[dataPos].value!=0) {
+			             _chart.parts.push(bar);
+		           		 _chart.threeGroup.add(bar);
+		            }
 					 stepX+=_chart._width/numberOfKeys1.length;
 		   			dataPos++;
 		   		};
