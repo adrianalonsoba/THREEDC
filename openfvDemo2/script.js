@@ -118,13 +118,11 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
     pieOrgs.dimension(dimByOrg)
            .group(groupByOrg)
            .opacity(1)
+           .color('orange')
+           .setTitle('Commits per org')
            .radius(30);
 
    myDashBoard.addChart(pieOrgs,{x:-15,y:20,z:-20});
-
-   var pieTitle= THREEDC.textChart();
-   pieTitle.data('Commits per Org').color('orange').size(5);
-   myDashBoard.addChart(pieTitle,{x:-26,y:30,z:-30});
 
 
 
@@ -137,19 +135,69 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
     lineMonths.dimension(dimByMonth)
               .group(groupByMonth)
+              .setTitle('Commits per week')
               .gridsOn(0xffffff)
               .width(400);
 
     myDashBoard.addChart(lineMonths,{x:100,y:0,z:0});
 
-    var lineTitle= THREEDC.textChart();
-    lineTitle.data('Commits per Week');
-    myDashBoard.addChart(lineTitle,{x:350,y:-20,z:0});
+
+// LINE CHART, AUTHORS PER WEEK
+
+    var groupByAuthorWeek= dimByMonth.group().reduce(
+                            function reduceAdd(p, v) {
+                              //++p.key2;
+                              if (v.Author_name) {p.value++};
+                              return p;
+                            },
+
+                            function reduceRemove(p, v) {
+                            //  --p.key2;
+                            if (v.Author_name) {p.value--};
+                              return p;
+                            },
+
+                            function reduceInitial() {
+                              return { value: 0};
+                            });
+
+    console.log('group',groupByAuthorWeek.all());
+
+    var lineAuthorWeek=THREEDC.lineChart();
+
+    lineAuthorWeek.dimension(groupByAuthorWeek)
+              .group(groupByAuthorWeek)
+              .gridsOn(0xffffff)
+              .width(400);
+
+    //myDashBoard.addChart(lineAuthorWeek,{x:-300,y:0,z:0});
+
+   // var lineTitle= THREEDC.textChart();
+   // lineTitle.data('Commits per Week');
+    //myDashBoard.addChart(lineTitle,{x:350,y:-20,z:0});
+
+// LINE CHART, COMMITS PER TIME ZONE
+    var dimByTz= cf.dimension(function(p) {return p.tz;});
+
+    var groupByTz= dimByTz.group();
+
+    var barsTz=THREEDC.barsChart();
+
+    barsTz.dimension(dimByTz)
+              .group(groupByTz)
+              .gridsOn(0xffffff)
+              .color(0xff00ff)
+              .setTitle('Commits per time zone')
+              .width(400);
+
+    myDashBoard.addChart(barsTz,{x:100,y:-100,z:-100});
+
 
 // BARS CHART, COMMITS PER AUTHOR
     var dimByAuthor= cf.dimension(function(p) {return p.Author_name;});
 
     var groupByAuthor= dimByAuthor.group();
+    console.log('numero de autores: ',groupByAuthor.all().length);
 
     var barAuthors=THREEDC.barsChart();
 
@@ -157,6 +205,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
               .group(groupByAuthor)
               .gridsOn(0xffffff)
               .color(0xFF0040)
+              .setTitle('Commits Per Author')
               .width(400);
 
     myDashBoard.addChart(barAuthors,{x:-250,y:0,z:0});
@@ -164,7 +213,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
    var barTitle= THREEDC.textChart();
    barTitle.data('Commits per Author').color(0xFF0040);
-   myDashBoard.addChart(barTitle,{x:-375,y:-20,z:0});
+  // myDashBoard.addChart(barTitle,{x:-375,y:-20,z:0});
 
 
     //3D BARS CHART
@@ -252,13 +301,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
     myDashBoard.gui.add(obj,'Clear').name('Update');
 
     function update() {
-       // dimByAuthor.filterAll();
-      //  dimByMonth.filterAll();
-       // dimByOrg.filterAll();
-        //for (var i = 0; i < myDashBoard.charts.length; i++) {
-        //    myDashBoard.charts[i].reBuild();
-        //}
-        console.log(window.mybar3d)
+
         myDashBoard.removeChart(window.window.mybar3d);
         var orgs = groupByOrg.top(Infinity);
         var mydata = grouporgWeek.all();
@@ -278,7 +321,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
 
    // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(grouporgWeek);
 
-    window.mybar3d.data(data1).width(250).gridsOn(0xffffff);
+    window.mybar3d.data(data1).width(250).gridsOn(0xffffff).setTitle('Commits per week and org');
 
 
    myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
@@ -291,6 +334,7 @@ $.getJSON("../jsons/opnfv-commits.json", function (data) {
         dimByAuthor.filterAll();
         dimByMonth.filterAll();
         dimByOrg.filterAll();
+        dimByTz.filterAll();
         for (var i = 0; i < myDashBoard.charts.length; i++) {
             myDashBoard.charts[i].reBuild();
         }

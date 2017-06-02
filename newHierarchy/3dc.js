@@ -1149,6 +1149,45 @@ function update()
 		}
 
 
+		_chart.renderTitle=function() {
+			var txt = _chart._title;
+			var material = new THREE.MeshPhongMaterial( {color: _chart._color,
+			                                    	     specular: 0x999999,
+			                                    	     shininess: 100,
+			                                    	     shading : THREE.SmoothShading,
+			                                       	     opacity:_chart._opacity,
+			                                   		     transparent: true
+			} );
+			var geometry = new THREE.TextGeometry( txt, {
+			  size: _chart._height/10,
+			  height: _chart._depth,
+			  curveSegments: 3,
+			  font: "helvetiker",
+			  weight: "bold",
+			  style: "normal",
+			  bevelEnabled: false
+			});
+
+			var chartTitle = new THREE.Mesh( geometry, material );
+			_chart.title=chartTitle;
+
+			chartTitle.position.x = _chart.coords.x;
+			chartTitle.position.y = _chart.coords.y-_chart._height/5;
+			chartTitle.position.z = _chart.coords.z;
+
+			_chart.threeGroup.add(chartTitle);
+
+			return _chart;
+		}
+
+
+		_chart.removeTitle=function() {
+			_chart.threeGroup.remove(_chart.title);
+			return _chart;
+		}
+
+
+
 	    _chart.getTopValue2=function() {
 			var topValue2 = _chart._data[0].value2;
 			for (var i = 1; i < _chart._data.length; i++) {
@@ -1318,6 +1357,14 @@ function update()
 	    	return _chart;
 	    }
 
+	    _chart.setTitle=function(title){
+	    	if(!arguments.length){
+	    		console.log('argument needed');
+	    		return;
+	    	}
+	    	_chart._title=title;
+	    	return _chart;
+	    }
 
 		return _chart;
 
@@ -1918,6 +1965,8 @@ function update()
 			}
 
 			_chart.addEvents();
+			if(_chart._title) _chart.renderTitle();
+
 	    }
 
 		return _chart;
@@ -2001,6 +2050,7 @@ function update()
 		    _chart.addEvents();
 		    _chart.addLabels();
 			if (_chart._gridsOn) _chart.addGrids();
+			if(_chart._title) _chart.renderTitle();
 	    }
 
 	    return _chart;
@@ -2114,6 +2164,8 @@ function update()
 		    _chart.addEvents();
 		    _chart.addLabels();
 			if (_chart._gridsOn) _chart.addGrids();
+			if(_chart._title) _chart.renderTitle();
+
 		}
 
 		return _chart;
@@ -2414,6 +2466,8 @@ function update()
 			_chart.addEvents();
 			_chart.addLabels();
 			if (_chart._gridsOn) _chart.addGrids();
+			if(_chart._title) _chart.renderTitle();
+
 
 
 	    }
@@ -2493,6 +2547,8 @@ function update()
 			_chart.addEvents();
 			_chart.addLabels();
 			if (_chart._gridsOn) _chart.addGrids();
+			if(_chart._title) _chart.renderTitle();
+
 	    }
 
 	    return _chart;
@@ -2588,6 +2644,8 @@ function update()
 		    _chart.addEvents();
 		    _chart.addLabels();
 			if (_chart._gridsOn) _chart.addGrids();
+			if(_chart._title) _chart.renderTitle();
+
 
 		}
 

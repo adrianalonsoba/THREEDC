@@ -54,24 +54,18 @@ var paymentsByTotal = payments.dimension(function(d) { return d.total; });
 var paymentGroupsByTotal = paymentsByTotal.group().reduce(reduceAdd,reduceRemove,reduceInitial);
 
 function reduceAdd(p, v) {
-  ++p.key2;
-  p.value += v.total;
-  return p;
+  return p + 1;
 }
 
 function reduceRemove(p, v) {
-  --p.key2;
-  p.value -= v.total;
-  return p;
+  return p - 1;
 }
 
 function reduceInitial() {
-  return {key2: 0, value: 0};
+  return 0;
 }
 
-function orderValue(p) {
-  return p.total;
-}
+
 
 
 console.log(paymentGroupsByTotal.all());
