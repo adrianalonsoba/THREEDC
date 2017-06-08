@@ -1,23 +1,25 @@
  
+function download(text, name, type) {
+    var a = document.createElement("a");
+    var file = new Blob([text], {type: type});
+    a.href = URL.createObjectURL(file);
+    a.download = name;
+    a.click();
+}
+
 // initialization
 //getJSON call, draw meshes with data
-$.getJSON("../jsons/webvr-git.json", function (data) {
+$.getJSON("../jsons/webvr-git-parsed.json", function (data) {
 
      window.json_data = data;
     init(json_data);
 });
 
  function init (data) {
- 	var parsed_data=[];
 
- 	for (var i = 0; i < data.length; i++) {
- 		parsed_data.push(data[i]._source);
- 	}
+    var cf = crossfilter(data);
 
-    console.log('parsed',parsed_data[0]);
-    var cf = crossfilter(parsed_data);
-
-    console.log(cf.size());
+    console.log(cf.size(),data);
 
     // CREATE A DASHBOARD
     var scenediv=document.getElementById( 'ThreeJS' );
@@ -99,7 +101,7 @@ $.getJSON("../jsons/webvr-git.json", function (data) {
 
     // PIE CHART, COMMITS PER ORG
 
-    dimByOrg= cf.dimension(function(p) {return p.author_org_name;});
+    dimByOrg= cf.dimension(function(p) {return p.Author_org_name;});
 
     groupByOrg= dimByOrg.group();
 
@@ -117,22 +119,22 @@ $.getJSON("../jsons/webvr-git.json", function (data) {
 
 
 
-   // BARS CHART, COMMITS PER REPO
-    var dimByRepo= cf.dimension(function(p) {return p.github_repo;});
+   // BARS CHART, COMMITS PER TIMEZONE
+   
+    var dimByTz= cf.dimension(function(p) {return p.tz;});
 
-    var groupByRepo= dimByRepo.group();
+    var groupByTz= dimByTz.group();
 
-    var barsRepo=THREEDC.barsChart();
+    var barsTz=THREEDC.barsChart();
 
-    barsRepo.dimension(dimByRepo)
-              .group(groupByRepo)
-              .setTitle('Commits per repo')
+    barsTz.dimension(dimByTz)
+              .group(groupByTz)
+              .setTitle('Commits per time zone')
               .gridsOn(0xffffff)
 			  .rotation({x:0,y:-55,z:0})
               .width(300);
 
-    myDashBoard.addChart(barsRepo,{x:70,y:0,z:-30});
-
+    myDashBoard.addChart(barsTz,{x:70,y:0,z:-30});
 
 
 
@@ -161,7 +163,6 @@ $.getJSON("../jsons/webvr-git.json", function (data) {
     
     function clearFilters() {
         dimByOrg.filterAll();
-        dimByRepo.filterAll();
         dimByAuthor.filterAll();
         for (var i = 0; i < myDashBoard.charts.length; i++) {
             myDashBoard.charts[i].reBuild();
