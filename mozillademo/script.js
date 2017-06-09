@@ -1,4 +1,15 @@
- 
+ //simple week number
+Date.prototype.getWeek = function () {
+    var target = new Date(this.valueOf());
+    var dayNr = (this.getDay() + 6) % 7;
+    target.setDate(target.getDate() - dayNr + 3);
+    var firstThursday = target.valueOf();
+    target.setMonth(0, 1);
+    if (target.getDay() != 4) {
+        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+    }
+    return 1 + Math.ceil((firstThursday - target) / 604800000);
+}
 // initialization
 //getJSON call, draw meshes with data
 $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
@@ -163,7 +174,7 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
               .setTitle('Commits Per Author')
               .width(300);
 
-    myDashBoard.addChart(barAuthors,{x:-200,y:0,z:20});
+    myDashBoard.addChart(barAuthors,{x:-200,y:80,z:20});
 
 
 
@@ -184,16 +195,17 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
               .group(groupbyYandQ)
               .setTitle('Commits per year and quarter')
               .gridsOn(0xffffff)
+              .rotation({x:0,y:-55,z:0})
               .color(0x33FF39)
-              .width(400);
+              .width(300);
 
-    myDashBoard.addChart(lineMonths,{x:100,y:0,z:0});
+    myDashBoard.addChart(lineMonths,{x:70,y:80,z:-30});
 
 
 
     //3D BARS CHART
 
-        var grouporgWeek = dimbyYandQ.group().reduce(function reduceAdd(p, v) {
+        var groupByOrgandYearQ = dimbyYandQ.group().reduce(function reduceAdd(p, v) {
         var findorg = function (element) {
             if (!element.key) return false;
             return element.key === v.Author_org_name;
@@ -231,10 +243,10 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
     });
 
     console.log( groupbyYandQ.all());
-    console.log( grouporgWeek.all());
+    console.log( groupByOrgandYearQ.all());
 
     var orgs = groupByOrg.top(Infinity);
-    var mydata = grouporgWeek.all();
+    var mydata = groupByOrgandYearQ.all();
     var data1 = [];
     var findorg = function (d) { return d.key === orgs[j].key; };
     for (var i = 0 ; i < mydata.length; i++) {
@@ -250,12 +262,94 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
 
     window.mybar3d = THREEDC.TDbarsChart();
 
-   // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(grouporgWeek);
+   // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(groupByOrgandYearQ);
 
-    window.mybar3d.data(data1).width(250).depth(200).barSeparation(0.9).gridsOn(0xffffff).setTitle('Commits per week and org');
+    window.mybar3d.data(data1).width(250).depth(200).barSeparation(0.9).gridsOn(0xffffff)
+    .rotation({x:0,y:200,z:0})
+    .setTitle('Commits per week and org');
+  //  myDashBoard.removeAllCharts();
 
 
-   myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
+   myDashBoard.addChart(window.mybar3d,{x:2000,y:0,z:-100});
+
+
+
+   //BUBBLE CHART
+    var dimByWeek = cf.dimension(function (p) {
+        var year = (new Date(p.utc_author)).getFullYear();
+        return Number.parseInt(year + ("000" + p.week).slice(-3));
+    });
+        window.grouporgWeek = dimByWeek.group().reduce(function reduceAdd(p, v) {
+            var findorg = function (element) {
+                if (!element.key) return false;
+                return element.key === v.Author_org_name;
+            };
+            var elementIndex = p.authors.findIndex(findorg);
+            if (elementIndex === -1) {
+                //init
+                elementIndex = p.authors.push({ key: v.Author_org_name, value: { commits: 1 } });
+                //index of added item.
+                elementIndex = elementIndex - 1;
+            } else {
+                p.authors[elementIndex].value.commits = p.authors[elementIndex].value.commits + 1;
+            }
+            p.totalCommits++;
+            return p;
+        },
+
+        function reduceRemove(p, v) {
+            var findorg = function (element) {
+                if (!element.key) return false;
+                return element.key === v.Author_org_name;
+            };
+            var elementIndex = p.authors.findIndex(findorg);
+            if (elementIndex !== -1) {
+                p.authors[elementIndex].value.commits = p.authors[elementIndex].value.commits - 1;
+                if (p.authors[elementIndex].value.commits <= 0) {
+                    //remove that element.
+                    p.authors.splice(elementIndex, 1);
+                } 
+                p.totalCommits--;
+            }
+
+            return p;
+        },
+
+        function reduceInitial() {
+            return {
+                authors: [],
+                totalCommits: 0,
+                
+            };
+        });
+        console.log("new grouping");
+        console.log(grouporgWeek.all());
+
+        var mydata = grouporgWeek.all();
+        var alldata = [];
+        var findorg = function (d) { return d.key === orgs[j].key; };
+        for (var i = 0 ; i < mydata.length; i++) {
+            for (var j = 0; j < orgs.length; j++) {
+                var found = mydata[i].value.authors.find(findorg);
+                if (found) {
+                    alldata.push({ key1:found.key , key2:mydata[i].key , value: found.value.commits ,value2:found.value.commits/mydata[i].value.totalCommits});
+                } else {
+                    alldata.push({ key1:orgs[j].key , key2:mydata[i].key , value: 0,value2:0 });
+                }
+            }
+        }
+
+        window.mybubblechart=THREEDC.bubbleChart();
+        console.log(alldata);
+        mybubblechart
+            .data(alldata)
+            .gridsOn(0xffffff)
+            .width(150)
+            .rotation({x:0,y:45,z:0})
+            .depth(200)
+            .setTitle("contribution by company");
+
+        myDashBoard.addChart(mybubblechart,{x:-200,y:0,z:0});
 
 
     //UPDATE BUTTON
@@ -266,9 +360,9 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
 
     function update() {
 
-        myDashBoard.removeChart(window.window.mybar3d);
+        myDashBoard.removeChart(window.mybar3d);
         var orgs = groupByOrg.top(Infinity);
-        var mydata = grouporgWeek.all();
+        var mydata = groupByOrgandYearQ.all();
         var data1 = [];
         var findorg = function (d) { return d.key === orgs[j].key; };
         for (var i = 0 ; i < mydata.length; i++) {
@@ -281,16 +375,14 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
                 }
             }
         }
-     window.mybar3d = THREEDC.TDbarsChart();
+        window.mybar3d = THREEDC.TDbarsChart();
 
-   // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(grouporgWeek);
+        // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(groupByOrgandYearQ);
 
-    window.mybar3d.data(data1).width(250).depth(200).barSeparation(0.9).gridsOn(0xffffff).setTitle('Commits per week and org');
-
-
-   myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
+        window.mybar3d.data(data1).width(250).depth(200).barSeparation(0.9).gridsOn(0xffffff).setTitle('Commits per week and org');
 
 
+        myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
 
     }
 
