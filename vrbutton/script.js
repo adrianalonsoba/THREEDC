@@ -1,222 +1,225 @@
- 
-// initialization
-//getJSON call, draw meshes with data
-$.getJSON("../jsons/webvr-git.json", function (data) {
-
-     window.json_data = data;
-    init(json_data);
-});
-
- function init (data) {
- 	var parsed_data=[];
-
- 	for (var i = 0; i < data.length; i++) {
- 		parsed_data.push(data[i]._source);
- 	}
-
-    console.log('parsed',parsed_data[0]);
-    var cf = crossfilter(parsed_data);
-
-    console.log(cf.size());
-
-    // CREATE A DASHBOARD
-    var scenediv=document.getElementById( 'ThreeJS' );
-
-    var myDashBoard= THREEDC.dashBoard(scenediv);
 
 
-    //TOTEM INFO
+      if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
-    var geometry = new THREE.PlaneBufferGeometry( 150, 250);
-    var material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide} );
-    var totem = new THREE.Mesh( geometry, material );
-    totem.position.set(0,100,-50);
-    myDashBoard.scene.add( totem );
+      var container;
 
-    //FLOOR
-    var geometry = new THREE.PlaneBufferGeometry( 5000, 5000);
-    var material = new THREE.MeshBasicMaterial( {map:THREE.ImageUtils.loadTexture( '../images/ground2.jpg'), side: THREE.DoubleSide} );
-    var floor = new THREE.Mesh( geometry, material );
-    floor.position.set(0,-400,0);
-    floor.rotation.x=Math.PI / 2;
-    myDashBoard.scene.add(floor);
+      var camera, scene, renderer, effect;
 
+      var mesh, lightMesh, geometry;
 
-    //LOGO
+      var myDashBoard;
 
-    var geometry = new THREE.PlaneBufferGeometry( 100, 50);
-    var logoTexture = THREE.ImageUtils.loadTexture( '../images/mozilla.png' );
-    var material = new THREE.MeshBasicMaterial( {map:logoTexture, side: THREE.FrontSide,BackGround:0xffffff} );
-    var logoContainer = new THREE.Mesh( geometry, material );
-    logoContainer.position.set(0,175,-49);
-    myDashBoard.scene.add( logoContainer );
+      var spheres = [];
 
-    //TEXT
-    var pieTitle= THREEDC.textChart();
-    pieTitle.data('GIT ANALYTICS').color('black').size(5);
-    myDashBoard.addChart(pieTitle,{x:-30,y:140,z:-49});
+      var directionalLight, pointLight;
+
+      var mouseX = 0, mouseY = 0;
+
+      var windowHalfX = window.innerWidth / 2;
+      var windowHalfY = window.innerHeight / 2;
+
+      document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
 
-    var text= THREEDC.textChart();
-    text.data('Clik on pie parts, bars and bubbles to filter').color('black').size(4);
-    myDashBoard.addChart(text,{x:-55,y:120,z:-49});
+      init();
+      animate();
+
+      function init() {
+
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+
+        camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
+     camera.position.set(0,150,800);
 
 
 
-    //CLEAR FILTERS TEXT
+        scene = new THREE.Scene();
 
 
-    var text= THREEDC.textChart();
-    text.data('Clear filters').color('black').size(5);
-    myDashBoard.addChart(text,{x:-55,y:10,z:-49});
+   camera.lookAt(scene.position);
+   scene.add(camera);
+         ///////////
+         // LIGHT //
+         ///////////
+         var light = new THREE.PointLight(0xffffff,0.8);
+         light.position.set(0,2500,2500);
+         scene.add(light);
 
-    var helper = new THREE.BoundingBoxHelper(text.mesh, 0xffffff);
-    helper.update();
-    helper.visible=true;
-    helper.opacity=0;
-    myDashBoard.scene.add(helper);
-
-    myDashBoard.domEvents.bind(helper, 'mousedown', function(object3d){
-        clearFilters();
-    });
-
-    //CHANGE BACKGROUND TEXT
-
-    var text= THREEDC.textChart();
-    text.data('Switch background').color('black').size(5);
-    myDashBoard.addChart(text,{x:-55,y:0,z:-49});
-
-    var helper = new THREE.BoundingBoxHelper(text.mesh, 0xffffff);
-    helper.update();
-    helper.visible=true;
-    helper.opacity=0;
-    myDashBoard.scene.add(helper);
-
-    myDashBoard.domEvents.bind(helper, 'mousedown', function(object3d){
-       ChangeBackGround();
-    });
-
-
-    // PIE CHART, COMMITS PER ORG
-
-    dimByOrg= cf.dimension(function(p) {return p.author_org_name;});
-
-    groupByOrg= dimByOrg.group();
-
-    var pieOrgs =THREEDC.pieChart();
-
-    pieOrgs.dimension(dimByOrg)
-           .group(groupByOrg)
-           .opacity(1)
-           .color('orange')
-           .setTitle('Commits per org')
-           .radius(30);
-
-   myDashBoard.addChart(pieOrgs,{x:-15,y:20,z:-20});
-
-
-
-
-   // BARS CHART, COMMITS PER REPO
-    var dimByRepo= cf.dimension(function(p) {return p.github_repo;});
-
-    var groupByRepo= dimByRepo.group();
-
-    var barsRepo=THREEDC.barsChart();
-
-    barsRepo.dimension(dimByRepo)
-              .group(groupByRepo)
-              .setTitle('Commits per repo')
-              .gridsOn(0xffffff)
-			  .rotation({x:0,y:-55,z:0})
-              .width(300);
-
-    myDashBoard.addChart(barsRepo,{x:70,y:0,z:-30});
-
-
-
-
-// BARS CHART, COMMITS PER AUTHOR
-    var dimByAuthor= cf.dimension(function(p) {return p.Author_name;});
-
-    var groupByAuthor= dimByAuthor.group();
-    console.log('numero de autores: ',groupByAuthor.all().length);
-
-    var barAuthors=THREEDC.barsChart();
-
-    barAuthors.dimension(dimByAuthor)
-              .group(groupByAuthor)
-              .gridsOn(0xffffff)
-              .color(0xFF0040)
-			  .rotation({x:0,y:55,z:0})
-              .setTitle('Commits Per Author')
-              .width(300);
-
-    myDashBoard.addChart(barAuthors,{x:-200,y:0,z:20});
-
-
-    //CLEAR FILTERS BUTTON
-
-
-    
-    function clearFilters() {
-        dimByOrg.filterAll();
-        dimByRepo.filterAll();
-        dimByAuthor.filterAll();
-        for (var i = 0; i < myDashBoard.charts.length; i++) {
-            myDashBoard.charts[i].reBuild();
-        }
-
-    }
-//BACKGROUNDS
-
-     var alternate=true;
-     var skyBox;
-
-
-
-    var imagePrefix = "../images/dawnmountain-";
-    var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
-    var imageSuffix = ".png";
-    var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );   
-    
-    var materialArray = [];
-    for (var i = 0; i < 6; i++)
-        materialArray.push( new THREE.MeshBasicMaterial({
-            map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-            side: THREE.BackSide
-        }));
-    var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-    skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-    myDashBoard.scene.add( skyBox );
-
-    function ChangeBackGround() {
-        myDashBoard.scene.remove( skyBox );
-        var imagePrefix;
-        var imageSuffix;
-        if (alternate) {
-            imagePrefix = "../images/skycubemap-";
-            imageSuffix = ".jpg";
-        }else{
-            imagePrefix = "../images/dawnmountain-";
-            imageSuffix = ".png";
-        }
-        var directions  = ["xpos", "xneg", "ypos", "yneg", "zpos", "zneg"];
-        var skyGeometry = new THREE.CubeGeometry( 5000, 5000, 5000 );   
+        // create a small sphere to show position of light
+        var lightbulb = new THREE.Mesh( 
+          new THREE.SphereGeometry( 100, 16, 8 ), 
+          new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+        );
+        lightbulb.position.set(0,2500,2500);
+        scene.add( lightbulb );
         
-        var materialArray = [];
-        for (var i = 0; i < 6; i++)
-            materialArray.push( new THREE.MeshBasicMaterial({
-                map: THREE.ImageUtils.loadTexture( imagePrefix + directions[i] + imageSuffix ),
-                side: THREE.BackSide
-            }));
-        var skyMaterial = new THREE.MeshFaceMaterial( materialArray );
-        skyBox = new THREE.Mesh( skyGeometry, skyMaterial );
-        myDashBoard.scene.add( skyBox );
-        alternate=!alternate;
+         var light = new THREE.PointLight(0xffffff,0.8);
+         light.position.set(-2500,2500,-2500);
+         scene.add(light);
 
-    }
+        // create a small sphere to show position of light
+        var lightbulb = new THREE.Mesh( 
+          new THREE.SphereGeometry( 100, 16, 8 ), 
+          new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+        );
+        lightbulb.position.set(-2500,2500,-2500);
+        scene.add( lightbulb );
+
+         var light = new THREE.PointLight(0xffffff,0.8);
+         light.position.set(2500,2500,-2500);
+         scene.add(light);
+
+        // create a small sphere to show position of light
+        var lightbulb = new THREE.Mesh( 
+          new THREE.SphereGeometry( 100, 16, 8 ), 
+          new THREE.MeshBasicMaterial( { color: 0xffaa00 } )
+        );
+        lightbulb.position.set(2500,2500,-2500);
+        scene.add( lightbulb );
 
 
+         var ambientLight = new THREE.AmbientLight(0x111111);
+         // scene.add(ambientLight);
 
+         // create a set of coordinate axes to help orient user
+         //    specify length in pixels in each direction
+         var axes = new THREE.AxisHelper(1000);
+         scene.add(axes);
+
+        var geometry = new THREE.SphereGeometry( 100, 32, 16 );
+
+        var material = new THREE.MeshLambertMaterial( { color: 0xffffff } );
+
+        for ( var i = 0; i < 50; i ++ ) {
+
+          var mesh = new THREE.Mesh( geometry, material );
+          mesh.position.x = Math.random() * 10000 - 5000;
+          mesh.position.y = Math.random() * 10000 - 5000;
+          mesh.position.z = Math.random() * 10000 - 5000;
+          mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
+          scene.add( mesh );
+
+          spheres.push( mesh );
+
+        }
+
+
+      
+        renderer = new THREE.WebGLRenderer();
+        renderer.setPixelRatio( window.devicePixelRatio );
+        renderer.setClearColor( 0xd8d8d8 );
+        container.appendChild( renderer.domElement );
+
+        effect = new THREE.StereoEffect( renderer );
+        effect.setSize( window.innerWidth, window.innerHeight );
+
+
+        window.addEventListener( 'resize', onWindowResize, false );
+
+
+    //3Ddata without CF
+
+  var data= [{key1:'january',key2:'apple',value:23},{key1:'february',key2:'apple',value:31},{key1:'march',key2:'apple',value:10},{key1:'april',key2:'apple',value:59},
+
+            {key1:'january',key2:'google',value:34},{key1:'february',key2:'google',value:89},{key1:'march',key2:'google',value:53},{key1:'april',key2:'google',value:76},
+
+            {key1:'january',key2:'microsoft',value:10},{key1:'february',key2:'microsoft',value:5},{key1:'march',key2:'microsoft',value:4},{key1:'april',key2:'microsoft',value:12},
+
+            {key1:'january',key2:'sony',value:56},{key1:'february',key2:'sony',value:21},{key1:'march',key2:'sony',value:23},{key1:'april',key2:'sony',value:12}
+  ];
+
+  //4D data
+
+      var data2= [{key1:'january',key2:'apple',value:23,value2:Math.random()*50},{key1:'february',key2:'apple',value:31,value2:Math.random()*50},{key1:'march',key2:'apple',value:10,value2:Math.random()*50},{key1:'april',key2:'apple',value:59,value2:Math.random()*50},
+
+              {key1:'january',key2:'google',value:34,value2:Math.random()*50},{key1:'february',key2:'google',value:89,value2:Math.random()*50},{key1:'march',key2:'google',value:53,value2:Math.random()*50},{key1:'april',key2:'google',value:76,value2:Math.random()*50},
+
+              {key1:'january',key2:'sony',value:34,value2:Math.random()*50},{key1:'february',key2:'sony',value:89,value2:Math.random()*50},{key1:'march',key2:'sony',value:53,value2:Math.random()*50},{key1:'april',key2:'sony',value:76,value2:Math.random()*50}
+
+
+      ];
+
+
+    controls = new THREE.DeviceOrientationControls(camera, true);
+    controls.connect();
+    controls.update();
+
+       myDashBoard = THREEDC.addDashBoard(scene,renderer.domElement);
+
+      myDashBoard.controls.enabled=false;
+
+      var data = [{ key: 'bla', value: 85 }, { key: 'bla2', value: 21 }, { key: 'bla2', value: 10 },
+                 { key: 'bla2', value: 5 }, { key: 'bla2', value: 38 }, { key: 'bla2', value: 200 }];
+
+
+      var myPieChart= THREEDC.pieChart();
+
+      myPieChart.data(data);
+
+      myDashBoard.addChart(myPieChart);
+
+
+      }
+
+      function onWindowResize() {
+
+        windowHalfX = window.innerWidth / 2;
+        windowHalfY = window.innerHeight / 2;
+
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+
+        effect.setSize( window.innerWidth, window.innerHeight );
+
+      }
+
+      function onDocumentMouseMove( event ) {
+
+        mouseX = ( event.clientX - windowHalfX ) * 10;
+        mouseY = ( event.clientY - windowHalfY ) * 10;
+
+      }
+
+      //
+
+      function animate() {
+
+        requestAnimationFrame( animate );
+        render();
+        update();
+
+      }
+
+      function render() {
+
+        var timer = 0.0001 * Date.now();
+
+        /*
+
+        camera.position.x += ( mouseX - camera.position.x ) * .05;
+        camera.position.y += ( - mouseY - camera.position.y ) * .05;
+        camera.lookAt( scene.position );
+
+        */
+
+        for ( var i = 0, il = spheres.length; i < il; i ++ ) {
+
+          var sphere = spheres[ i ];
+
+          sphere.position.x = 5000 * Math.cos( timer + i );
+          sphere.position.y = 5000 * Math.sin( timer + i * 1.1 );
+
+        }
+
+        effect.render( scene, camera );
+
+      }
+
+function update()
+{
+    controls.update();
+ // dash.controls.update();
+  //stats.update();
 }
