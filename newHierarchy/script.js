@@ -249,59 +249,55 @@ function init () {
   var test_data1=[{id:'root',parent:null,size:700},{id:'pepe',parent:'root',size:500},{id:'juan',parent:'root',size:200},{id:'satan',parent:'juan',size:100},{id:'satan',parent:'satan',size:100}];
 
 
+
   dash=THREEDC.addDashBoard(scene,renderer.domElement);
 
+  var panel= THREEDC.Panel({numberOfRows:2,numberOfColumns:2});
+
+  //panel.id(1234);
+
+  dash.addPanel(panel,{x:0,y:0,z:0});
 
   var bars =  THREEDC.barsChart();
-    bars.group(groupByMonth)
-        .dimension(dimByMonth)
-        .width(400)
-        .numberOfXLabels(5)
-        .numberOfYLabels(5)
-        .gridsOn()
-        .rotation({x:90,y:90,z:90})
-        .height(150)
-        .depth(20)
-        .color(0xff0000);
+  bars.group(groupByOrg)
+      .dimension(dimByOrg)
+      .width(200)
+      .height(200)
+      .numberOfXLabels(7)
+      .gridsOn()
+      .depth(30)
+      .numberOfYLabels(4)
+      .color(0x00ffff);
 
-  var line =  THREEDC.lineChart();
-    line.group(groupByAuthor)
-        .dimension(dimByAuthor)
-        .width(400)
-        .numberOfXLabels(5)
-        .numberOfYLabels(5)
-        .gridsOn()
-      //  .rotation({x:0,y:0,z:90})
-        .height(150)
-        .depth(20)
-        .color(0xff00ff);
+   var line =  THREEDC.barsChart();
+       line.group(groupByAuthor)
+      .dimension(dimByAuthor)
+      .gridsOn()
+      .width(200)
+      .height(200)
+      .numberOfXLabels(7)
+      .depth(30)
+      .color(0xff0000);
 
 
-  var pie =THREEDC.pieChart();
-  pie.group(groupByOrg).dimension(dimByOrg);
+    var line1 =  THREEDC.lineChart();
+       line1.group(groupByMonth)
+      .dimension(dimByMonth)
+      .width(400)
+      .numberOfXLabels(7)
+      .numberOfYLabels(5)
+      .gridsOn()
+      .depth(30)
+      .height(200)
+      .color(0x0000ff);
 
 
+   panel.addChart(bars,{row:2,column:1});
 
-    var bubbles= THREEDC.TDbarsChart();
+  panel.addChart(line,{row:2,column:2});
 
-  bubbles.data(data)
-         .width(500)
-         .height(400)
-         .gridsOn('purple')
-         .rotation({x:0,y:0,z:90})
-         .depth(400);
+ panel.addChart(line1,{row:1,column:1});
 
-dash.addChart(bubbles,{x:0,y:0,z:0});
-
-
-
-//dash.addChart(bars, {x:100,y:0,z:0});
-
-
-//dash.addChart(pie, {x:110,y:111,z:110});
-
-
-//dash.addChart(line, {x:-110,y:111,z:110});
 
 
 

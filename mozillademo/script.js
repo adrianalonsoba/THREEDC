@@ -351,6 +351,28 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
 
         myDashBoard.addChart(window.mybubblechart,{x:-200,y:0,z:0});
 
+/*
+       console.log(document);
+
+        var node = document.createElement("button");   
+        node.setAttribute("id", "buttonVR"); 
+        node.innerHTML="VR MODE";
+        node.style.position = "absolute";  // Set specific style while leaving other inline style values untouched
+                      
+        document.getElementById("ThreeJS").appendChild(node);
+*/
+        
+        document.querySelector("#buttonVR").addEventListener('click', function(){
+             THREEx.FullScreen.request();
+           //  document.querySelector(".button.request").innerHTML="";
+             var element = document.getElementById("buttonVR");
+           //  element.parentNode.removeChild(element);
+
+        }, false);
+
+        THREEx.FullScreen.bindKey({
+            dblclick    : true
+        });
 
     //UPDATE BUTTON
 
