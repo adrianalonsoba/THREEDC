@@ -341,7 +341,7 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
 
         window.mybubblechart=THREEDC.bubbleChart();
         console.log(alldata);
-        mybubblechart
+        window.mybubblechart
             .data(alldata)
             .gridsOn(0xffffff)
             .width(150)
@@ -349,7 +349,7 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
             .depth(200)
             .setTitle("contribution by company");
 
-        myDashBoard.addChart(mybubblechart,{x:-200,y:0,z:0});
+        myDashBoard.addChart(window.mybubblechart,{x:-200,y:0,z:0});
 
 
     //UPDATE BUTTON
@@ -379,14 +379,44 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
 
         // window.mybar3d.dimension(dimbyYandQ).gridsOn(0xffffff).group(groupByOrgandYearQ);
 
-        window.mybar3d.data(data1).width(250).depth(200).barSeparation(0.9).gridsOn(0xffffff).setTitle('Commits per week and org');
+    window.mybar3d.data(data1).width(250).depth(200).barSeparation(0.9).gridsOn(0xffffff)
+    .rotation({x:0,y:200,z:0})
+    .setTitle('Commits per week and org');
+  //  myDashBoard.removeAllCharts();
 
 
-        myDashBoard.addChart(window.mybar3d,{x:-100,y:20,z:100});
+   myDashBoard.addChart(window.mybar3d,{x:2000,y:0,z:-100});
+
+
+        myDashBoard.removeChart(window.mybubblechart);
+
+        var mydata = grouporgWeek.all();
+        var alldata = [];
+        var findorg = function (d) { return d.key === orgs[j].key; };
+        for (var i = 0 ; i < mydata.length; i++) {
+            for (var j = 0; j < orgs.length; j++) {
+                var found = mydata[i].value.authors.find(findorg);
+                if (found) {
+                    alldata.push({ key1:found.key , key2:mydata[i].key , value: found.value.commits ,value2:found.value.commits/mydata[i].value.totalCommits});
+                } else {
+                    alldata.push({ key1:orgs[j].key , key2:mydata[i].key , value: 0,value2:0 });
+                }
+            }
+        }
+
+        window.mybubblechart=THREEDC.bubbleChart();
+        console.log(alldata);
+        window.mybubblechart
+            .data(alldata)
+            .gridsOn(0xffffff)
+            .width(150)
+            .rotation({x:0,y:45,z:0})
+            .depth(200)
+            .setTitle("contribution by company");
+
+        myDashBoard.addChart(window.mybubblechart,{x:-200,y:0,z:0});
 
     }
-
-
 
     //CLEAR FILTERS BUTTON
 
@@ -395,6 +425,7 @@ $.getJSON("../jsons/webvr-git-parsed.json", function (data) {
         dimByAuthor.filterAll();
         dimByTz.filterAll();
         dimbyYandQ.filterAll();
+        dimByWeek.filterAll();
         for (var i = 0; i < myDashBoard.charts.length; i++) {
             myDashBoard.charts[i].reBuild();
         }
